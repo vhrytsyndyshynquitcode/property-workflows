@@ -23,7 +23,7 @@ Docker не потрібен: локально — лише npm run dev прот
       рядки вашого коду) — https://github.com/vhrytsyndyshynquitcode/property-workflows
 - [x] `git clone https://github.com/<dev>/<team-slug>.git` → `npm ci` → `cp .env.example .env.local`
       (у PowerShell: `Copy-Item .env.example .env.local`)
-- [ ] CodeRabbit (GitHub App) встановлено на це репо (github.com/apps/coderabbitai → Configure → Only select repositories) — <!-- знімок -->
+- [x] CodeRabbit (GitHub App) встановлено на це репо (github.com/apps/coderabbitai → Configure → Only select repositories) — рев'ю в PR #1: https://github.com/vhrytsyndyshynquitcode/property-workflows/pull/1#issuecomment-6268356329
 - [ ] (Якщо PM надіслав список справжніх назв клієнта особистим повідомленням) — локальний `product/denylist.local.txt`
       (у `.gitignore`; `npm run spec:check` читає його й значень не друкує)
 
@@ -76,17 +76,23 @@ Docker не потрібен: локально — лише npm run dev прот
 
 ## 7. Перший PR (перевірка ruleset-у)
 
-- [ ] `git switch -c setup/bootstrap` → цей файл із доказами розділів 1–6 → push → `gh pr create --web` (тип «Реалізація»)
-      → окремим коментарем `@coderabbitai review` — <!-- посилання на PR (наступним PR) -->
-- [ ] Поки перевірки не зелені, кнопка merge заблокована; push у `main` напряму відхиляється — <!-- знімок -->
-- [ ] Vercel створив preview для PR — <!-- посилання на preview (наступним PR) -->
-- [ ] **Squash and merge** → прод-деплой Vercel пройшов — <!-- посилання -->
+- [x] `git switch -c setup/bootstrap` → цей файл із доказами розділів 1–6 → push → `gh pr create --web` (тип «Реалізація»)
+      → окремим коментарем `@coderabbitai review` — https://github.com/vhrytsyndyshynquitcode/property-workflows/pull/1
+- [x] Поки перевірки не зелені, кнопка merge заблокована; push у `main` напряму відхиляється — у PR #1 до зелених
+      перевірок GitHub показував `mergeStateStatus: BLOCKED`; правила ruleset-у (`pull_request`, `non_fast_forward`,
+      `deletion`, обов'язкові `spec`, `app`, `conformance`, `db-check`) — [docs/img/ruleset-solo-main.png](img/ruleset-solo-main.png)
+- [x] Vercel створив preview для PR — https://property-workflows-git-setup-bootstrap-quit-code1.vercel.app/login (відкривається без входу у Vercel)
+- [x] **Squash and merge** → прод-деплой Vercel пройшов — коміт `5c95945` у `main`, деплой Production `success`,
+      CI на `main`: https://github.com/vhrytsyndyshynquitcode/property-workflows/actions/runs/39261364545
 - [ ] (З першою задачею, що має міграцію) `db-check` зелений, після merge `db-deploy` застосував її у вашу базу — <!-- посилання на run -->
 
 ## 8. Вимоги PM і специфікація
 
 - [ ] Адресу репо вимог PM узято з чату команди; на зустрічі команди (дні 0–2, до кінця 15.10, організує PM; якщо
       команда не зібралася — діра в чат команди до обіду 16.10) — перший раунд питань до брифу
+      **Затримка PM:** станом на 19.10 PM не опублікував вимог першого зрізу (строк — кінець 16.10) і не дав адреси
+      репо вимог. За рубрикою курсу ([README курсу, «Що знімає бали (розробник)» → «Не знімає балів затримка PM»](https://github.com/koldovsky/2026-quitcode-06-specs-in-practice-hw/blob/main/README.md#що-знімає-бали-розробник)) для C достатньо одного злитого PR задачі, а D — PR
+      `/requirements-sync` зі знімком від 19.10 чи пізніше; зазначено й у файлі здачі.
 - [ ] PM написав у чаті команди «вимоги оновлено» (у курсі перші вимоги — до кінця 16.10) → у Claude Code чи Cursor
       `/requirements-sync <pm>/<team-slug>-spec` → PR «Оновлення вимог» злито; шапка `docs/conformance.md` показує
       адресу, джерело (issues чи docs) і дату знімка — <!-- посилання на PR -->
