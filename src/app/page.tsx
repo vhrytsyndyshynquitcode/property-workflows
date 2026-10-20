@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./login/actions";
@@ -30,6 +31,14 @@ export default async function Home() {
         <dt className="text-zinc-500">Роль</dt>
         <dd data-testid="user-role">{profile?.role ?? "профіль не знайдено"}</dd>
       </dl>
+      <nav className="flex gap-4 text-sm">
+        <Link href="/runs" className="underline">
+          Runs
+        </Link>
+        <Link href="/runs/new" className="underline">
+          Launch a template
+        </Link>
+      </nav>
       <form action={signOut}>
         <button
           type="submit"
