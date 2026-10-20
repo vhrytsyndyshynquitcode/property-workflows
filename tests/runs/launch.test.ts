@@ -35,6 +35,7 @@ describe("run-launch", () => {
   it('AC-RUN-03: empty or spaces-only case name is rejected with "Enter a case name"', () => {
     expect(validateCaseName("")).toMatchObject({ ok: false, message: MESSAGES.caseNameEmpty });
     expect(validateCaseName("    ")).toMatchObject({ ok: false, message: "Enter a case name" });
+    expect(validateCaseName("\t\n ")).toMatchObject({ ok: false, message: "Enter a case name" });
   });
 
   it("AC-RUN-04: tasks assigned to manager B go to B, the remaining 3 to manager A", () => {
@@ -57,6 +58,9 @@ describe("run-launch", () => {
   it('AC-RUN-07: a case name of 101 characters is rejected with "Case name must be at most 100 characters"', () => {
     expect(validateCaseName("a".repeat(101))).toMatchObject({ ok: false, message: "Case name must be at most 100 characters" });
     expect(validateCaseName("a".repeat(100))).toEqual({ ok: true, value: "a".repeat(100) });
+    // 100 символів з емодзі — це 100 символів, не 200 UTF-16 code units (як length() у Postgres).
+    expect(validateCaseName("🏠".repeat(100)).ok).toBe(true);
+    expect(validateCaseName("🏠".repeat(101))).toMatchObject({ ok: false, message: "Case name must be at most 100 characters" });
   });
 
   it("AC-RUN-08: manager A without assignments is the assignee of all 5 tasks", () => {
