@@ -19,6 +19,8 @@ export const ERROR_MESSAGES = {
   case_name_empty: MESSAGES.caseNameEmpty,
   case_name_too_long: MESSAGES.caseNameTooLong,
   not_allowed: MESSAGES.notAllowedToMark,
+  template_not_found: "Pick a template",
+  invalid_assignee: "An assignee must be a manager or an administrator",
   failed: "Something went wrong. Try again.",
 } as const;
 export type ErrorCode = keyof typeof ERROR_MESSAGES;
@@ -34,8 +36,10 @@ export type CaseNameCheck =
 /** AC-RUN-03, AC-RUN-07: назва випадку — 1–100 символів; лише пробіли — порожня. */
 export function validateCaseName(raw: string): CaseNameCheck {
   const value = raw.trim();
-  if (value.length === 0) return { ok: false, code: "case_name_empty", message: MESSAGES.caseNameEmpty };
-  if (value.length > CASE_NAME_MAX) return { ok: false, code: "case_name_too_long", message: MESSAGES.caseNameTooLong };
+  // Символи (code points), як length() у Postgres, а не UTF-16 code units: емодзі — один символ.
+  const length = [...value].length;
+  if (length === 0) return { ok: false, code: "case_name_empty", message: MESSAGES.caseNameEmpty };
+  if (length > CASE_NAME_MAX) return { ok: false, code: "case_name_too_long", message: MESSAGES.caseNameTooLong };
   return { ok: true, value };
 }
 
@@ -136,6 +140,8 @@ export function errorCodeForDb(message: string | undefined): ErrorCode {
   if (message?.includes("CASE_NAME_EMPTY")) return "case_name_empty";
   if (message?.includes("CASE_NAME_TOO_LONG")) return "case_name_too_long";
   if (message?.includes("NOT_ALLOWED")) return "not_allowed";
+  if (message?.includes("TEMPLATE_NOT_FOUND")) return "template_not_found";
+  if (message?.includes("INVALID_ASSIGNEE")) return "invalid_assignee";
   return "failed";
 }
 
