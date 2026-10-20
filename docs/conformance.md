@@ -33,21 +33,21 @@
 
 | AC | Що перевіряє | Код | Тест | Статус |
 |---|---|---|---|---|
-| AC-RUN-01 | запуск — один запуск «in progress» з усіма 5 задачами «to do» | — | — | відкладено (чекає реалізації) |
-| AC-RUN-02 | зміна шаблону після запуску не змінює задачі запуску | — | — | відкладено (чекає реалізації) |
-| AC-RUN-03 | порожня назва випадку — «Enter a case name», запуску немає | — | — | відкладено (чекає реалізації) |
-| AC-RUN-04 | 2 задачі — менеджеру B, решта 3 — менеджеру запуску A | — | — | відкладено (чекає реалізації) |
-| AC-RUN-05 | адміністратор, що запустив шаблон, — менеджер запуску | — | — | відкладено (чекає реалізації) |
-| AC-RUN-06 | менеджер A, що запустив шаблон, — менеджер запуску | — | — | відкладено (чекає реалізації) |
-| AC-RUN-07 | назва з 101 символу — «Case name must be at most 100 characters» | — | — | відкладено (чекає реалізації) |
-| AC-RUN-08 | менеджер без призначень — виконавець усіх 5 задач | — | — | відкладено (чекає реалізації) |
-| AC-RUN-09 | адміністратор без призначень — виконавець усіх 5 задач | — | — | відкладено (чекає реалізації) |
-| AC-TASK-01 | виконавець позначає свою задачу «done» | — | — | відкладено (чекає реалізації) |
-| AC-TASK-02 | менеджер запуску позначає чужу задачу свого запуску «done» | — | — | відкладено (чекає реалізації) |
-| AC-TASK-03 | сторонній менеджер — відмова з повідомленням, задача «to do» | — | — | відкладено (чекає реалізації) |
-| AC-TASK-04 | третя обов'язкова задача «done» — запуск «completed» | — | — | відкладено (чекає реалізації) |
-| AC-TASK-05 | сторінка запуску — прогрес «2 of 5 done» | — | — | відкладено (чекає реалізації) |
-| AC-TASK-06 | менеджер B бачить свій запуск і запуск A, де він виконавець | — | — | відкладено (чекає реалізації) |
-| AC-TASK-07 | адміністратор позначає задачу в чужому запуску «done» | — | — | відкладено (чекає реалізації) |
-| AC-TASK-08 | сторінка запуску — статус кожної з 5 задач | — | — | відкладено (чекає реалізації) |
-| AC-TASK-09 | список запусків — прогрес «2 of 5 done» | — | — | відкладено (чекає реалізації) |
+| AC-RUN-01 | запуск — один запуск «in progress» з усіма 5 задачами «to do» | `src/lib/runs/domain.ts` (buildRun), `supabase/migrations/20261020073540_workflow_runs.sql` (launch_run) | `tests/runs/launch.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-RUN-02 | зміна шаблону після запуску не змінює задачі запуску | `src/lib/runs/domain.ts` (buildRun), `supabase/migrations/20261020073540_workflow_runs.sql` (run_tasks — копія задач) | `tests/runs/launch.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-RUN-03 | порожня назва випадку — «Enter a case name», запуску немає | `src/lib/runs/domain.ts` (validateCaseName), `supabase/migrations/20261020073540_workflow_runs.sql` (CASE_NAME_EMPTY) | `tests/runs/launch.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-RUN-04 | 2 задачі — менеджеру B, решта 3 — менеджеру запуску A | `src/lib/runs/domain.ts` (buildRun), `supabase/migrations/20261020073540_workflow_runs.sql` (launch_run) | `tests/runs/launch.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-RUN-05 | адміністратор, що запустив шаблон, — менеджер запуску | `src/lib/runs/domain.ts` (buildRun), `supabase/migrations/20261020073540_workflow_runs.sql` (run_manager_id) | `tests/runs/launch.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-RUN-06 | менеджер A, що запустив шаблон, — менеджер запуску | `src/lib/runs/domain.ts` (buildRun), `supabase/migrations/20261020073540_workflow_runs.sql` (run_manager_id) | `tests/runs/launch.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-RUN-07 | назва з 101 символу — «Case name must be at most 100 characters» | `src/lib/runs/domain.ts` (validateCaseName), `supabase/migrations/20261020073540_workflow_runs.sql` (CASE_NAME_TOO_LONG) | `tests/runs/launch.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-RUN-08 | менеджер без призначень — виконавець усіх 5 задач | `src/lib/runs/domain.ts` (buildRun), `supabase/migrations/20261020073540_workflow_runs.sql` (launch_run) | `tests/runs/launch.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-RUN-09 | адміністратор без призначень — виконавець усіх 5 задач | `src/lib/runs/domain.ts` (buildRun), `supabase/migrations/20261020073540_workflow_runs.sql` (launch_run) | `tests/runs/launch.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-TASK-01 | виконавець позначає свою задачу «done» | `src/lib/runs/domain.ts` (markTaskDone), `supabase/migrations/20261020073540_workflow_runs.sql` (mark_task_done) | `tests/runs/tasks.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-TASK-02 | менеджер запуску позначає чужу задачу свого запуску «done» | `src/lib/runs/domain.ts` (canMarkDone), `supabase/migrations/20261020073540_workflow_runs.sql` (mark_task_done) | `tests/runs/tasks.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-TASK-03 | сторонній менеджер — відмова з повідомленням, задача «to do» | `src/lib/runs/domain.ts` (canMarkDone), `supabase/migrations/20261020073540_workflow_runs.sql` (NOT_ALLOWED) | `tests/runs/tasks.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-TASK-04 | третя обов'язкова задача «done» — запуск «completed» | `src/lib/runs/domain.ts` (runStatusFor), `supabase/migrations/20261020073540_workflow_runs.sql` (mark_task_done) | `tests/runs/tasks.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-TASK-05 | сторінка запуску — прогрес «2 of 5 done» | `src/lib/runs/domain.ts` (progressLabel) | `tests/runs/tasks.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-TASK-06 | менеджер B бачить свій запуск і запуск A, де він виконавець | `src/lib/runs/domain.ts` (visibleRuns), `supabase/migrations/20261020073540_workflow_runs.sql` (can_see_run, runs_select_visible) | `tests/runs/tasks.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-TASK-07 | адміністратор позначає задачу в чужому запуску «done» | `src/lib/runs/domain.ts` (canMarkDone), `supabase/migrations/20261020073540_workflow_runs.sql` (mark_task_done) | `tests/runs/tasks.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-TASK-08 | сторінка запуску — статус кожної з 5 задач | `src/lib/runs/domain.ts` (TASK_STATUS_LABEL) | `tests/runs/tasks.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
+| AC-TASK-09 | список запусків — прогрес «2 of 5 done» | `src/lib/runs/domain.ts` (progressLabel) | `tests/runs/tasks.test.ts` | відкладено (UI — задача 2, impl-workflow-runs/tasks.md) |
