@@ -13,27 +13,27 @@ alter table public.profiles
   add constraint profiles_role_check check (role in ('manager', 'admin'));
 
 -- Призначати виконавців може менеджер запуску (AC-RUN-04): йому потрібен список менеджерів і адміністраторів
--- (лише id, ім'я, email, роль). Профілі інших користувачів менеджер не бачить (матриця прав), тому — функція
+-- (лише id, ім'я, роль — без email та інших полів профілю). Профілі інших користувачів менеджер не бачить (матриця прав), тому — функція
 -- security definer у private (читає profiles в обхід RLS) і обгортка security invoker у public для rpc.
 -- Робоче припущення про набір полів — до відповіді PM (solomchaak/property-workflows-spec#5).
 create or replace function private.list_assignable_users()
-returns table (id uuid, full_name text, email text, role text)
+returns table (id uuid, full_name text, role text)
 language sql
 stable
 security definer
 set search_path = ''
 as $$
-  select p.id, p.full_name, p.email, p.role
+  select p.id, p.full_name, p.role
   from public.profiles as p
   where (select private.current_app_role()) in ('manager', 'admin')
     and p.role in ('manager', 'admin')
-  order by p.full_name nulls last, p.email;
+  order by p.full_name nulls last, p.id;
 $$;
 revoke execute on function private.list_assignable_users() from public, anon;
 grant execute on function private.list_assignable_users() to authenticated;
 
 create or replace function public.list_assignable_users()
-returns table (id uuid, full_name text, email text, role text)
+returns table (id uuid, full_name text, role text)
 language sql
 stable
 security invoker
