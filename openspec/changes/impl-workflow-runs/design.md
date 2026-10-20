@@ -39,7 +39,7 @@
   (AC-TASK-01, AC-TASK-02, AC-TASK-07), інакше `NOT_ALLOWED` (AC-TASK-03); повторна позначка нічого не змінює; коли всі
   обов'язкові задачі `done` — запуск `completed` (AC-TASK-04).
 - `public.list_assignable_users()` (`security invoker`) → `private.list_assignable_users` (`security definer`,
-  `set search_path = ''`): лише для `manager`/`admin`, повертає id, ім'я, email і роль менеджерів та адміністраторів —
+  `set search_path = ''`): лише для `manager`/`admin`, повертає мінімум для AC-RUN-04 — id, ім'я і роль менеджерів та адміністраторів (без email та інших полів профілю) —
   для вибору виконавців (AC-RUN-04) і показу виконавця задачі; інші поля профілів менеджер не бачить.
 - Права на функції: для кожної `revoke execute … from public, anon` і `grant execute … to authenticated` — і на
   обгортки в `public`, і на функції в `private` (обгортка `security invoker` викликає їх від імені користувача;
@@ -50,7 +50,7 @@
 
 - Назву випадку обрізаємо від пробілів, межу 100 символів перевіряємо на обрізаній назві (AC-RUN-03, AC-RUN-07) —
   відкрите питання solomchaak/property-workflows-spec#6.
-- Для вибору виконавця менеджер бачить ім'я, email і роль менеджерів та адміністраторів (AC-RUN-04) — відкрите
+- Для вибору виконавця менеджер бачить лише ім'я і роль менеджерів та адміністраторів (AC-RUN-04) — відкрите
   питання solomchaak/property-workflows-spec#5.
 - Список запусків показує й завершені запуски зі статусом (solomchaak/property-workflows-spec#10), сторінка запуску —
   позначку «required» / «optional» (solomchaak/property-workflows-spec#11), назви розділів — на момент запуску
