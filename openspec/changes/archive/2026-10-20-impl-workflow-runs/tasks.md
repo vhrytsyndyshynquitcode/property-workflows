@@ -11,6 +11,6 @@ Done when: AC-RUN-01, AC-RUN-02, AC-RUN-03, AC-RUN-04, AC-RUN-05, AC-RUN-06, AC-
 - [x] 2.1 `/runs/new` і server action `launchRun`: вибір шаблону, назва випадку, виконавці задач, повідомлення PM
 - [x] 2.2 `/runs/[id]` і server action `markTaskDone`: прогрес, задачі за розділами, статуси, «Mark as done», повідомлення AC-TASK-03
 - [x] 2.3 `/runs`: список видимих запусків зі статусом і прогресом; посилання з головної
-- [ ] 2.4 Перевірка на прод-URL під синтетичними користувачами; рядки матриці «реалізовано»; archive `impl-workflow-runs`
+- [x] 2.4 Перевірка на прод-URL під синтетичними користувачами; рядки матриці «реалізовано»; archive `impl-workflow-runs`
 
 Done when: AC-RUN-01, AC-RUN-03, AC-RUN-04, AC-RUN-07, AC-TASK-01, AC-TASK-03, AC-TASK-05, AC-TASK-06, AC-TASK-08, AC-TASK-09 працюють на прод-URL
