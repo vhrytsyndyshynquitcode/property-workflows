@@ -11,7 +11,7 @@
 Для PM це матеріал нотатки «порівняння реалізацій»: де одні вимоги прочитали по-різному.
 -->
 
-Вимоги: solomchaak/property-workflows-spec · джерело: issues · знімок 2026-10-20
+Вимоги: solomchaak/property-workflows-spec · джерело: issues · знімок 2026-10-21
 
 ## Скан за таксономією
 
@@ -33,15 +33,21 @@
 
 | # | AC / вимога | Питання | Рекомендація | Issue в репо PM | Відповідь PM | Рішення (що зробили) |
 |---|---|---|---|---|---|---|
-| Q1 | AC-TASK-06, AC-TASK-09 (solomchaak/property-workflows-spec#3) | Чи лишається завершений запуск у списку запусків і чи видно в списку статус запуску? | A: у списку всі видимі запуски — «in progress» і «completed», з назвою випадку, статусом і прогресом | solomchaak/property-workflows-spec#10 | очікуємо | Робоче припущення A; у специфікації — текст PM, питання в Open questions (Q2) |
-| Q2 | AC-TASK-08, AC-TASK-04 (solomchaak/property-workflows-spec#3) | Чи показує сторінка запуску, які задачі обов'язкові? | A: біля статусу — позначка «required» / «optional» | solomchaak/property-workflows-spec#11 | очікуємо | Робоче припущення A; у специфікації — текст PM, питання в Open questions (Q3) |
-| Q3 | AC-RUN-02 (solomchaak/property-workflows-spec#2) | Розділ шаблону перейменували після запуску — чи зберігає запуск старі назви й групування розділів? | A: запуск зберігає назви розділів і групування на момент запуску | https://github.com/solomchaak/property-workflows-spec/issues/7#issuecomment-6285655324 (новий випадок у питанні колеги #7) | очікуємо | Робоче припущення A: назву розділу копіюємо в кожну задачу запуску |
+| Q1 | AC-TASK-06, AC-TASK-09 (solomchaak/property-workflows-spec#3) | Чи лишається завершений запуск у списку запусків і чи видно в списку статус запуску? | A: у списку всі видимі запуски — «in progress» і «completed», з назвою випадку, статусом і прогресом | solomchaak/property-workflows-spec#10 | A — новий AC-TASK-13 (і AC-TASK-14: назва шаблону, новіші першими), журнал змін solomchaak/property-workflows-spec#3, 2026-10-20 | Робоче припущення A збіглося; зміна `clarify-workflow-runs` (ADDED AC-TASK-13, AC-TASK-14); порядок «новіші першими» вже реалізовано |
+| Q2 | AC-TASK-08, AC-TASK-04 (solomchaak/property-workflows-spec#3) | Чи показує сторінка запуску, які задачі обов'язкові? | A: біля статусу — позначка «required» / «optional» | solomchaak/property-workflows-spec#11 | A — новий AC-TASK-15, журнал змін solomchaak/property-workflows-spec#3, 2026-10-20 | Робоче припущення A збіглося; ADDED AC-TASK-15, позначка вже реалізована |
+| Q3 | AC-RUN-02 (solomchaak/property-workflows-spec#2) | Розділ шаблону перейменували після запуску — чи зберігає запуск старі назви й групування розділів? | A: запуск зберігає назви розділів і групування на момент запуску | https://github.com/solomchaak/property-workflows-spec/issues/7#issuecomment-6285655324 (новий випадок у питанні колеги #7) | A — новий AC-RUN-12 і AC-TASK-12, журнал змін solomchaak/property-workflows-spec#2 і #3, 2026-10-20 | Робоче припущення A збіглося: назва розділу копіюється в кожну задачу запуску; ADDED AC-RUN-12, AC-TASK-12 |
 
 Інші відкриті питання команди, від яких залежить моє прочитання (не дублював): solomchaak/property-workflows-spec#4,
 solomchaak/property-workflows-spec#5, solomchaak/property-workflows-spec#6, solomchaak/property-workflows-spec#8,
 solomchaak/property-workflows-spec#9 — усі в Open questions зміни `add-workflow-runs`.
 
 ## Власні припущення
+
+Після відповідей PM 2026-10-20 (знімок 2026-10-21): пробіли — підтверджено (AC-RUN-11); повторний запуск і момент запуску
+— підтверджено («Припущення» solomchaak/property-workflows-spec#2); **список виконавців — PM вирішив інакше**: менеджер
+бачить лише email, без імен і ролей (AC-RUN-10, AC-TASK-11, solomchaak/property-workflows-spec#5) — код змінюю в PR
+реалізації; сторонній менеджер за прямим посиланням бачить «Run not found» (AC-TASK-10, solomchaak/property-workflows-spec#4).
+Записи нижче — стан до відповідей.
 
 - **Пробіли в назві випадку (AC-RUN-03, AC-RUN-07; питання колеги solomchaak/property-workflows-spec#6).** Поки PM не
   відповів: пробіли на початку й у кінці обрізаємо, а межу 100 символів перевіряємо на обрізаній назві.
