@@ -97,15 +97,33 @@ export function canMarkDone(actor: Actor, run: Pick<Run, "runManagerId">, task: 
   return actor.role === "admin" || task.assigneeId === actor.id || run.runManagerId === actor.id;
 }
 
-export type MarkResult = { ok: true; run: Run } | { ok: false; message: string; run: Run };
+export type MarkResult =
+  | { ok: true; run: Run }
+  | { ok: false; needsConfirmation: true; run: Run }
+  | { ok: false; needsConfirmation?: false; message: string; run: Run };
 
-/** AC-TASK-01..04, AC-TASK-07: позначка «done»; запуск «completed», коли виконано всі обов'язкові задачі. */
-export function markTaskDone(run: Run, taskId: string, actor: Actor): MarkResult {
+/** AC-TASK-04, AC-TASK-16: позначка останньої обов'язкової задачі «to do» просить підтвердження. */
+export function needsConfirmation(tasks: readonly Pick<RunTask, "id" | "isRequired" | "status">[], taskId: string): boolean {
+  const task = tasks.find((t) => t.id === taskId);
+  if (!task || !task.isRequired || task.status === "done") return false;
+  return tasks.filter((t) => t.isRequired && t.status !== "done").length === 1;
+}
+
+export const CONFIRM_NOTICE = "This cannot be undone";
+
+/**
+ * AC-TASK-01..04, AC-TASK-07, AC-TASK-16: позначка «done»; остання обов'язкова — лише з підтвердженням;
+ * запуск «completed», коли виконано всі обов'язкові задачі.
+ */
+export function markTaskDone(run: Run, taskId: string, actor: Actor, options: { confirmed?: boolean } = {}): MarkResult {
   const task = run.tasks.find((t) => t.id === taskId);
   if (!task || !canMarkDone(actor, run, task)) {
     return { ok: false, message: MESSAGES.notAllowedToMark, run };
   }
   if (task.status === "done") return { ok: true, run };
+  if (needsConfirmation(run.tasks, taskId) && !options.confirmed) {
+    return { ok: false, needsConfirmation: true, run };
+  }
   const tasks = run.tasks.map((t) => (t.id === taskId ? { ...t, status: "done" as const } : t));
   return { ok: true, run: { ...run, tasks, status: runStatusFor(tasks, run.status) } };
 }
@@ -131,6 +149,40 @@ export function visibleRuns<T extends Pick<Run, "runManagerId" | "tasks">>(actor
   return runs.filter((r) => canSeeRun(actor, r));
 }
 
+/** AC-TASK-10: сторінка запуску, якого користувач не бачить. */
+export const RUN_NOT_FOUND = "Run not found";
+
+/** AC-RUN-10, AC-TASK-11: виконавця показуємо лише за email — без імен і ролей. */
+export type AssignableUser = { id: string; email: string | null };
+export function assigneeLabel(users: readonly AssignableUser[], userId: string): string {
+  return users.find((u) => u.id === userId)?.email ?? "—";
+}
+export function assigneeOptions(users: readonly AssignableUser[], selfId: string): { value: string; label: string }[] {
+  return users.filter((u) => u.id !== selfId).map((u) => ({ value: u.id, label: u.email ?? "—" }));
+}
+
+/** AC-TASK-15: позначка обов'язковості біля статусу. */
+export function requiredLabel(isRequired: boolean): "required" | "optional" {
+  return isRequired ? "required" : "optional";
+}
+
+/** AC-TASK-13, AC-TASK-14, AC-TASK-17: рядок списку — випадок, шаблон, статус, прогрес; новіші першими. */
+export type RunListItem = Pick<Run, "id" | "caseName" | "templateName" | "status"> & {
+  createdAt: string;
+  tasks: readonly Pick<RunTask, "status">[];
+};
+export function runListRows(runs: readonly RunListItem[]) {
+  return [...runs]
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .map((r) => ({
+      id: r.id,
+      caseName: r.caseName,
+      templateName: r.templateName,
+      status: RUN_STATUS_LABEL[r.status],
+      progress: progressLabel(r.tasks),
+    }));
+}
+
 /** Тексти статусів дослівно, як у PM. */
 export const TASK_STATUS_LABEL: Record<TaskStatus, string> = { to_do: "to do", done: "done" };
 export const RUN_STATUS_LABEL: Record<RunStatus, string> = { in_progress: "in progress", completed: "completed" };
@@ -145,7 +197,7 @@ export function errorCodeForDb(message: string | undefined): ErrorCode {
   return "failed";
 }
 
-/** Рядки задач для сторінки запуску, згруповані за розділом у порядку задач (AC-TASK-08). */
+/** AC-TASK-08, AC-TASK-12, AC-RUN-12: задачі сторінки запуску за розділами в порядку задач на момент запуску. */
 export function groupBySection<T extends { sectionName: string }>(tasks: readonly T[]): { section: string; tasks: T[] }[] {
   const groups: { section: string; tasks: T[] }[] = [];
   for (const t of tasks) {

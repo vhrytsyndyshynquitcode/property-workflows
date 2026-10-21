@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildRun, MESSAGES, validateCaseName, type TemplateTask } from "@/lib/runs/domain";
+import { assigneeOptions, buildRun, groupBySection, MESSAGES, validateCaseName, type TemplateTask } from "@/lib/runs/domain";
 
 // Шаблон «Tenant move-in»: 2 розділи, 5 задач, 3 обов'язкові (як у AC PM і в міграції зрізу).
 const tenantMoveIn: TemplateTask[] = [
@@ -61,6 +61,41 @@ describe("run-launch", () => {
     // 100 символів з емодзі — це 100 символів, не 200 UTF-16 code units (як length() у Postgres).
     expect(validateCaseName("🏠".repeat(100)).ok).toBe(true);
     expect(validateCaseName("🏠".repeat(101))).toMatchObject({ ok: false, message: "Case name must be at most 100 characters" });
+  });
+
+  it("AC-RUN-10: manager A sees only the emails of manager B and the administrator in the assignee picker", () => {
+    const users = [
+      { id: managerA, email: "member1@example.test" },
+      { id: managerB, email: "member2@example.test" },
+      { id: admin, email: "admin@example.test" },
+    ];
+    const options = assigneeOptions(users, managerA);
+    expect(options.map((o) => o.label)).toEqual(["member2@example.test", "admin@example.test"]);
+    expect(options.every((o) => Object.keys(o).join() === "value,label")).toBe(true);
+  });
+
+  it("AC-RUN-11: a 100-character case name preceded by one space is saved without the space", () => {
+    const name = "b".repeat(100);
+    expect(validateCaseName(` ${name}`)).toEqual({ ok: true, value: name });
+  });
+
+  it('AC-RUN-12: after the template sections change the run still shows "Before move-in" (2) and "Move-in day" (3)', () => {
+    const template: TemplateTask[] = [
+      { id: "a1", name: "Sign the lease", sectionName: "Before move-in", isRequired: true },
+      { id: "a2", name: "Collect the deposit", sectionName: "Before move-in", isRequired: true },
+      { id: "b1", name: "Hand over the keys", sectionName: "Move-in day", isRequired: true },
+      { id: "b2", name: "Record meter readings", sectionName: "Move-in day", isRequired: false },
+      { id: "b3", name: "Order cleaning", sectionName: "Move-in day", isRequired: false },
+    ];
+    const run = buildRun({ id: "r1", templateName: "Tenant move-in", templateTasks: template, caseName: "Apartment 12, move-in", launchedBy: managerA });
+    // Розділ перейменовано, задачу перенесено — у шаблоні, не в запуску.
+    template.filter((t) => t.sectionName === "Move-in day").forEach((t) => (t.sectionName = "Key handover"));
+    template[4].sectionName = "Before move-in";
+    const sections = groupBySection(run.tasks);
+    expect(sections.map((g) => [g.section, g.tasks.length])).toEqual([
+      ["Before move-in", 2],
+      ["Move-in day", 3],
+    ]);
   });
 
   it("AC-RUN-08: manager A without assignments is the assignee of all 5 tasks", () => {
