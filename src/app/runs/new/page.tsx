@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { CASE_NAME_MAX, messageFor } from "@/lib/runs/domain";
+import { assigneeOptions, CASE_NAME_MAX, messageFor } from "@/lib/runs/domain";
 import { launchRun } from "../actions";
 
-// Запуск шаблону: шаблон → назва випадку → виконавець кожної задачі (AC-RUN-01, AC-RUN-03..09).
-// Виконавець за замовчуванням — менеджер запуску (той, хто запускає).
+// Запуск шаблону: шаблон → назва випадку → виконавець кожної задачі (AC-RUN-01, AC-RUN-03..11).
+// Виконавець за замовчуванням — менеджер запуску (той, хто запускає); інших показуємо лише за email (AC-RUN-10).
 export default async function NewRunPage({ searchParams }: PageProps<"/runs/new">) {
   const { template, error } = await searchParams;
   const templateId = typeof template === "string" ? template : undefined;
@@ -31,7 +31,7 @@ export default async function NewRunPage({ searchParams }: PageProps<"/runs/new"
   );
 
   const { data: users } = selected ? await supabase.rpc("list_assignable_users") : { data: null };
-  const others = (users ?? []).filter((u) => u.id !== claims.sub);
+  const others = assigneeOptions(users ?? [], claims.sub);
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-16">
@@ -76,8 +76,8 @@ export default async function NewRunPage({ searchParams }: PageProps<"/runs/new"
                 >
                   <option value="">Me (run manager)</option>
                   {others.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.full_name || u.id.slice(0, 8)} ({u.role})
+                    <option key={u.value} value={u.value}>
+                      {u.label}
                     </option>
                   ))}
                 </select>

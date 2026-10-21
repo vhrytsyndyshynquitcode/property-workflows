@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { errorCodeForDb, validateCaseName } from "@/lib/runs/domain";
+import { errorCodeForDb, needsConfirmation, validateCaseName, type TaskStatus } from "@/lib/runs/domain";
 
 // Запуск шаблону для випадку (AC-RUN-01, AC-RUN-03..09). Правила дублює функція бази public.launch_run:
 // тут — лише щоб показати повідомлення PM без зайвого запиту.
@@ -39,14 +39,27 @@ export async function launchRun(formData: FormData) {
   redirect(`/runs/${runId}`);
 }
 
-// Позначка «done» (AC-TASK-01..04, AC-TASK-07). Право перевіряє функція бази public.mark_task_done.
+// Позначка «done» (AC-TASK-01..04, AC-TASK-07, AC-TASK-16). Право перевіряє функція бази public.mark_task_done.
+// Остання обов'язкова задача — лише з підтвердженням: без confirmed=1 повертаємо на сторінку з підтвердженням.
 export async function markTaskDone(formData: FormData) {
   const runId = String(formData.get("runId") ?? "");
   const taskId = String(formData.get("taskId") ?? "");
+  const confirmed = formData.get("confirmed") === "1";
 
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   if (!data?.claims) redirect("/login");
+
+  if (!confirmed) {
+    const { data: tasks } = await supabase
+      .from("run_tasks")
+      .select("id, is_required, status")
+      .eq("run_id", runId);
+    const shaped = (tasks ?? []).map((t) => ({ id: t.id, isRequired: t.is_required, status: t.status as TaskStatus }));
+    if (needsConfirmation(shaped, taskId)) {
+      redirect(`/runs/${runId}?confirm=${encodeURIComponent(taskId)}`);
+    }
+  }
 
   const { error } = await supabase.rpc("mark_task_done", { p_task_id: taskId });
   revalidatePath("/runs");

@@ -45,21 +45,21 @@
 | AC-TASK-01 | виконавець позначає свою задачу «done» | `src/lib/runs/domain.ts` (markTaskDone), `supabase/migrations/20261020073540_workflow_runs.sql` (mark_task_done), `src/app/runs/actions.ts` | `tests/runs/tasks.test.ts` | реалізовано |
 | AC-TASK-02 | менеджер запуску позначає чужу задачу свого запуску «done» | `src/lib/runs/domain.ts` (canMarkDone), `supabase/migrations/20261020073540_workflow_runs.sql` (mark_task_done) | `tests/runs/tasks.test.ts` | реалізовано |
 | AC-TASK-03 | сторонній менеджер — відмова з повідомленням, задача «to do» | `src/lib/runs/domain.ts` (canMarkDone), `supabase/migrations/20261020073540_workflow_runs.sql` (NOT_ALLOWED), `src/app/runs/page.tsx` | `tests/runs/tasks.test.ts` | реалізовано |
-| AC-TASK-04 | третя обов'язкова задача «done» — запуск «completed» | `src/lib/runs/domain.ts` (runStatusFor), `supabase/migrations/20261020073540_workflow_runs.sql` (mark_task_done) | `tests/runs/tasks.test.ts` | відкладено (підтвердження останньої обов'язкової задачі — PR реалізації clarify) |
+| AC-TASK-04 | третя обов'язкова задача «done» — запуск «completed» | `src/lib/runs/domain.ts` (markTaskDone, needsConfirmation), `supabase/migrations/20261020073540_workflow_runs.sql` (mark_task_done), `src/app/runs/actions.ts`, `src/app/runs/[id]/page.tsx` | `tests/runs/tasks.test.ts` | реалізовано |
 | AC-TASK-05 | сторінка запуску — прогрес «2 of 5 done» | `src/lib/runs/domain.ts` (progressLabel), `src/app/runs/[id]/page.tsx` | `tests/runs/tasks.test.ts` | реалізовано |
 | AC-TASK-06 | менеджер B бачить свій запуск і запуск A, де він виконавець | `src/lib/runs/domain.ts` (visibleRuns), `supabase/migrations/20261020073540_workflow_runs.sql` (can_see_run, runs_select_visible), `src/app/runs/page.tsx` | `tests/runs/tasks.test.ts` | реалізовано |
 | AC-TASK-07 | адміністратор позначає задачу в чужому запуску «done» | `src/lib/runs/domain.ts` (canMarkDone), `supabase/migrations/20261020073540_workflow_runs.sql` (mark_task_done) | `tests/runs/tasks.test.ts` | реалізовано |
 | AC-TASK-08 | сторінка запуску — статус кожної з 5 задач | `src/lib/runs/domain.ts` (TASK_STATUS_LABEL), `src/app/runs/[id]/page.tsx` | `tests/runs/tasks.test.ts` | реалізовано |
-| AC-RUN-10 | у виборі виконавця — лише email менеджерів і адміністраторів | — | — | відкладено (чекає реалізації) |
-| AC-RUN-11 | назва зі 100 символів і пробілом попереду — збережено без пробілу | — | — | відкладено (чекає реалізації) |
-| AC-RUN-12 | розділи запуску — як на момент запуску після зміни шаблону | — | — | відкладено (чекає реалізації) |
-| AC-TASK-10 | чужий запуск за посиланням — «Run not found», задач не видно | — | — | відкладено (чекає реалізації) |
-| AC-TASK-11 | біля задачі — email виконавця, без імен і ролей | — | — | відкладено (чекає реалізації) |
-| AC-TASK-12 | задачі двома групами за розділами в порядку розділів | — | — | відкладено (чекає реалізації) |
-| AC-TASK-13 | завершений запуск у списку — «completed», «4 of 5 done» | — | — | відкладено (чекає реалізації) |
-| AC-TASK-14 | список — новіші першими, з назвою випадку й шаблону | — | — | відкладено (чекає реалізації) |
-| AC-TASK-15 | позначка «required» / «optional» біля статусу | — | — | відкладено (чекає реалізації) |
-| AC-TASK-16 | скасування на підтвердженні — задача «to do», запуск «in progress» | — | — | відкладено (чекає реалізації) |
-| AC-TASK-17 | виконавець бачить у списку прогрес «2 of 5 done» | — | — | відкладено (чекає реалізації) |
-| AC-TASK-18 | позначка «done» запропонована лише на своїх задачах | — | — | відкладено (чекає реалізації) |
+| AC-RUN-10 | у виборі виконавця — лише email менеджерів і адміністраторів | `src/lib/runs/domain.ts` (assigneeOptions), `supabase/migrations/20261021073349_assignee_emails.sql`, `src/app/runs/new/page.tsx` | `tests/runs/launch.test.ts` | реалізовано |
+| AC-RUN-11 | назва зі 100 символів і пробілом попереду — збережено без пробілу | `src/lib/runs/domain.ts` (validateCaseName), `supabase/migrations/20261020081209_runs_hardening.sql` | `tests/runs/launch.test.ts` | реалізовано |
+| AC-RUN-12 | розділи запуску — як на момент запуску після зміни шаблону | `src/lib/runs/domain.ts` (buildRun, groupBySection), `supabase/migrations/20261020073540_workflow_runs.sql` (run_tasks.section_name), `src/app/runs/[id]/page.tsx` | `tests/runs/launch.test.ts` | реалізовано |
+| AC-TASK-10 | чужий запуск за посиланням — «Run not found», задач не видно | `src/lib/runs/domain.ts` (RUN_NOT_FOUND, canSeeRun), `src/app/runs/[id]/page.tsx` | `tests/runs/tasks.test.ts` | реалізовано |
+| AC-TASK-11 | біля задачі — email виконавця, без імен і ролей | `src/lib/runs/domain.ts` (assigneeLabel), `supabase/migrations/20261021073349_assignee_emails.sql`, `src/app/runs/[id]/page.tsx` | `tests/runs/tasks.test.ts` | реалізовано |
+| AC-TASK-12 | задачі двома групами за розділами в порядку розділів | `src/lib/runs/domain.ts` (groupBySection), `src/app/runs/[id]/page.tsx` | `tests/runs/tasks.test.ts` | реалізовано |
+| AC-TASK-13 | завершений запуск у списку — «completed», «4 of 5 done» | `src/lib/runs/domain.ts` (runListRows), `src/app/runs/page.tsx` | `tests/runs/tasks.test.ts` | реалізовано |
+| AC-TASK-14 | список — новіші першими, з назвою випадку й шаблону | `src/lib/runs/domain.ts` (runListRows), `src/app/runs/page.tsx` | `tests/runs/tasks.test.ts` | реалізовано |
+| AC-TASK-15 | позначка «required» / «optional» біля статусу | `src/lib/runs/domain.ts` (requiredLabel), `src/app/runs/[id]/page.tsx` | `tests/runs/tasks.test.ts` | реалізовано |
+| AC-TASK-16 | скасування на підтвердженні — задача «to do», запуск «in progress» | `src/lib/runs/domain.ts` (needsConfirmation, CONFIRM_NOTICE), `src/app/runs/actions.ts`, `src/app/runs/[id]/page.tsx` | `tests/runs/tasks.test.ts` | реалізовано |
+| AC-TASK-17 | виконавець бачить у списку прогрес «2 of 5 done» | `src/lib/runs/domain.ts` (visibleRuns, progressLabel), `src/app/runs/page.tsx` | `tests/runs/tasks.test.ts` | реалізовано |
+| AC-TASK-18 | позначка «done» запропонована лише на своїх задачах | `src/lib/runs/domain.ts` (canMarkDone), `src/app/runs/[id]/page.tsx` | `tests/runs/tasks.test.ts` | реалізовано |
 | AC-TASK-09 | список запусків — прогрес «2 of 5 done» | `src/lib/runs/domain.ts` (progressLabel), `src/app/runs/page.tsx` | `tests/runs/tasks.test.ts` | реалізовано |
