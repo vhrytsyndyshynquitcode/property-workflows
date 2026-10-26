@@ -34,7 +34,7 @@
 | AC | Що перевіряє | Код | Тест | Статус |
 |---|---|---|---|---|
 | AC-DSYS-01 | ті самі слова й кольори статусів у списку й на сторінках запусків | `src/components/ui/status-badge.tsx`, `src/lib/runs/domain.ts` (RUN_STATUS_TONE), `src/app/runs/page.tsx`, `src/app/runs/[id]/page.tsx` | `tests/templates/ui.test.ts` | реалізовано |
-| AC-DSYS-02 | менеджер у редакторі — «Not enough rights» і «Back to templates», шаблон без змін | `src/lib/templates/domain.ts` (adminPageAccess), `src/components/app/not-enough-rights.tsx`, `src/app/templates/[id]/edit/page.tsx` | `tests/templates/ui.test.ts` | реалізовано |
+| AC-DSYS-02 | менеджер у редакторі — «Not enough rights» і «Back to templates», шаблон без змін | `src/lib/templates/domain.ts` (adminPageAccess), `src/components/app/not-enough-rights.tsx`, `src/app/templates/[id]/edit/page.tsx`, `src/components/ui/page.tsx` (AppShell — той самий макет із бічною навігацією) | `tests/templates/ui.test.ts` | реалізовано |
 | AC-DSYS-03 | відвідувач без входу на сторінці запуску — сторінка входу, без даних | `src/lib/templates/server.ts` (currentUser), `src/app/runs/[id]/page.tsx`, `src/app/login/page.tsx` | `tests/templates/ui.test.ts` | реалізовано |
 | AC-DSYS-04 | порожній список запусків — «No runs yet. Launch a template to start one.» | `src/lib/runs/domain.ts` (runsListView), `src/app/runs/page.tsx` | `tests/templates/ui.test.ts` | реалізовано |
 | AC-EDITOR-01 | зміна в редакторі — «Unpublished changes», 6 задач після повернення | `supabase/migrations/20261026084454_template_versions.sql` (mark_template_unpublished), `src/app/templates/actions.ts`, `src/app/templates/[id]/edit/page.tsx` | `tests/db/template-versions.test.ts`, `tests/templates/ui.test.ts` | реалізовано |
