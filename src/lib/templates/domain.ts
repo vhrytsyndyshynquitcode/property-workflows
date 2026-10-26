@@ -82,18 +82,17 @@ export function templateMessageFor(code: unknown): string | undefined {
   return undefined;
 }
 
-/** Порядок у редакторі: пересунути елемент на одну позицію вгору чи вниз (обмін позиціями з сусідом). */
-export function swapWithNeighbour<T extends { id: string; position: number }>(
+// Переміщення розділу чи задачі на одну позицію: новий порядок 1..n і лише змінені елементи. Порядок — за position,
+// при рівних — за id, тож після обірваного запису (дві однакові position) наступне переміщення відновлює послідовність.
+export function reorderAfterMove<T extends { id: string; position: number }>(
   items: readonly T[],
   id: string,
   direction: "up" | "down",
-): [T, T] | null {
-  const sorted = [...items].sort((a, b) => a.position - b.position);
+): T[] {
+  const sorted = [...items].sort((a, b) => a.position - b.position || a.id.localeCompare(b.id));
   const i = sorted.findIndex((x) => x.id === id);
   const j = direction === "up" ? i - 1 : i + 1;
-  if (i < 0 || j < 0 || j >= sorted.length) return null;
-  return [
-    { ...sorted[i], position: sorted[j].position },
-    { ...sorted[j], position: sorted[i].position },
-  ];
+  if (i < 0 || j < 0 || j >= sorted.length) return [];
+  [sorted[i], sorted[j]] = [sorted[j], sorted[i]];
+  return sorted.flatMap((x, k) => (x.position === k + 1 ? [] : [{ ...x, position: k + 1 }]));
 }

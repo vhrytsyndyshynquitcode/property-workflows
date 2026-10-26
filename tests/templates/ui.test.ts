@@ -10,6 +10,7 @@ import {
 import {
   adminPageAccess,
   formatVersionDate,
+  reorderAfterMove,
   showUnpublishedNotice,
   TEMPLATE_MESSAGES,
   templateMessageFor,
@@ -71,6 +72,31 @@ describe("template-editor (pages)", () => {
 
   it("AC-EDITOR-02: manager B sees no notice about unpublished changes", () => {
     expect(showUnpublishedNotice("manager", true)).toBe(false);
+  });
+
+  it("AC-EDITOR-01: moving a task in the editor changes only the moved pair and repairs duplicate positions", () => {
+    const tasks = [
+      { id: "a", position: 1 },
+      { id: "b", position: 2 },
+      { id: "c", position: 3 },
+    ];
+    expect(reorderAfterMove(tasks, "c", "up")).toEqual([
+      { id: "c", position: 2 },
+      { id: "b", position: 3 },
+    ]);
+    expect(reorderAfterMove(tasks, "a", "up")).toEqual([]); // перший не йде вгору
+    expect(reorderAfterMove(tasks, "x", "down")).toEqual([]); // чужий id — нічого
+    // Обірваний попередній запис лишив дві position = 2: наступне переміщення відновлює 1..n.
+    const broken = [
+      { id: "a", position: 1 },
+      { id: "b", position: 2 },
+      { id: "c", position: 2 },
+    ];
+    expect(reorderAfterMove(broken, "a", "down")).toEqual([
+      { id: "b", position: 1 },
+      { id: "a", position: 2 },
+      { id: "c", position: 3 },
+    ]);
   });
 
   it('AC-EDITOR-03: saving shows "Version 2 saved"', () => {
