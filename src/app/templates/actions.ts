@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { swapWithNeighbour, templateErrorCodeForDb } from "@/lib/templates/domain";
+import { reorderAfterMove, templateErrorCodeForDb } from "@/lib/templates/domain";
 
 // Дії редактора шаблонів (AC-EDITOR-01, AC-EDITOR-03, AC-EDITOR-04, AC-EDITOR-08). Server Action — публічний POST:
 // кожна дія спершу getClaims() і роль admin з profiles, лише потім запис серверним клієнтом користувача (RLS і
@@ -28,9 +28,10 @@ function done(templateId: string, query = ""): never {
   redirect(`${editPath(templateId)}${query}`);
 }
 
-// Відмову бази (RLS, FK, column grants) показуємо як помилку дії, а не як успіх.
-function doneOrFailed(templateId: string, error: unknown): never {
-  done(templateId, error ? "?error=failed" : "");
+// Відмову бази (RLS, FK, column grants) і запис, якого фільтр не знайшов (0 рядків), показуємо як помилку дії.
+function doneOrFailed(templateId: string, result: { error: unknown; data?: readonly unknown[] | null }): never {
+  const missed = result.data !== undefined && (result.data?.length ?? 0) === 0;
+  done(templateId, result.error || missed ? "?error=failed" : "");
 }
 
 export async function createTemplate(fd: FormData) {
@@ -53,7 +54,7 @@ export async function addSection(fd: FormData) {
   const { error } = await supabase
     .from("template_sections")
     .insert({ template_id: templateId, name, position: (last?.position ?? 0) + 1 });
-  doneOrFailed(templateId, error);
+  doneOrFailed(templateId, { error });
 }
 
 export async function renameSection(fd: FormData) {
@@ -61,28 +62,29 @@ export async function renameSection(fd: FormData) {
   const templateId = str(fd, "templateId");
   const name = str(fd, "name");
   if (!name) done(templateId, "?error=failed");
-  const { error } = await supabase
-    .from("template_sections").update({ name }).eq("id", str(fd, "sectionId")).eq("template_id", templateId);
-  doneOrFailed(templateId, error);
+  const result = await supabase
+    .from("template_sections").update({ name }).eq("id", str(fd, "sectionId")).eq("template_id", templateId)
+    .select("id");
+  doneOrFailed(templateId, result);
 }
 
 export async function removeSection(fd: FormData) {
   const supabase = await requireAdmin();
   const templateId = str(fd, "templateId");
-  const { error } = await supabase
-    .from("template_sections").delete().eq("id", str(fd, "sectionId")).eq("template_id", templateId);
-  doneOrFailed(templateId, error);
+  const result = await supabase
+    .from("template_sections").delete().eq("id", str(fd, "sectionId")).eq("template_id", templateId).select("id");
+  doneOrFailed(templateId, result);
 }
 
 export async function moveSection(fd: FormData) {
   const supabase = await requireAdmin();
   const templateId = str(fd, "templateId");
   const { data: sections } = await supabase.from("template_sections").select("id, position").eq("template_id", templateId);
-  const pair = swapWithNeighbour(sections ?? [], str(fd, "sectionId"), str(fd, "direction") === "up" ? "up" : "down");
-  for (const s of pair ?? []) {
+  const changes = reorderAfterMove(sections ?? [], str(fd, "sectionId"), str(fd, "direction") === "up" ? "up" : "down");
+  for (const s of changes) {
     const { error } = await supabase
       .from("template_sections").update({ position: s.position }).eq("id", s.id).eq("template_id", templateId);
-    if (error) doneOrFailed(templateId, error);
+    if (error) doneOrFailed(templateId, { error });
   }
   done(templateId);
 }
@@ -103,38 +105,39 @@ export async function addTask(fd: FormData) {
     is_required: fd.get("required") === "on",
     position: (last?.position ?? 0) + 1,
   });
-  doneOrFailed(templateId, error);
+  doneOrFailed(templateId, { error });
 }
 
 export async function updateTask(fd: FormData) {
   const supabase = await requireAdmin();
   const templateId = str(fd, "templateId");
   const name = str(fd, "name");
-  const { error } = await supabase
+  const { error, data } = await supabase
     .from("template_tasks")
     .update({ ...(name ? { name } : {}), is_required: fd.get("required") === "on" })
     .eq("id", str(fd, "taskId"))
-    .eq("template_id", templateId);
-  doneOrFailed(templateId, error);
+    .eq("template_id", templateId)
+    .select("id");
+  doneOrFailed(templateId, { error, data });
 }
 
 export async function removeTask(fd: FormData) {
   const supabase = await requireAdmin();
   const templateId = str(fd, "templateId");
-  const { error } = await supabase
-    .from("template_tasks").delete().eq("id", str(fd, "taskId")).eq("template_id", templateId);
-  doneOrFailed(templateId, error);
+  const result = await supabase
+    .from("template_tasks").delete().eq("id", str(fd, "taskId")).eq("template_id", templateId).select("id");
+  doneOrFailed(templateId, result);
 }
 
 export async function moveTask(fd: FormData) {
   const supabase = await requireAdmin();
   const templateId = str(fd, "templateId");
   const { data: tasks } = await supabase.from("template_tasks").select("id, position").eq("section_id", str(fd, "sectionId"));
-  const pair = swapWithNeighbour(tasks ?? [], str(fd, "taskId"), str(fd, "direction") === "up" ? "up" : "down");
-  for (const t of pair ?? []) {
+  const changes = reorderAfterMove(tasks ?? [], str(fd, "taskId"), str(fd, "direction") === "up" ? "up" : "down");
+  for (const t of changes) {
     const { error } = await supabase
       .from("template_tasks").update({ position: t.position }).eq("id", t.id).eq("template_id", templateId);
-    if (error) doneOrFailed(templateId, error);
+    if (error) doneOrFailed(templateId, { error });
   }
   done(templateId);
 }
