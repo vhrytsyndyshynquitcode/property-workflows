@@ -49,7 +49,7 @@ export default async function RunPage({ params, searchParams }: PageProps<"/runs
     return (
       <AppShell nav={APP_NAV} actions={<SignOutButton />}>
         <Alert>
-          <AlertTitle role="alert">{RUN_NOT_FOUND}</AlertTitle>
+          <AlertTitle>{RUN_NOT_FOUND}</AlertTitle>
         </Alert>
         <Link href="/runs" className="text-sm text-primary underline-offset-4 hover:underline">
           All runs

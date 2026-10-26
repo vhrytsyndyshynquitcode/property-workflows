@@ -17,6 +17,10 @@ import { basename, join, relative, sep } from "node:path";
 const args = process.argv.slice(2);
 const rootIdx = args.indexOf("--root");
 const root = rootIdx >= 0 ? args[rootIdx + 1] : process.cwd();
+if (rootIdx >= 0 && (!root || root.startsWith("--"))) {
+  console.error("check-server-boundary: після --root потрібен шлях до кореня проєкту.");
+  process.exit(2);
+}
 
 const isDir = (p) => {
   try {
