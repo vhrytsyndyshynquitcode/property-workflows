@@ -15,15 +15,22 @@ function AppShell({
 }) {
   return (
     <div className="flex min-h-full flex-1 flex-col">
-      <header className="border-b border-border bg-card">
+      <header className="sticky top-0 z-10 border-b border-border bg-card/85 backdrop-blur supports-[backdrop-filter]:bg-card/70">
         <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <Link href="/" className="text-sm font-semibold text-foreground">
+          <Link
+            href="/"
+            className="flex items-center gap-2 rounded-md text-sm font-semibold tracking-tight text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          >
             Property workflows
           </Link>
           {nav && nav.length > 0 ? (
-            <nav aria-label="Main" className="flex flex-wrap gap-4 text-sm">
+            <nav aria-label="Main" className="flex flex-wrap gap-1 text-sm">
               {nav.map((item) => (
-                <Link key={item.href} href={item.href} className="text-foreground underline-offset-4 hover:underline">
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="rounded-md px-2.5 py-1.5 text-muted-foreground transition-colors outline-none hover:bg-accent hover:text-accent-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+                >
                   {item.label}
                 </Link>
               ))}
@@ -51,7 +58,7 @@ function PageHeader({
   return (
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
         {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
       </div>
       {actions}
