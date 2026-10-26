@@ -36,6 +36,7 @@ export default async function EditTemplatePage({ params, searchParams }: PagePro
   if (access.kind !== "allowed") {
     return (
       <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+        <PageHeader title="Edit template" />
         <NotEnoughRights />
       </AppShell>
     );
@@ -49,6 +50,7 @@ export default async function EditTemplatePage({ params, searchParams }: PagePro
   if (!template) {
     return (
       <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+        <PageHeader title="Edit template" />
         <Alert>
           <AlertTitle>{TEMPLATE_MESSAGES.templateNotFound}</AlertTitle>
         </Alert>
