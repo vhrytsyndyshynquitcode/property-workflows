@@ -109,3 +109,34 @@
     --status-draft-foreground: oklch(0.9 0.1 90);
   }
 }
+
+:root {
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply text-balance;
+  }
+  ::selection {
+    @apply bg-primary/20;
+  }
+}
