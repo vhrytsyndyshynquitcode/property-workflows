@@ -194,6 +194,15 @@ export const RUN_STATUS_TONE = { in_progress: "progress", completed: "done" } as
 /** AC-DSYS-04: порожній список запусків — дослівно з AC. */
 export const NO_RUNS = "No runs yet. Launch a template to start one.";
 
+/** AC-DSYS-04: без запусків — повідомлення й посилання «Launch a template», без порожньої таблиці. */
+export function runsListView(rowCount: number):
+  | { kind: "empty"; message: typeof NO_RUNS; actionLabel: "Launch a template"; actionHref: "/runs/new" }
+  | { kind: "table" } {
+  return rowCount === 0
+    ? { kind: "empty", message: NO_RUNS, actionLabel: "Launch a template", actionHref: "/runs/new" }
+    : { kind: "table" };
+}
+
 /** Помилка функції бази (raise exception 'CASE_NAME_EMPTY' тощо) → код для searchParams. */
 export function errorCodeForDb(message: string | undefined): ErrorCode {
   if (message?.includes("CASE_NAME_EMPTY")) return "case_name_empty";

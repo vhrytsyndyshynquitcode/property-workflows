@@ -224,6 +224,13 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "runs_template_version_id_fkey";
+            columns: ["template_version_id"];
+            isOneToOne: false;
+            referencedRelation: "template_versions";
+            referencedColumns: ["id"];
+          },
+          {
             foreignKeyName: "runs_template_id_fkey";
             columns: ["template_id"];
             isOneToOne: false;

@@ -24,6 +24,7 @@ import {
   type RunStatus,
   type TaskStatus,
 } from "@/lib/runs/domain";
+import { templateVersionLabel } from "@/lib/templates/domain";
 import { markTaskDone } from "../actions";
 
 // Сторінка запуску: прогрес і статус кожної задачі (AC-TASK-05, AC-TASK-08, AC-DSYS-01), задачі за розділами на момент
@@ -41,7 +42,7 @@ export default async function RunPage({ params, searchParams }: PageProps<"/runs
 
   const { data: run } = await supabase
     .from("runs")
-    .select("id, case_name, template_name, status, run_manager_id, run_tasks(id, name, section_name, is_required, position, assignee_id, status)")
+    .select("id, case_name, template_name, status, run_manager_id, template_version:template_versions(number), run_tasks(id, name, section_name, is_required, position, assignee_id, status)")
     .eq("id", id)
     .maybeSingle();
 
@@ -72,7 +73,7 @@ export default async function RunPage({ params, searchParams }: PageProps<"/runs
     <AppShell nav={APP_NAV} actions={<SignOutButton />}>
       <PageHeader
         title={run.case_name}
-        description={`${run.template_name} · run manager: ${assigneeLabel(users ?? [], run.run_manager_id)}`}
+        description={`${run.template_name}${run.template_version ? ` · ${templateVersionLabel(run.template_version.number)}` : ""} · run manager: ${assigneeLabel(users ?? [], run.run_manager_id)}`}
       />
       <dl className="grid grid-cols-[max-content_1fr] items-center gap-x-4 gap-y-2 text-sm">
         <dt className="text-muted-foreground">Status</dt>

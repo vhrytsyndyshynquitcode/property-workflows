@@ -7,7 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { AppShell, PageHeader } from "@/components/ui/page";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { messageFor, NO_RUNS, RUN_STATUS_TONE, runListRows, type RunStatus, type TaskStatus } from "@/lib/runs/domain";
+import { messageFor, RUN_STATUS_TONE, runListRows, runsListView, type RunStatus, type TaskStatus } from "@/lib/runs/domain";
 import { createClient } from "@/lib/supabase/server";
 
 // Список запусків (AC-TASK-06, AC-TASK-09, AC-TASK-13, AC-TASK-14, AC-TASK-17, AC-DSYS-01, AC-DSYS-04). Які запуски
@@ -34,6 +34,7 @@ export default async function RunsPage({ searchParams }: PageProps<"/runs">) {
       tasks: r.run_tasks.map((t) => ({ status: t.status as TaskStatus })),
     })),
   );
+  const view = runsListView(rows.length);
   const statusOf = new Map((runs ?? []).map((r) => [r.id, r.status as RunStatus]));
 
   return (
@@ -41,7 +42,7 @@ export default async function RunsPage({ searchParams }: PageProps<"/runs">) {
       <PageHeader
         title="Runs"
         actions={
-          rows.length > 0 ? (
+          view.kind === "table" ? (
             <Link href="/runs/new" className={buttonVariants()}>
               Launch a template
             </Link>
@@ -53,7 +54,7 @@ export default async function RunsPage({ searchParams }: PageProps<"/runs">) {
           <AlertDescription>{message}</AlertDescription>
         </Alert>
       ) : null}
-      {rows.length > 0 ? (
+      {view.kind === "table" ? (
         <Table>
           <TableHeader>
             <TableRow>
@@ -85,9 +86,9 @@ export default async function RunsPage({ searchParams }: PageProps<"/runs">) {
         </Table>
       ) : (
         <div className="flex flex-col items-start gap-3 rounded-lg border border-border bg-card p-6">
-          <p className="text-sm text-muted-foreground">{NO_RUNS}</p>
-          <Link href="/runs/new" className={buttonVariants()}>
-            Launch a template
+          <p className="text-sm text-muted-foreground">{view.message}</p>
+          <Link href={view.actionHref} className={buttonVariants()}>
+            {view.actionLabel}
           </Link>
         </div>
       )}
