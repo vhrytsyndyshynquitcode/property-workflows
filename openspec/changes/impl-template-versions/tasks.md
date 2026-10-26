@@ -9,10 +9,10 @@ Done when: AC-EDITOR-02, AC-EDITOR-03, AC-EDITOR-04, AC-EDITOR-06, AC-EDITOR-08,
 
 ## 2. Сторінки шаблонів і редактор
 
-- [ ] 2.1 `/templates`, `/templates/new`, `/templates/[id]`: списки за роллю, позначка «Unpublished changes»
-- [ ] 2.2 `/templates/[id]/edit`: server actions з `getClaims()` і роллю (додати / перейменувати / видалити / пересунути розділ і задачу, required), «Save», «A template needs at least one required task», «Not enough rights» + «Back to templates»
-- [ ] 2.3 `/templates/[id]/versions`: номер, дата Київ, email, новіші першими; «Not enough rights» для manager
-- [ ] 2.4 Запуск з поточної версії й «Template version N» на сторінці запуску; дизайн-система на всіх сторінках
+- [x] 2.1 `/templates`, `/templates/new`, `/templates/[id]`: списки за роллю, позначка «Unpublished changes»
+- [x] 2.2 `/templates/[id]/edit`: server actions з `getClaims()` і роллю (додати / перейменувати / видалити / пересунути розділ і задачу, required), «Save», «A template needs at least one required task», «Not enough rights» + «Back to templates»
+- [x] 2.3 `/templates/[id]/versions`: номер, дата Київ, email, новіші першими; «Not enough rights» для manager
+- [x] 2.4 Запуск з поточної версії й «Template version N» на сторінці запуску; дизайн-система на всіх сторінках
 - [ ] 2.5 Тести логіки сторінок і дій з AC ID; рядки матриці; акаунти `pm-admin`, `pm-manager`; скріни за ролями; archive `impl-template-versions`
 
 Done when: AC-EDITOR-01, AC-EDITOR-05, AC-EDITOR-07, AC-DSYS-01, AC-DSYS-02, AC-DSYS-03, AC-DSYS-04 працюють на прод-URL і мають тест логіки

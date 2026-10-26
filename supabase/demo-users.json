@@ -18,5 +18,15 @@
     "email": "manager3@example.test",
     "full_name": "Ігор Демо-Третій",
     "role": "manager"
+  },
+  {
+    "email": "pm-admin@example.test",
+    "full_name": "PM Administrator",
+    "role": "admin"
+  },
+  {
+    "email": "pm-manager@example.test",
+    "full_name": "PM Manager",
+    "role": "manager"
   }
 ]
