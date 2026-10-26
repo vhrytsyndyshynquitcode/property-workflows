@@ -1,118 +1,136 @@
-# Дизайн-система: <назва продукту>
+# Дизайн-система: Property workflows
 
-<!--
-Шаблон DESIGN.md (домашка WS7, завдання B). Покладіть у корінь репо як DESIGN.md і заповніть.
-Читачі: ви, колеги й агент — CLAUDE.md імпортує цей файл (@DESIGN.md), Cursor бачить правило з AGENTS.md.
-Пишіть правила, які можна перевірити («основна дія — Button variant default, одна на екран»), а не настрій
-(«сучасно й дружньо»). Такі блоки-коментарі — підказки, їх можна видалити.
-Без брендингу клієнта: жодних справжніх кольорів, логотипів, шрифтів і назв.
--->
-
-- **Джерело:** <!-- посилання на артефакт Claude Design (Design System) або «AI-чат: <інструмент>, промпт — у PR #N» -->
-- **Вхід від PM:** <!-- розділ «Вигляд і тон» у requirements/product.md (дата знімка) або «бриф і бачення продукту» -->
-- **Код:** токени — `src/app/globals.css`; компоненти — `src/components/ui/` (shadcn/ui); перевірка — `npm run check:design`
+- **Джерело:** AI-агент — Claude Code (Claude Opus 5.5) за шаблоном `materials/DESIGN.template.md` курсу; промпт — в описі
+  PR дизайн-системи. Значення OKLCH підібрано під «Вигляд і тон» PM, контраст пораховано скриптом (WCAG 2.x,
+  OKLCH → sRGB → відносна яскравість), таблиця — у розділі 2.
+- **Вхід від PM:** розділ «Вигляд і тон» у `requirements/product.md` (знімок 2026-10-26,
+  solomchaak/property-workflows-spec#1) і вимога «Use one design system across the application»
+  (`requirements/19-use-one-design-system.md`, AC-DSYS-01…04).
+- **Код:** токени — `src/app/globals.css`; компоненти — `src/components/ui/` (shadcn/ui, стиль base-nova); перевірка —
+  `npm run check:design`.
 
 ## 1. Огляд
 
-<!-- 3–5 речень: для кого інтерфейс, де ним користуються (робочий стіл, телефон), який тон (3–5 прикметників і чого
-уникаємо), що важливіше — щільність чи простір. -->
+Внутрішній робочий інструмент агенції з управління житловою нерухомістю: менеджер і адміністратор запускають процеси за
+шаблонами й відстежують задачі. Працюють переважно за робочим столом, іноді з телефона. Тон — **спокійний, діловий,
+точний**: без жартів, знаків оклику, звинувачень («You made a mistake») і жаргону. Щільність важливіша за простір:
+менеджер переглядає багато запусків, тож таблиці щільні, але читабельні на телефоні. Інтерфейс — англійською.
 
 ## 2. Кольори
 
-<!-- Семантичні токени з іменами shadcn/ui. Значення — OKLCH. У сторінках — лише утиліти з колонки «Клас»,
-ніколи hex, bg-[#…] чи сирі палітри (zinc-500, bg-white). Темна тема — за системою (prefers-color-scheme). -->
+Семантичні токени з іменами shadcn/ui, значення — OKLCH. У сторінках — лише класи з колонки «Клас»; ніколи hex,
+`bg-[#…]` чи сирі палітри (`zinc-500`, `bg-white`). Темна тема — за системою (`prefers-color-scheme`).
 
 | Токен | Для чого | Світла | Темна | Клас |
 |---|---|---|---|---|
-| `background` / `foreground` | тло сторінки й основний текст | `oklch(…)` / `oklch(…)` | `oklch(…)` / `oklch(…)` | `bg-background`, `text-foreground` |
-| `card` / `card-foreground` | картки, панелі | | | `bg-card`, `text-card-foreground` |
-| `popover` / `popover-foreground` | меню, діалоги | | | `bg-popover` |
-| `primary` / `primary-foreground` | основна дія (одна на екран) | | | `bg-primary`, `text-primary-foreground` |
-| `secondary` / `secondary-foreground` | другорядна дія | | | `bg-secondary` |
-| `muted` / `muted-foreground` | приглушене тло, підписи, допоміжний текст | | | `bg-muted`, `text-muted-foreground` |
-| `accent` / `accent-foreground` | наведення, вибраний рядок | | | `bg-accent` |
-| `destructive` | небезпечна дія, текст помилки | | | `bg-destructive`, `text-destructive` |
-| `border` | розділювачі, межі карток | | | `border-border` |
-| `input` | межа поля вводу | | | `border-input` |
-| `ring` | кільце фокусу | | | `ring-ring` |
-| `status-<назва>` / `status-<назва>-foreground` | статус домену (<!-- напр. «на розгляді» -->) | | | `bg-status-<назва>`, `text-status-<назва>-foreground` |
+| `background` / `foreground` | тло сторінки й основний текст | `oklch(0.99 0.003 250)` / `oklch(0.22 0.02 255)` | `oklch(0.17 0.01 255)` / `oklch(0.96 0.005 255)` | `bg-background`, `text-foreground` |
+| `card` / `card-foreground` | картки, шапка, панелі | `oklch(1 0 0)` / `oklch(0.22 0.02 255)` | `oklch(0.21 0.012 255)` / `oklch(0.96 0.005 255)` | `bg-card`, `text-card-foreground` |
+| `popover` / `popover-foreground` | меню, діалоги | як `card` | як `card` | `bg-popover` |
+| `primary` / `primary-foreground` | **одна** основна дія екрана (Launch, Save, Sign in) — акцент, більше ні для чого | `oklch(0.47 0.17 290)` / `oklch(0.99 0 0)` | `oklch(0.72 0.14 290)` / `oklch(0.17 0.01 255)` | `bg-primary`, `text-primary-foreground`, `text-primary` (посилання) |
+| `secondary` / `secondary-foreground` | другорядна дія, вибраний шаблон | `oklch(0.95 0.008 255)` / як `foreground` | `oklch(0.27 0.012 255)` / як `foreground` | `bg-secondary` |
+| `muted` / `muted-foreground` | приглушене тло, підписи, порожні стани | `oklch(0.955 0.006 255)` / `oklch(0.47 0.02 255)` | `oklch(0.26 0.01 255)` / `oklch(0.74 0.015 255)` | `bg-muted`, `text-muted-foreground` |
+| `accent` / `accent-foreground` | наведення, вибраний рядок | `oklch(0.94 0.012 255)` / як `foreground` | `oklch(0.28 0.015 255)` / як `foreground` | `bg-accent` |
+| `destructive` / `destructive-foreground` | незворотна дія (лише з підтвердженням «This cannot be undone»), текст помилки | `oklch(0.52 0.2 27)` / `oklch(0.99 0 0)` | `oklch(0.7 0.18 25)` / `oklch(0.17 0.01 255)` | `bg-destructive`, `text-destructive` |
+| `border` | розділювачі, межі карток | `oklch(0.88 0.008 255)` | `oklch(0.32 0.012 255)` | `border-border` |
+| `input` | межа поля вводу | `oklch(0.6 0.02 255)` | `oklch(0.55 0.02 255)` | `border-input` |
+| `ring` | кільце фокусу | як `primary` | як `primary` | `ring-ring` |
+| `status-todo` / `-foreground` | статус «to do» — нейтральний сірий | `oklch(0.93 0.005 255)` / `oklch(0.35 0.02 255)` | `oklch(0.3 0.01 255)` / `oklch(0.88 0.01 255)` | `bg-status-todo`, `text-status-todo-foreground` |
+| `status-progress` / `-foreground` | «in progress» — синій | `oklch(0.93 0.04 250)` / `oklch(0.4 0.14 255)` | `oklch(0.3 0.07 255)` / `oklch(0.86 0.08 250)` | `bg-status-progress`, `text-status-progress-foreground` |
+| `status-done` / `-foreground` | «done», «completed» — зелений | `oklch(0.93 0.05 150)` / `oklch(0.38 0.11 150)` | `oklch(0.3 0.06 150)` / `oklch(0.87 0.1 150)` | `bg-status-done`, `text-status-done-foreground` |
+| `status-draft` / `-foreground` | «Unpublished changes» — теплий жовтий | `oklch(0.94 0.07 90)` / `oklch(0.4 0.09 70)` | `oklch(0.32 0.06 85)` / `oklch(0.9 0.1 90)` | `bg-status-draft`, `text-status-draft-foreground` |
+
+Акцент `primary` — фіолетовий, щоб не збігатися з жодним кольором статусу (сірий, синій, зелений, жовтий, червоний).
 
 ### Контраст
 
-<!-- Пораховані співвідношення (WCAG) для кожної пари в обох темах. Текст ≥ 4.5:1, межі полів і фокус ≥ 3:1.
-Порахувати: DevTools (підказка кольору) або агентом — «порахуй контраст WCAG для цих пар OKLCH». -->
+Пораховано для кожної пари (WCAG 2.x). Текст ≥ 4.5:1, межі полів і фокус ≥ 3:1.
 
 | Пара | Світла | Темна | Норма |
 |---|---|---|---|
-| `foreground` на `background` | | | ≥ 4.5 |
-| `muted-foreground` на `background` | | | ≥ 4.5 |
-| `muted-foreground` на `card` | | | ≥ 4.5 |
-| `primary-foreground` на `primary` | | | ≥ 4.5 |
-| `destructive` на `card` | | | ≥ 4.5 |
-| `status-…-foreground` на `status-…` | | | ≥ 4.5 |
-| `input` на `card` | | | ≥ 3 |
-| `ring` на `background` | | | ≥ 3 |
+| `foreground` на `background` | 16.82 | 17.02 | ≥ 4.5 |
+| `muted-foreground` на `background` | 6.63 | 8.30 | ≥ 4.5 |
+| `muted-foreground` на `card` | 6.82 | 7.69 | ≥ 4.5 |
+| `primary-foreground` на `primary` | 7.14 | 7.40 | ≥ 4.5 |
+| `destructive` на `card` | 6.11 | 6.12 | ≥ 4.5 |
+| `destructive-foreground` на `destructive` | 5.94 | 6.60 | ≥ 4.5 |
+| `status-todo-foreground` на `status-todo` | 9.19 | 9.50 | ≥ 4.5 |
+| `status-progress-foreground` на `status-progress` | 7.57 | 8.93 | ≥ 4.5 |
+| `status-done-foreground` на `status-done` | 7.85 | 9.32 | ≥ 4.5 |
+| `status-draft-foreground` на `status-draft` | 7.88 | 9.45 | ≥ 4.5 |
+| `input` на `card` | 3.94 | 3.65 | ≥ 3 |
+| `ring` на `background` | 7.14 | 7.40 | ≥ 3 |
 
 ## 3. Типографіка
 
-<!-- Шрифт (Geist через next/font, --font-sans), шкала: заголовок сторінки, заголовок розділу, основний текст,
-підпис — класами Tailwind (text-2xl font-semibold …). Числа й дати — tabular-nums? Мова інтерфейсу. -->
+Шрифт — Geist (`next/font`, `--font-geist-sans`) із системним запасом; числа прогресу — `tabular-nums`.
 
 | Роль | Клас | Де |
 |---|---|---|
-| Заголовок сторінки | `text-2xl font-semibold` | один на сторінку |
-| Заголовок розділу | | |
-| Основний текст | | |
-| Підпис, допоміжний текст | `text-sm text-muted-foreground` | |
+| Заголовок сторінки | `text-2xl font-semibold` | один `h1` на сторінку (`PageHeader`) |
+| Заголовок розділу | `text-base font-semibold` | розділ шаблону чи запуску (`h2`) |
+| Основний текст | `text-sm` | таблиці, форми, задачі |
+| Підпис, допоміжний текст | `text-sm text-muted-foreground` | email виконавця, «required/optional», опис сторінки |
+
+Мінімальний розмір тексту — `text-xs` лише в бейджах статусу; «small grey text» для змісту не використовуємо.
 
 ## 4. Відступи й радіуси
 
-<!-- Шкала відступів (Tailwind 4: gap-2, gap-4, p-6 …) і де яка; ширина контенту (max-w-…); радіус --radius і
-похідні (rounded-md, rounded-lg). -->
+- Ширина контенту — `max-w-4xl`, бокові відступи `px-4` (телефон) / `sm:px-6`, вертикальні — `py-8`.
+- Між блоками сторінки — `gap-6`; у формі — `gap-5` між полями, `gap-2` між `Label` і полем.
+- Радіус `--radius: 0.5rem`; похідні — `rounded-md` (бейдж), `rounded-lg` (поля, кнопки, картки).
 
 ## 5. Компоненти й варіанти
 
-<!-- Лише з @/components/ui. Для кожного — коли який варіант. Нові компоненти — npx shadcn@latest add <назва>. -->
+Лише з `@/components/ui`. Нові — `npx shadcn@latest add <назва>` (або власні на токенах у цій теці).
 
 | Компонент | Варіанти | Правило |
 |---|---|---|
-| `Button` | `default`, `secondary`, `outline`, `ghost`, `destructive`, `link` | `default` — одна основна дія на екран; `destructive` — лише з підтвердженням |
-| `Input` + `Label` | — | у кожного поля `Label` з `htmlFor`; placeholder — не замість підпису |
-| `Card` | | |
-| `Table` | | |
-| `Badge` | статуси домену | статус — завжди з текстом, не лише кольором |
-| `Dialog` | | |
-| `Alert` | помилка, інформація | текст помилки — дослівно з AC |
+| `AppShell`, `PageHeader` (`page.tsx`) | — | кожна сторінка, зокрема вхід і відмови: та сама шапка, ширина й місце для повідомлень (AC-DSYS-02, AC-DSYS-03) |
+| `Button` | `default`, `secondary`, `outline`, `ghost`, `destructive`, `link` | `default` — одна основна дія на екран; `destructive` — лише з підтвердженням; текст кнопки починається з дієслова |
+| `buttonVariants` на `Link` | як `Button` | навігаційна дія, що виглядає як кнопка («Launch a template») |
+| `Input` + `Label` | — | у кожного поля `Label` з `htmlFor`; placeholder — приклад, не підпис |
+| `NativeSelect` | — | вибір виконавця у формах server actions |
+| `Card` | — | групи вмісту: форма, розділ запуску, профіль |
+| `Table` | — | список запусків; на телефоні другорядна колонка (шаблон) переходить під назву випадку |
+| `StatusBadge` | `todo`, `progress`, `done`, `draft` | статус — завжди слово поруч із кольором (AC-DSYS-01) |
+| `Badge` | `default`, `secondary`, `outline` | службові позначки, не статуси |
+| `Alert` | `default`, `destructive` | `destructive` — помилка дії; `default` — відмова, підтвердження; текст дослівно з AC |
+| `Dialog`, `Select` | — | для клієнтських сценаріїв наступних зрізів |
 
 ## 6. Стани
 
-<!-- Для кожного екрана зрізу — тексти дослівно з AC PM. -->
-
 | Стан | Як виглядає | Приклад тексту |
 |---|---|---|
-| Порожній список | `text-muted-foreground` + дія, що допоможе | «<з AC>» |
-| Помилка дії | `Alert` (destructive) над формою; введене лишається у формі | «<з AC>» |
-| Відмова в доступі | сторінка з поясненням, без даних | «Недостатньо прав» |
-| Завантаження | | |
-| Успіх | | |
-| Вимкнена дія | `disabled` + пояснення поруч | |
+| Порожній список | рамка `border-border bg-card` + `text-muted-foreground` + дія, без порожньої таблиці | «No runs yet. Launch a template to start one.» + «Launch a template» (AC-DSYS-04) |
+| Помилка дії | `Alert variant="destructive"` над кнопкою; форма лишається | «Enter a case name» (AC-RUN-03), «A template needs at least one required task» (AC-EDITOR-04) |
+| Відмова в доступі | той самий `AppShell`, `Alert` з текстом і посиланням назад, без даних | «Not enough rights» + «Back to templates» (AC-DSYS-02, AC-EDITOR-07) |
+| Не знайдено | той самий `AppShell`, `Alert`, без даних | «Run not found» (AC-TASK-10) |
+| Не ввійшов | сторінка входу в тому самому `AppShell` | «Sign in» (AC-DSYS-03, AC-EDITOR-09) |
+| Незворотна дія | `Alert` з назвою об'єкта, «This cannot be undone», `Button destructive` «Confirm» і `outline` «Cancel» | AC-TASK-04, AC-TASK-16 |
+| Неопубліковані зміни | `StatusBadge tone="draft"` | «Unpublished changes» (AC-EDITOR-01) |
+| Успіх | `Alert` (default) на сторінці, без спливних вікон | «Version 2 saved» |
+| Завантаження | серверний рендер; кнопки форм без анімацій | — |
 
 ## 7. Доступність — мінімум
 
-- Label у кожного поля; помилка поля пов'язана з полем (`aria-describedby`).
-- Видимий фокус: `ring` на кожному інтерактивному елементі; Tab проходить форму по порядку.
+- `Label` у кожного поля; помилка поля пов'язана з полем (`aria-describedby`), якщо помилка стосується поля.
+- Видимий фокус: `focus-visible:ring-ring/50` і `border-ring` на кожному інтерактивному елементі; Tab проходить форму
+  по порядку.
 - Контраст — таблиця в розділі 2.
-- Статус ніколи не лише кольором — поруч завжди текст.
-- Спершу семантичний HTML (`<button>`, `<table>`, `<label>`); `aria-*` — там, де HTML бракує, а не замість нього.
+- Статус ніколи не лише кольором — поруч завжди слово статусу.
+- Спершу семантичний HTML (`<button>`, `<table>`, `<label>`, `<nav aria-label>`); `aria-*` — там, де HTML бракує.
+- Без іконок без підпису, декоративних анімацій і градієнтів.
 
 ## 8. Do / Don't
 
 | ✅ Робимо | ❌ Не робимо |
 |---|---|
-| `bg-primary text-primary-foreground` | `bg-zinc-900 text-white`, `bg-[#0f6b6e]`, `style={{ color: "#…" }}` |
+| `bg-primary text-primary-foreground` для однієї основної дії | `bg-zinc-900 text-white`, `bg-[#0f6b6e]`, `style={{ color: "#…" }}` |
+| `StatusBadge tone="progress"` + «in progress» | кольорова крапка без тексту |
 | компонент `Button` з потрібним варіантом | власний `<button className="…">` у сторінці |
+| текст повідомлення дослівно з AC PM | перефразоване «Oops! Something broke!» |
+| `Alert` на сторінці для успіху й помилок | спливні toast-вікна для рутинної інформації |
 | новий токен через розділ 9 | новий колір «лише для цієї сторінки» |
-| <!-- ваші правила --> | |
 
 ## 9. Як додати токен
 
@@ -125,5 +143,10 @@
 
 - `npm run check:design` — жодного hex, довільного кольору, сирої палітри чи кольору в inline style поза
   `src/components/ui` і `globals.css`. CI: `.github/workflows/architecture.yml`, job «Дизайн-система: лише токени».
-- Виняток — коментар `design-ok: <причина>` у тому самому рядку; кожен виняток — з реальною причиною.
-- Візуально: знімки ключових сторінок у світлій і темній темі (`docs/img/`), Tab по формі, контраст.
+- Виняток — коментар `design-ok: <причина>` у тому самому рядку; кожен виняток — з реальною причиною (зараз — жодного).
+- Візуально: знімки `/login` і `/runs` у світлій і темній темі (`docs/img/ws7-before-*`, `docs/img/ws7-after-*`),
+  Tab по формі, контраст.
+
+> Темна тема: вимога PM «Use one design system» відносить темну тему до «Поза межами» зрізу 2, а завдання B курсу
+> вимагає токени для обох тем. Токени темної теми є (за системою), окремих сторінок чи перемикача теми немає;
+> питання PM — у `docs/spec-reading.md` (розділ «Зріз 2»).

@@ -187,6 +187,13 @@ export function runListRows(runs: readonly RunListItem[]) {
 export const TASK_STATUS_LABEL: Record<TaskStatus, string> = { to_do: "to do", done: "done" };
 export const RUN_STATUS_LABEL: Record<RunStatus, string> = { in_progress: "in progress", completed: "completed" };
 
+/** AC-DSYS-01: той самий тон для того самого статусу на кожній сторінці («Вигляд і тон» PM). */
+export const TASK_STATUS_TONE = { to_do: "todo", done: "done" } as const satisfies Record<TaskStatus, string>;
+export const RUN_STATUS_TONE = { in_progress: "progress", completed: "done" } as const satisfies Record<RunStatus, string>;
+
+/** AC-DSYS-04: порожній список запусків — дослівно з AC. */
+export const NO_RUNS = "No runs yet. Launch a template to start one.";
+
 /** Помилка функції бази (raise exception 'CASE_NAME_EMPTY' тощо) → код для searchParams. */
 export function errorCodeForDb(message: string | undefined): ErrorCode {
   if (message?.includes("CASE_NAME_EMPTY")) return "case_name_empty";

@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { APP_NAV } from "@/components/app/app-nav";
+import { SignOutButton } from "@/components/app/sign-out-button";
+import { Card, CardContent } from "@/components/ui/card";
+import { AppShell, PageHeader } from "@/components/ui/page";
 import { createClient } from "@/lib/supabase/server";
-import { signOut } from "./login/actions";
 
-// Головна сторінка шаблону: хто увійшов і з якою роллю (з таблиці profiles).
-// Сторінка читає cookies, тому рендериться динамічно (шаблон зібрано з --no-cache-components).
+// Головна: хто увійшов і з якою роллю (з таблиці profiles).
 export default async function Home() {
   const supabase = await createClient();
 
@@ -23,30 +25,23 @@ export default async function Home() {
     .maybeSingle();
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-16">
-      <h1 className="text-2xl font-semibold">Проєкт команди</h1>
-      <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm">
-        <dt className="text-zinc-500">Email</dt>
-        <dd data-testid="user-email">{profile?.email ?? claims.email ?? "—"}</dd>
-        <dt className="text-zinc-500">Роль</dt>
-        <dd data-testid="user-role">{profile?.role ?? "профіль не знайдено"}</dd>
-      </dl>
-      <nav className="flex gap-4 text-sm">
-        <Link href="/runs" className="underline">
-          Runs
+    <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+      <PageHeader title="Property workflows" description="Launch a template for a case and track its progress." />
+      <Card>
+        <CardContent>
+          <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm">
+            <dt className="text-muted-foreground">Email</dt>
+            <dd data-testid="user-email">{profile?.email ?? claims.email ?? "—"}</dd>
+            <dt className="text-muted-foreground">Role</dt>
+            <dd data-testid="user-role">{profile?.role ?? "profile not found"}</dd>
+          </dl>
+        </CardContent>
+      </Card>
+      <p className="text-sm">
+        <Link href="/runs" className="text-primary underline-offset-4 hover:underline">
+          Go to runs
         </Link>
-        <Link href="/runs/new" className="underline">
-          Launch a template
-        </Link>
-      </nav>
-      <form action={signOut}>
-        <button
-          type="submit"
-          className="rounded border border-zinc-300 px-4 py-2 text-sm dark:border-zinc-700"
-        >
-          Вийти
-        </button>
-      </form>
-    </main>
+      </p>
+    </AppShell>
   );
 }

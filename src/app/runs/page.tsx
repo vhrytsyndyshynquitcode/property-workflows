@@ -1,11 +1,17 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { APP_NAV } from "@/components/app/app-nav";
+import { SignOutButton } from "@/components/app/sign-out-button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { buttonVariants } from "@/components/ui/button";
+import { AppShell, PageHeader } from "@/components/ui/page";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { messageFor, NO_RUNS, RUN_STATUS_TONE, runListRows, type RunStatus, type TaskStatus } from "@/lib/runs/domain";
 import { createClient } from "@/lib/supabase/server";
-import { messageFor, runListRows, type RunStatus, type TaskStatus } from "@/lib/runs/domain";
 
-// Список запусків (AC-TASK-06, AC-TASK-09, AC-TASK-13, AC-TASK-14, AC-TASK-17). Які запуски видно, вирішує RLS
-// (private.can_see_run): менеджер — свої й ті, де він виконавець; адміністратор — усі. Рядок — випадок, шаблон,
-// статус і прогрес; новіші першими.
+// Список запусків (AC-TASK-06, AC-TASK-09, AC-TASK-13, AC-TASK-14, AC-TASK-17, AC-DSYS-01, AC-DSYS-04). Які запуски
+// видно, вирішує RLS (private.can_see_run): менеджер — свої й ті, де він виконавець; адміністратор — усі.
 export default async function RunsPage({ searchParams }: PageProps<"/runs">) {
   const { error } = await searchParams;
   const message = messageFor(error);
@@ -28,53 +34,63 @@ export default async function RunsPage({ searchParams }: PageProps<"/runs">) {
       tasks: r.run_tasks.map((t) => ({ status: t.status as TaskStatus })),
     })),
   );
+  const statusOf = new Map((runs ?? []).map((r) => [r.id, r.status as RunStatus]));
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-6 py-16">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold">Runs</h1>
-        <Link href="/runs/new" className="rounded bg-foreground px-4 py-2 text-sm font-medium text-background">
-          Launch a template
-        </Link>
-      </div>
+    <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+      <PageHeader
+        title="Runs"
+        actions={
+          rows.length > 0 ? (
+            <Link href="/runs/new" className={buttonVariants()}>
+              Launch a template
+            </Link>
+          ) : null
+        }
+      />
       {message ? (
-        <p role="alert" className="text-sm text-red-600">
-          {message}
-        </p>
+        <Alert variant="destructive">
+          <AlertDescription>{message}</AlertDescription>
+        </Alert>
       ) : null}
       {rows.length > 0 ? (
-        <table className="w-full text-left text-sm">
-          <thead className="text-zinc-500">
-            <tr>
-              <th className="py-2 font-normal">Case</th>
-              <th className="py-2 font-normal">Template</th>
-              <th className="py-2 font-normal">Status</th>
-              <th className="py-2 font-normal">Progress</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Case</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Progress</TableHead>
+              <TableHead className="hidden sm:table-cell">Template</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {rows.map((row) => (
-              <tr key={row.id} className="border-t border-zinc-200 dark:border-zinc-800" data-testid="run-row">
-                <td className="py-2">
-                  <Link href={`/runs/${row.id}`} className="underline">
+              <TableRow key={row.id} data-testid="run-row">
+                <TableCell>
+                  <Link href={`/runs/${row.id}`} className="text-primary underline-offset-4 hover:underline">
                     {row.caseName}
                   </Link>
-                </td>
-                <td className="py-2">{row.templateName}</td>
-                <td className="py-2">{row.status}</td>
-                <td className="py-2" data-testid="run-progress">
+                  <span className="block text-muted-foreground sm:hidden">{row.templateName}</span>
+                </TableCell>
+                <TableCell>
+                  <StatusBadge tone={RUN_STATUS_TONE[statusOf.get(row.id) ?? "in_progress"]}>{row.status}</StatusBadge>
+                </TableCell>
+                <TableCell data-testid="run-progress" className="tabular-nums">
                   {row.progress}
-                </td>
-              </tr>
+                </TableCell>
+                <TableCell className="hidden sm:table-cell">{row.templateName}</TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       ) : (
-        <p className="text-sm text-zinc-500">No runs yet.</p>
+        <div className="flex flex-col items-start gap-3 rounded-lg border border-border bg-card p-6">
+          <p className="text-sm text-muted-foreground">{NO_RUNS}</p>
+          <Link href="/runs/new" className={buttonVariants()}>
+            Launch a template
+          </Link>
+        </div>
       )}
-      <Link href="/" className="text-sm underline">
-        Home
-      </Link>
-    </main>
+    </AppShell>
   );
 }
