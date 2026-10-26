@@ -102,7 +102,7 @@ create policy template_sections_select_admin on public.template_sections for sel
   using ((select private.current_app_role()) = 'admin');
 drop policy template_tasks_select on public.template_tasks;
 create policy template_tasks_select_admin on public.template_tasks for select to authenticated
-  using (true);
+  using ((select private.current_app_role()) = 'admin');
 -- insert / update / delete робочої копії — політики *_admin зрізу 1 (лише admin) лишаються.
 
 create policy template_versions_select on public.template_versions for select to authenticated
