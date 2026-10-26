@@ -81,7 +81,7 @@
   --status-draft-foreground: oklch(0.4 0.09 70);
   --mochi-violet: oklch(0.52 0.27 285);
   --mochi-pink: oklch(0.8 0.12 354);
-  --aurora-strength: 18%;
+  --aurora-strength: 26%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -115,7 +115,7 @@
     --status-draft-foreground: oklch(0.9 0.1 90);
     --mochi-violet: oklch(0.6 0.25 285);
     --mochi-pink: oklch(0.78 0.13 354);
-    --aurora-strength: 24%;
+    --aurora-strength: 40%;
   }
 }
 
@@ -123,9 +123,9 @@
    Картки й таблиці непрозорі (bg-card), тож контраст тексту не залежить від тла. */
 @utility bg-aurora {
   background-image:
-    radial-gradient(55% 45% at 12% 8%, color-mix(in oklch, var(--mochi-violet) var(--aurora-strength), transparent), transparent 70%),
-    radial-gradient(45% 40% at 88% 18%, color-mix(in oklch, var(--mochi-pink) var(--aurora-strength), transparent), transparent 70%),
-    radial-gradient(60% 50% at 55% 100%, color-mix(in oklch, var(--primary) var(--aurora-strength), transparent), transparent 70%);
+    radial-gradient(70% 60% at 10% 5%, color-mix(in oklch, var(--mochi-violet) var(--aurora-strength), transparent), transparent 70%),
+    radial-gradient(60% 55% at 90% 15%, color-mix(in oklch, var(--mochi-pink) var(--aurora-strength), transparent), transparent 70%),
+    radial-gradient(75% 60% at 50% 105%, color-mix(in oklch, var(--primary) var(--aurora-strength), transparent), transparent 70%);
   background-size: 180% 180%;
   background-position: 0% 0%;
 }

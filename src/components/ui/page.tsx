@@ -55,7 +55,8 @@ function AppShell({
           {actions ? <div className="md:px-3">{actions}</div> : null}
         </div>
       </aside>
-      {content}
+      {/* Права смуга під кутовий MochiCorner (від sm, де він видимий): контент не заходить під талісмана. */}
+      <div className="flex min-w-0 flex-1 sm:pr-36">{content}</div>
     </div>
   )
 }

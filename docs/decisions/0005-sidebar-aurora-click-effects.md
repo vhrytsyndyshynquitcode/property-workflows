@@ -19,7 +19,7 @@
   `aria-current="page"` і `bg-primary/12 text-primary` (`activeHref`: найдовший префікс, тож `/runs/new` —
   «Launch a template»). Вхід і 404 без `nav` — як раніше, проста шапка.
 - **Тло `bg-aurora`** (Tailwind `@utility` у `globals.css`): три м'які радіальні плями з токенів `mochi-violet`,
-  `mochi-pink`, `primary` (18 % у світлій, 24 % у темній темі), повільний дрейф 22 с. Картки, таблиці й форми — непрозорі
+  `mochi-pink`, `primary` (26 % у світлій, 40 % у темній темі), повільний дрейф 22 с. Картки, таблиці й форми — непрозорі
   `bg-card`, тож контраст тексту не змінюється (таблиця в DESIGN.md, розділ 2).
 - **`ClickBurst`** у root layout: на `pointerdown` по кнопці чи посиланню — кільце й 10 іскор `bg-mochi-violet`,
   `bg-mochi-pink`, `bg-primary` (Web Animations API, ~0.5 с, шар прибирається). `pointer-events: none`, `aria-hidden`,
