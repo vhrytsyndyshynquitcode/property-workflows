@@ -25,14 +25,19 @@ export default async function NewRunPage({ searchParams }: PageProps<"/runs/new"
   const claims = data?.claims;
   if (!claims) redirect("/login");
 
-  const { data: templates } = await supabase.from("templates").select("id, name").order("name");
+  // Запускаємо лише збережену поточну версію (AC-EDITOR-06): шаблони без версії не показуємо.
+  const { data: templates } = await supabase
+    .from("templates")
+    .select("id, name, current_version_id")
+    .not("current_version_id", "is", null)
+    .order("name");
   const selected = templates?.find((t) => t.id === templateId);
 
-  const { data: tasks } = selected
+  const { data: tasks } = selected?.current_version_id
     ? await supabase
-        .from("template_tasks")
-        .select("id, name, is_required, position, template_sections(name, position)")
-        .eq("template_id", selected.id)
+        .from("version_tasks")
+        .select("id, name, is_required, position, template_sections:version_sections(name, position)")
+        .eq("version_id", selected.current_version_id)
     : { data: null };
   const sortedTasks = [...(tasks ?? [])].sort(
     (a, b) =>

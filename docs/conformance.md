@@ -33,6 +33,19 @@
 
 | AC | Що перевіряє | Код | Тест | Статус |
 |---|---|---|---|---|
+| AC-DSYS-01 | ті самі слова й кольори статусів у списку й на сторінках запусків | — | — | відкладено (чекає реалізації) |
+| AC-DSYS-02 | менеджер у редакторі — «Not enough rights» і «Back to templates», шаблон без змін | — | — | відкладено (чекає реалізації) |
+| AC-DSYS-03 | відвідувач без входу на сторінці запуску — сторінка входу, без даних | — | — | відкладено (чекає реалізації) |
+| AC-DSYS-04 | порожній список запусків — «No runs yet. Launch a template to start one.» | — | — | відкладено (чекає реалізації) |
+| AC-EDITOR-01 | зміна в редакторі — «Unpublished changes», 6 задач після повернення | — | — | відкладено (чекає реалізації) |
+| AC-EDITOR-02 | менеджер бачить версію 1 з 5 задачами без неопублікованих змін | `supabase/migrations/20261026084454_template_versions.sql` (template_tasks_select_admin, templates_select_admin_or_published) | `tests/db/template-versions.test.ts` | відкладено (UI — задача 2, impl-template-versions/tasks.md) |
+| AC-EDITOR-03 | збереження — версія 2 з 6 задачами поточна, позначка зникає | `supabase/migrations/20261026084454_template_versions.sql` (save_template_version) | `tests/db/template-versions.test.ts` | відкладено (UI — задача 2, impl-template-versions/tasks.md) |
+| AC-EDITOR-04 | без обов'язкової задачі — «A template needs at least one required task», версії немає | `supabase/migrations/20261026084454_template_versions.sql` (NO_REQUIRED_TASK) | `tests/db/template-versions.test.ts` | відкладено (UI — задача 2, impl-template-versions/tasks.md) |
+| AC-EDITOR-05 | список версій — новіша першою, дата DD.MM.YYYY HH:MM, email автора | `supabase/migrations/20261026084454_template_versions.sql` (template_versions, number) | `tests/db/template-versions.test.ts` | відкладено (UI — задача 2, impl-template-versions/tasks.md) |
+| AC-EDITOR-06 | запуск показує «Template version 1» і 5 задач версії 1 | `supabase/migrations/20261026084454_template_versions.sql` (launch_run, runs.template_version_id), `src/app/runs/new/page.tsx` | `tests/db/template-versions.test.ts` | відкладено (UI — задача 2, impl-template-versions/tasks.md) |
+| AC-EDITOR-07 | менеджер на списку версій — «Not enough rights», версій немає | — | — | відкладено (чекає реалізації) |
+| AC-EDITOR-08 | прямий запит менеджера — шаблон у версії 1, без неопублікованих змін | `supabase/migrations/20261026084454_template_versions.sql` (RLS, column grants, save_template_version) | `tests/db/template-versions.test.ts` | відкладено (UI — задача 2, impl-template-versions/tasks.md) |
+| AC-EDITOR-09 | відвідувач без входу в редакторі — сторінка входу, без вмісту | `supabase/migrations/20261026084454_template_versions.sql` (revoke all from anon) | `tests/db/template-versions.test.ts` | відкладено (UI — задача 2, impl-template-versions/tasks.md) |
 | AC-RUN-01 | запуск — один запуск «in progress» з усіма 5 задачами «to do» | `src/lib/runs/domain.ts` (buildRun), `supabase/migrations/20261020073540_workflow_runs.sql` (launch_run), `src/app/runs/new/page.tsx` | `tests/runs/launch.test.ts` | реалізовано |
 | AC-RUN-02 | зміна шаблону після запуску не змінює задачі запуску | `src/lib/runs/domain.ts` (buildRun), `supabase/migrations/20261020073540_workflow_runs.sql` (run_tasks — копія задач) | `tests/runs/launch.test.ts` | реалізовано |
 | AC-RUN-03 | порожня назва випадку — «Enter a case name», запуску немає | `src/lib/runs/domain.ts` (validateCaseName), `supabase/migrations/20261020073540_workflow_runs.sql` (CASE_NAME_EMPTY), `src/app/runs/actions.ts` | `tests/runs/launch.test.ts` | реалізовано |
