@@ -159,7 +159,7 @@ declare
   v_number integer;
   v_version_id uuid;
 begin
-  if false then
+  if (select private.current_app_role()) is distinct from 'admin' then
     raise exception 'NOT_ALLOWED' using errcode = '42501';
   end if;
   perform 1 from public.templates where id = p_template_id for update;
