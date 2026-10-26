@@ -1,5 +1,5 @@
-// Перенесено без змін логіки з демо «3D GPU Fur Simulation» (Google AI Studio, gpu-fur-simulation),
-// наданого власником продукту; див. docs/decisions/0004-mochi-mascot.md.
+// Перенесено з демо «3D GPU Fur Simulation» (Google AI Studio, gpu-fur-simulation), наданого власником продукту;
+// у репо додано лише сором'язливий режим (setEyesClosed). Див. docs/decisions/0004-mochi-mascot.md.
 import * as THREE from 'three';
 
 /**
@@ -362,7 +362,10 @@ export function createBlobCreature() {
     velocity: new THREE.Vector3(),
     angularVelocity: new THREE.Vector3(),
     targetLook: new THREE.Vector2(0, 0),
-    currentLook: new THREE.Vector2(0, 0)
+    currentLook: new THREE.Vector2(0, 0),
+    // Сором'язливий режим (додано в репо): поки людина вводить пароль, очі заплющені (0 — розплющені, 1 — заплющені).
+    eyesClosed: false,
+    lidClose: 0
   };
 
   // Spatial anchor position & viewer-facing orientation for AR plane placement
@@ -477,6 +480,17 @@ export function createBlobCreature() {
     animState.boopPhase = 0.0;
   }
 
+  // immediate — без анімації повік (prefers-reduced-motion).
+  function setEyesClosed(closed, immediate = false) {
+    animState.eyesClosed = Boolean(closed);
+    if (immediate) {
+      // Без анімації повіки й погляд стають у кінцевий стан одразу — сцена малює лише один кадр.
+      animState.lidClose = animState.eyesClosed ? 1.0 : 0.0;
+      animState.targetLook.set(0, animState.eyesClosed ? -0.18 : 0);
+      animState.currentLook.copy(animState.targetLook);
+    }
+  }
+
   function update(dt, pointerNDC, cameraPos = null, isARMode = false) {
     const safeDt = Math.min(Math.max(dt, 0.001), 0.05);
     animState.time += safeDt;
@@ -486,7 +500,10 @@ export function createBlobCreature() {
     }
 
     // Smooth eye/head tracking toward pointer (held centered on viewer right after placement)
-    if (pointerNDC && faceViewerHoldTimer <= 0) {
+    if (animState.eyesClosed) {
+      // Не підглядає: голова трохи опущена, курсор ігнорує.
+      animState.targetLook.set(0, -0.18);
+    } else if (pointerNDC && faceViewerHoldTimer <= 0) {
       animState.targetLook.set(pointerNDC.x * 0.35, pointerNDC.y * 0.25);
     } else if (faceViewerHoldTimer > 0) {
       animState.targetLook.set(0, 0);
@@ -592,6 +609,11 @@ export function createBlobCreature() {
       blinkScaleY = Math.min(blinkScaleY, 0.18);
     }
 
+    // Плавно заплющує / розплющує очі для сором'язливого режиму.
+    const lidTarget = animState.eyesClosed ? 1.0 : 0.0;
+    animState.lidClose += (lidTarget - animState.lidClose) * Math.min(1.0, safeDt * 14.0);
+    blinkScaleY = Math.min(blinkScaleY, 1.0 - animState.lidClose * 0.92);
+
     for (const eye of eyes) {
       eye.pivot.scale.y = blinkScaleY;
       eye.catchlightMain.position.x = -eye.side * 0.042 + animState.currentLook.x * 0.028;
@@ -607,6 +629,7 @@ export function createBlobCreature() {
     animState,
     setEnvironmentScale,
     triggerBoop,
+    setEyesClosed,
     placeAt,
     resetPlacement,
     isPlaced: () => isPlaced,

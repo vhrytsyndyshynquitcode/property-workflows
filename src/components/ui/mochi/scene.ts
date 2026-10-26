@@ -2,6 +2,7 @@ import * as THREE from "three"
 import { createBlobCreature } from "./blob-creature.js"
 import { createGPUFurSystem } from "./fur-system.js"
 import { createGPUFurPhysics } from "./gpu-physics.js"
+import { watchPasswordFocus } from "./password-focus"
 
 // Сцена талісмана Mochi-Puff (ADR 0004): спрощений main.js демо без середовищ, AR, UI й OrbitControls.
 // Очі й тіло стежать за курсором по всьому вікну; наведення на хутро — «погладити», клік — «бупнути».
@@ -107,6 +108,12 @@ export function mountMochi(container: HTMLElement, { reducedMotion }: { reducedM
     }
   }
 
+  // Сором'язливий режим: поки фокус у полі пароля, Mochi заплющує очі й не дивиться на курсор.
+  function setShy(typingPassword: boolean) {
+    creature.setEyesClosed(typingPassword, reducedMotion)
+    if (reducedMotion && staticReady) renderFrame(0)
+  }
+
   // setSize очищає буфер полотна, тож без циклу анімації (reduced motion) кадр після кожного ресайзу малюємо знову.
   let staticReady = false
   function resize() {
@@ -180,6 +187,8 @@ export function mountMochi(container: HTMLElement, { reducedMotion }: { reducedM
   })
   visibility.observe(container)
 
+  const stopWatchingFocus = watchPasswordFocus(document, setShy)
+
   if (reducedMotion) {
     // Один кадр без руху: істота дивиться вперед, хутро нерухоме (і знову — після кожного ресайзу).
     staticReady = true
@@ -193,6 +202,7 @@ export function mountMochi(container: HTMLElement, { reducedMotion }: { reducedM
 
   return function dispose() {
     cancelAnimationFrame(frame)
+    stopWatchingFocus()
     window.removeEventListener("pointermove", onPointerMove)
     renderer.domElement.removeEventListener("pointerdown", onPointerDown)
     renderer.domElement.removeEventListener("pointerup", onPointerUp)
