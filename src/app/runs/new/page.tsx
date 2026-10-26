@@ -1,7 +1,16 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { APP_NAV } from "@/components/app/app-nav";
+import { SignOutButton } from "@/components/app/sign-out-button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/native-select";
+import { AppShell, PageHeader } from "@/components/ui/page";
 import { assigneeOptions, CASE_NAME_MAX, messageFor } from "@/lib/runs/domain";
+import { createClient } from "@/lib/supabase/server";
 import { launchRun } from "../actions";
 
 // Запуск шаблону: шаблон → назва випадку → виконавець кожної задачі (AC-RUN-01, AC-RUN-03..11).
@@ -39,71 +48,65 @@ export default async function NewRunPage({ searchParams }: PageProps<"/runs/new"
   const others = assigneeOptions(users ?? [], claims.sub);
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-16">
-      <h1 className="text-2xl font-semibold">Launch a template</h1>
-      <nav className="flex flex-wrap gap-2 text-sm">
+    <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+      <PageHeader title="Launch a template" description="Pick a template, name the case and assign tasks." />
+      <nav aria-label="Templates" className="flex flex-wrap gap-2">
         {(templates ?? []).map((t) => (
           <Link
             key={t.id}
             href={`/runs/new?template=${t.id}`}
-            className={`rounded border px-3 py-1 ${t.id === selected?.id ? "border-foreground" : "border-zinc-300 dark:border-zinc-700"}`}
+            aria-current={t.id === selected?.id ? "page" : undefined}
+            className={buttonVariants({ variant: t.id === selected?.id ? "secondary" : "outline", size: "sm" })}
           >
             {t.name}
           </Link>
         ))}
       </nav>
       {selected ? (
-        <form action={launchRun} className="flex flex-col gap-4">
-          <input type="hidden" name="templateId" value={selected.id} />
-          <label className="flex flex-col gap-1 text-sm">
-            Case name
-            <input
-              name="caseName"
-              placeholder="Apartment 12, move-in"
-              maxLength={CASE_NAME_MAX + 50}
-              className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
-            />
-          </label>
-          <fieldset className="flex flex-col gap-2 text-sm">
-            <legend className="mb-2 font-medium">Assignees</legend>
-            {sortedTasks.map((task) => (
-              <label key={task.id} className="flex items-center justify-between gap-4">
-                <span>
-                  {task.name}{" "}
-                  <span className="text-zinc-500">
-                    ({task.template_sections?.name} · {task.is_required ? "required" : "optional"})
-                  </span>
-                </span>
-                <select
-                  name={`assignee:${task.id}`}
-                  defaultValue=""
-                  className="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700 dark:bg-zinc-900"
-                >
-                  <option value="">Me (run manager)</option>
-                  {others.map((u) => (
-                    <option key={u.value} value={u.value}>
-                      {u.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ))}
-          </fieldset>
-          {message ? (
-            <p role="alert" className="text-sm text-red-600">
-              {message}
-            </p>
-          ) : null}
-          <button type="submit" className="rounded bg-foreground px-4 py-2 font-medium text-background">
-            Launch
-          </button>
-        </form>
+        <Card>
+          <CardContent>
+            <form action={launchRun} className="flex flex-col gap-5">
+              <input type="hidden" name="templateId" value={selected.id} />
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="caseName">Case name</Label>
+                <Input id="caseName" name="caseName" placeholder="Apartment 12, move-in" maxLength={CASE_NAME_MAX + 50} />
+              </div>
+              <fieldset className="flex flex-col gap-3">
+                <legend className="mb-2 text-sm font-medium">Assignees</legend>
+                {sortedTasks.map((task) => (
+                  <div key={task.id} className="flex flex-wrap items-center justify-between gap-2">
+                    <Label htmlFor={`assignee-${task.id}`} className="font-normal">
+                      {task.name}
+                      <span className="text-muted-foreground">
+                        {" "}
+                        ({task.template_sections?.name} · {task.is_required ? "required" : "optional"})
+                      </span>
+                    </Label>
+                    <NativeSelect id={`assignee-${task.id}`} name={`assignee:${task.id}`} defaultValue="">
+                      <option value="">Me (run manager)</option>
+                      {others.map((u) => (
+                        <option key={u.value} value={u.value}>
+                          {u.label}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  </div>
+                ))}
+              </fieldset>
+              {message ? (
+                <Alert variant="destructive">
+                  <AlertDescription>{message}</AlertDescription>
+                </Alert>
+              ) : null}
+              <Button type="submit" size="lg" className="self-start">
+                Launch
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       ) : (
-        <p className="text-sm text-zinc-500">Pick a template.</p>
+        <p className="text-sm text-muted-foreground">Pick a template.</p>
       )}
-      <Link href="/runs" className="text-sm underline">
-        All runs
-      </Link>
-    </main>
+    </AppShell>
   );
 }
