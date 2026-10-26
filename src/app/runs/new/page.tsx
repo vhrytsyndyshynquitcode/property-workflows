@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { APP_NAV } from "@/components/app/app-nav";
@@ -56,7 +57,13 @@ export default async function NewRunPage({ searchParams }: PageProps<"/runs/new"
             key={t.id}
             href={`/runs/new?template=${t.id}`}
             aria-current={t.id === selected?.id ? "page" : undefined}
-            className={buttonVariants({ variant: t.id === selected?.id ? "secondary" : "outline", size: "sm" })}
+            // Усі шаблони — outline; вибраний — ще й тло secondary, рамка й текст primary. Самого secondary замало: у
+            // темній темі outline з рамкою виглядав помітнішим за вибраний.
+            className={cn(
+              buttonVariants({ variant: "outline", size: "sm" }),
+              t.id === selected?.id &&
+                "border-primary bg-secondary text-primary hover:bg-secondary hover:text-primary dark:border-primary dark:bg-secondary dark:hover:bg-secondary",
+            )}
           >
             {t.name}
           </Link>
