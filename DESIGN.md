@@ -39,6 +39,11 @@
 | `status-done` / `-foreground` | «done», «completed» — зелений | `oklch(0.93 0.05 150)` / `oklch(0.38 0.11 150)` | `oklch(0.3 0.06 150)` / `oklch(0.87 0.1 150)` | `bg-status-done`, `text-status-done-foreground` |
 | `status-draft` / `-foreground` | «Unpublished changes» — теплий жовтий | `oklch(0.94 0.07 90)` / `oklch(0.4 0.09 70)` | `oklch(0.32 0.06 85)` / `oklch(0.9 0.1 90)` | `bg-status-draft`, `text-status-draft-foreground` |
 
+Талісман Mochi-Puff (ADR 0004) — 3D-ілюстрація на WebGL з власними кольорами хутра (пресет «Sakura Mochi»:
+фіолетова основа, рожеві кінчики — у тон з `primary`). Це не токени: шейдери не читають CSS-змінних, тож кольори
+записано в `src/components/ui/mochi/scene.ts` і більше ніде не вживаються — ні для тексту, ні для статусу, ні для дії.
+Талісман декоративний (`aria-hidden`), норма контрасту для нього не діє.
+
 Акцент `primary` — фіолетовий, щоб не збігатися з жодним кольором статусу (сірий, синій, зелений, жовтий, червоний).
 
 ### Контраст
@@ -85,7 +90,8 @@
 
 | Компонент | Варіанти | Правило |
 |---|---|---|
-| `AppShell`, `PageHeader` (`page.tsx`) | — | кожна сторінка, зокрема вхід і відмови: та сама шапка, ширина й місце для повідомлень (AC-DSYS-02, AC-DSYS-03) |
+| `AppShell`, `PageHeader` (`page.tsx`) | — | кожна сторінка, зокрема вхід і відмови: та сама шапка (липка, напівпрозора), ширина й місце для повідомлень (AC-DSYS-02, AC-DSYS-03) |
+| `MochiPuff` | — | талісман: пухнаста 3D-істота (WebGL, three.js), що стежить очима за курсором; наведення — «погладити» хутро, клік — «бупнути»; великий (`hero`) — **лише** вхід і 404; на робочих екранах — тільки `MochiCorner` (правий нижній кут, 128–144 px, від 640 px ширини; ховається, коли є великий); three.js вантажиться ліниво; при `prefers-reduced-motion` — один статичний кадр |
 | `Button` | `default`, `secondary`, `outline`, `ghost`, `destructive`, `link` | `default` — одна основна дія на екран; `destructive` — лише з підтвердженням; текст кнопки починається з дієслова |
 | `buttonVariants` на `Link` | як `Button` | навігаційна дія, що виглядає як кнопка («Launch a template») |
 | `Input` + `Label` | — | у кожного поля `Label` з `htmlFor`; placeholder — приклад, не підпис |
@@ -105,6 +111,7 @@
 | Помилка дії | `Alert variant="destructive"` над кнопкою; форма лишається | «Enter a case name» (AC-RUN-03), «A template needs at least one required task» (AC-EDITOR-04) |
 | Відмова в доступі | той самий `AppShell`, `Alert` з текстом і посиланням назад, без даних | «Not enough rights» + «Back to templates» (AC-DSYS-02, AC-EDITOR-07) |
 | Не знайдено | той самий `AppShell`, `Alert`, без даних | «Run not found» (AC-TASK-10) |
+| Сторінки немає (404) | той самий `AppShell`, `MochiPuff`, заголовок і дія назад | «Page not found» + «Go to home» |
 | Не ввійшов | сторінка входу в тому самому `AppShell` | «Sign in» (AC-DSYS-03, AC-EDITOR-09) |
 | Незворотна дія | `Alert` з назвою об'єкта, «This cannot be undone», `Button destructive` «Confirm» і `outline` «Cancel» | AC-TASK-04, AC-TASK-16 |
 | Неопубліковані зміни | `StatusBadge tone="draft"` | «Unpublished changes» (AC-EDITOR-01) |
@@ -119,7 +126,9 @@
 - Контраст — таблиця в розділі 2.
 - Статус ніколи не лише кольором — поруч завжди слово статусу.
 - Спершу семантичний HTML (`<button>`, `<table>`, `<label>`, `<nav aria-label>`); `aria-*` — там, де HTML бракує.
-- Без іконок без підпису, декоративних анімацій і градієнтів.
+- Без іконок без підпису, декоративних анімацій і градієнтів — **крім** талісмана на неробочих екранах (ADR 0004):
+  великий `MochiPuff` на вході й 404, маленький `MochiCorner` у правому нижньому куті робочих екранів, м'який градієнт `from-status-draft/70` під ним; рух хутра, погляд за курсором і кліпання; вимикається
+  за `prefers-reduced-motion`. На робочих екранах (шаблони, запуски, задачі) — без градієнтів і анімацій в інтерфейсі; лише кутовий талісман поза зоною таблиць і форм.
 
 ## 8. Do / Don't
 
