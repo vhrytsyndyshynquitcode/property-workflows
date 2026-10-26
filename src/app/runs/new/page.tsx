@@ -61,7 +61,8 @@ export default async function NewRunPage({ searchParams }: PageProps<"/runs/new"
             // темній темі outline з рамкою виглядав помітнішим за вибраний.
             className={cn(
               buttonVariants({ variant: "outline", size: "sm" }),
-              t.id === selected?.id && "border-primary bg-secondary text-primary dark:border-primary dark:bg-secondary",
+              t.id === selected?.id &&
+                "border-primary bg-secondary text-primary hover:bg-secondary hover:text-primary dark:border-primary dark:bg-secondary dark:hover:bg-secondary",
             )}
           >
             {t.name}
