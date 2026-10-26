@@ -483,7 +483,12 @@ export function createBlobCreature() {
   // immediate — без анімації повік (prefers-reduced-motion).
   function setEyesClosed(closed, immediate = false) {
     animState.eyesClosed = Boolean(closed);
-    if (immediate) animState.lidClose = animState.eyesClosed ? 1.0 : 0.0;
+    if (immediate) {
+      // Без анімації повіки й погляд стають у кінцевий стан одразу — сцена малює лише один кадр.
+      animState.lidClose = animState.eyesClosed ? 1.0 : 0.0;
+      animState.targetLook.set(0, animState.eyesClosed ? -0.18 : 0);
+      animState.currentLook.copy(animState.targetLook);
+    }
   }
 
   function update(dt, pointerNDC, cameraPos = null, isARMode = false) {
