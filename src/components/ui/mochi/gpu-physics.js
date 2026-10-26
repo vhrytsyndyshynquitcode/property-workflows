@@ -1,5 +1,5 @@
 // Перенесено без змін логіки з демо «3D GPU Fur Simulation» (Google AI Studio, gpu-fur-simulation),
-// наданого власником продукту; див. docs/decisions/0004-mochi-mascot-on-non-work-screens.md.
+// наданого власником продукту; див. docs/decisions/0004-mochi-mascot.md.
 import * as THREE from 'three';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer.js';
 

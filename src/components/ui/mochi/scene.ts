@@ -107,6 +107,8 @@ export function mountMochi(container: HTMLElement, { reducedMotion }: { reducedM
     }
   }
 
+  // setSize очищає буфер полотна, тож без циклу анімації (reduced motion) кадр після кожного ресайзу малюємо знову.
+  let staticReady = false
   function resize() {
     const w = Math.max(1, container.clientWidth)
     const h = Math.max(1, container.clientHeight)
@@ -115,6 +117,7 @@ export function mountMochi(container: HTMLElement, { reducedMotion }: { reducedM
     renderer.domElement.style.height = "100%"
     camera.aspect = w / h
     camera.updateProjectionMatrix()
+    if (reducedMotion && staticReady) renderFrame(0)
   }
   resize()
   const resizeObserver = new ResizeObserver(resize)
@@ -178,7 +181,8 @@ export function mountMochi(container: HTMLElement, { reducedMotion }: { reducedM
   visibility.observe(container)
 
   if (reducedMotion) {
-    // Один кадр без руху: істота дивиться вперед, хутро нерухоме.
+    // Один кадр без руху: істота дивиться вперед, хутро нерухоме (і знову — після кожного ресайзу).
+    staticReady = true
     renderFrame(0.016)
   } else {
     window.addEventListener("pointermove", onPointerMove, { passive: true })
