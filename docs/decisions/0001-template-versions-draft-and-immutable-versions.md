@@ -61,4 +61,5 @@ JS-бандлі, Server Action — публічний POST, тож захища�
 - Архітектурне правило в `.github/workflows/architecture.yml`, job «Секретний ключ лише на сервері»
   (`scripts/check-server-boundary.mjs`): `SUPABASE_SECRET_KEY` і admin-клієнт — лише в `src/lib/supabase/admin.ts` з
   `server-only`; спроба «спростити» збереження admin-клієнтом у сторінці чи Client Component червонить CI (доказ —
-  червоний прогін у PR задачі 2).
+  червоний прогін https://github.com/vhrytsyndyshynquitcode/property-workflows/actions/runs/40299502181 у PR #17,
+  коміт 167fc4e, потім revert).
