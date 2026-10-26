@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ClickBurst } from "@/components/ui/click-burst";
 import { MochiCorner } from "@/components/ui/mochi-puff";
 import "./globals.css";
 
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         {children}
         <MochiCorner />
+        <ClickBurst />
       </body>
     </html>
   );
