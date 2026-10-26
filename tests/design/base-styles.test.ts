@@ -14,6 +14,12 @@ describe("design-system base styles", () => {
     expect(baseLayer).toMatch(/\*\s*\{[^}]*@apply border-border/);
   });
 
+  it("AC-DSYS-01: headings, text rendering and selection use the shared typography rules", () => {
+    expect(baseLayer).toMatch(/html\s*\{[^}]*text-rendering: optimizeLegibility/);
+    expect(baseLayer).toMatch(/h1,\s*h2,\s*h3\s*\{[^}]*@apply text-balance/);
+    expect(baseLayer).toMatch(/::selection\s*\{[^}]*@apply bg-primary\/20/);
+  });
+
   it("AC-DSYS-01: native form controls follow the light and dark theme", () => {
     expect(css).toMatch(/:root\s*\{\s*color-scheme: light;/);
     expect(css).toMatch(/prefers-color-scheme: dark\)\s*\{\s*:root\s*\{\s*color-scheme: dark;/);
