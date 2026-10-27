@@ -28,10 +28,15 @@ function done(templateId: string, query = ""): never {
   redirect(`${editPath(templateId)}${query}`);
 }
 
-// Відмову бази (RLS, FK, column grants) і запис, якого фільтр не знайшов (0 рядків), показуємо як помилку дії.
-function doneOrFailed(templateId: string, result: { error: unknown; data?: readonly unknown[] | null }): never {
+// Відмову бази (RLS, FK, column grants, обмеження) і запис, якого фільтр не знайшов (0 рядків), показуємо як помилку
+// дії; відома помилка бази — текстом з AC (порожня назва задачі → «Every section and task needs a name», AC-EDITOR-20).
+function doneOrFailed(
+  templateId: string,
+  result: { error: { message?: string } | null; data?: readonly unknown[] | null },
+): never {
+  if (result.error) done(templateId, `?error=${templateErrorCodeForDb(result.error.message)}`);
   const missed = result.data !== undefined && (result.data?.length ?? 0) === 0;
-  done(templateId, result.error || missed ? "?error=failed" : "");
+  done(templateId, missed ? "?error=failed" : "");
 }
 
 export async function createTemplate(fd: FormData) {

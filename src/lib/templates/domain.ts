@@ -104,7 +104,8 @@ export function templateErrorCodeForDb(message: string | undefined): TemplateErr
 }
 export function templateMessageFor(code: unknown): string | undefined {
   // no_changes: збереження без змін нічого не робить і не показує помилки (AC-EDITOR-12).
-  return typeof code === "string" && code in MESSAGES_BY_CODE
+  // Object.hasOwn, не `in`: ?error=__proto__ чи constructor не мають дістатися прототипу.
+  return typeof code === "string" && Object.hasOwn(MESSAGES_BY_CODE, code)
     ? MESSAGES_BY_CODE[code as keyof typeof MESSAGES_BY_CODE]
     : undefined;
 }
