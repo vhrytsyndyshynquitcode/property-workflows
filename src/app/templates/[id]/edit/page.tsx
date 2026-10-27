@@ -10,13 +10,22 @@ import { Label } from "@/components/ui/label";
 import { NativeCheckbox } from "@/components/ui/native-checkbox";
 import { AppShell, PageHeader } from "@/components/ui/page";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { adminPageAccess, TEMPLATE_MESSAGES, templateMessageFor, versionSavedMessage } from "@/lib/templates/domain";
+import { NativeSelect } from "@/components/ui/native-select";
+import {
+  adminPageAccess,
+  canSaveVersion,
+  removalTarget,
+  TEMPLATE_MESSAGES,
+  templateMessageFor,
+  versionSavedMessage,
+} from "@/lib/templates/domain";
 import { currentUser } from "@/lib/templates/server";
 import {
   addSection,
   addTask,
   moveSection,
   moveTask,
+  moveTaskToSection,
   removeSection,
   removeTask,
   renameSection,
@@ -24,12 +33,14 @@ import {
   updateTask,
 } from "../../actions";
 
-// Редактор (AC-EDITOR-01, AC-EDITOR-03, AC-EDITOR-04). Без входу — сторінка входу (currentUser, AC-EDITOR-09);
+// Редактор (AC-EDITOR-01, AC-EDITOR-03, AC-EDITOR-04, AC-EDITOR-12 — «Save» лише за змін, AC-EDITOR-13/14 —
+// видалення з підтвердженням, AC-EDITOR-28 — перенесення задачі в інший розділ). Без входу — сторінка входу (currentUser, AC-EDITOR-09);
 // менеджер — «Not enough rights» і «Back to templates», без вмісту редактора (AC-DSYS-02). Кожна правка — одразу в
 // базі як неопубліковані зміни; «Save» — нова версія.
 export default async function EditTemplatePage({ params, searchParams }: PageProps<"/templates/[id]/edit">) {
   const { id } = await params;
-  const { error, saved } = await searchParams;
+  const { error, saved, remove } = await searchParams;
+  const removal = removalTarget(remove);
   const { supabase, role } = await currentUser();
   const access = adminPageAccess(role);
 
@@ -75,10 +86,12 @@ export default async function EditTemplatePage({ params, searchParams }: PagePro
             {template.has_unpublished_changes ? (
               <StatusBadge tone="draft">{TEMPLATE_MESSAGES.unpublished}</StatusBadge>
             ) : null}
-            <form action={saveVersion}>
-              <input type="hidden" name="templateId" value={template.id} />
-              <Button type="submit">Save</Button>
-            </form>
+            {canSaveVersion(template.has_unpublished_changes) ? (
+              <form action={saveVersion}>
+                <input type="hidden" name="templateId" value={template.id} />
+                <Button type="submit">Save</Button>
+              </form>
+            ) : null}
             <Link href={`/templates/${template.id}/versions`} className={buttonVariants({ variant: "outline" })}>
               Versions
             </Link>
@@ -127,14 +140,34 @@ export default async function EditTemplatePage({ params, searchParams }: PagePro
                   Move down
                 </Button>
               </form>
-              <form action={removeSection}>
-                <input type="hidden" name="templateId" value={template.id} />
-                <input type="hidden" name="sectionId" value={section.id} />
-                <Button type="submit" variant="ghost" size="sm">
-                  Remove section
-                </Button>
-              </form>
+              <Link
+                href={`?remove=section:${section.id}`}
+                scroll={false}
+                className={buttonVariants({ variant: "ghost", size: "sm" })}
+              >
+                Remove section
+              </Link>
             </div>
+            {removal?.kind === "section" && removal.id === section.id ? (
+              <Alert variant="destructive" data-testid="confirm-remove">
+                <AlertTitle>Remove «{section.name}»?</AlertTitle>
+                <AlertDescription className="flex flex-col gap-3">
+                  {TEMPLATE_MESSAGES.cannotBeUndone}
+                  <div className="flex gap-2">
+                    <form action={removeSection}>
+                      <input type="hidden" name="templateId" value={template.id} />
+                      <input type="hidden" name="sectionId" value={section.id} />
+                      <Button type="submit" variant="destructive" size="sm">
+                        Confirm
+                      </Button>
+                    </form>
+                    <Link href="?" scroll={false} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                      Cancel
+                    </Link>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            ) : null}
 
             <ul className="flex flex-col divide-y divide-border">
               {(tasks ?? [])
@@ -174,13 +207,57 @@ export default async function EditTemplatePage({ params, searchParams }: PagePro
                         Down
                       </Button>
                     </form>
-                    <form action={removeTask}>
-                      <input type="hidden" name="templateId" value={template.id} />
-                      <input type="hidden" name="taskId" value={task.id} />
-                      <Button type="submit" variant="ghost" size="sm">
-                        Remove
-                      </Button>
-                    </form>
+                    {all.length > 1 ? (
+                      <form action={moveTaskToSection} className="flex items-end gap-2">
+                        <input type="hidden" name="templateId" value={template.id} />
+                        <input type="hidden" name="taskId" value={task.id} />
+                        <Label htmlFor={`move-${task.id}`} className="sr-only">
+                          Move to section
+                        </Label>
+                        <NativeSelect id={`move-${task.id}`} name="toSectionId" defaultValue="">
+                          <option value="" disabled>
+                            Move to…
+                          </option>
+                          {all
+                            .filter((other) => other.id !== section.id)
+                            .map((other) => (
+                              <option key={other.id} value={other.id}>
+                                {other.name || "Untitled section"}
+                              </option>
+                            ))}
+                        </NativeSelect>
+                        <Button type="submit" variant="ghost" size="sm">
+                          Move
+                        </Button>
+                      </form>
+                    ) : null}
+                    <Link
+                      href={`?remove=task:${task.id}`}
+                      scroll={false}
+                      className={buttonVariants({ variant: "ghost", size: "sm" })}
+                    >
+                      Remove
+                    </Link>
+                    {removal?.kind === "task" && removal.id === task.id ? (
+                      <Alert variant="destructive" className="w-full" data-testid="confirm-remove">
+                        <AlertTitle>Remove «{task.name}»?</AlertTitle>
+                        <AlertDescription className="flex flex-col gap-3">
+                          {TEMPLATE_MESSAGES.cannotBeUndone}
+                          <div className="flex gap-2">
+                            <form action={removeTask}>
+                              <input type="hidden" name="templateId" value={template.id} />
+                              <input type="hidden" name="taskId" value={task.id} />
+                              <Button type="submit" variant="destructive" size="sm">
+                                Confirm
+                              </Button>
+                            </form>
+                            <Link href="?" scroll={false} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                              Cancel
+                            </Link>
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    ) : null}
                   </li>
                 ))}
             </ul>

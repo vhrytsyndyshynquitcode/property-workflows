@@ -58,13 +58,24 @@ async function inTransaction<T>(db: PGlite, role: string, userId: string | null,
   }
 }
 
-export async function createTestDb(): Promise<TestDb> {
+/**
+ * beforeMigration: дані, що існували до певної міграції (наприклад, запуск до появи версій, AC-EDITOR-27).
+ * Ключ — ім'я файлу міграції; хук виконується від суперкористувача перед нею.
+ */
+export interface TestDbOptions {
+  beforeMigration?: Record<string, (db: PGlite) => Promise<void>>;
+}
+
+export async function createTestDb(options: TestDbOptions = {}): Promise<TestDb> {
   const db = new PGlite();
   await db.exec(SUPABASE_SHIM);
   const migrations = readdirSync(new URL("supabase/migrations/", root))
     .filter((f) => f.endsWith(".sql"))
     .sort();
-  for (const file of migrations) await db.exec(read(`supabase/migrations/${file}`));
+  for (const file of migrations) {
+    await options.beforeMigration?.[file]?.(db);
+    await db.exec(read(`supabase/migrations/${file}`));
+  }
   await db.exec(read("supabase/seed.sql"));
 
   // Як scripts/create-demo-users.mjs: користувач Auth → тригер створює профіль → service_role ставить роль.

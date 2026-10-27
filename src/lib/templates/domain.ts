@@ -10,7 +10,16 @@ export const TEMPLATE_MESSAGES = {
   noRequiredTask: "A template needs at least one required task",
   unpublished: "Unpublished changes",
   templateNotFound: "Template not found",
-  noTemplates: "No templates yet.",
+  noTemplatesForManager: "No templates yet. An administrator creates them.",
+  noTemplatesForAdmin: "No templates yet. Create a template to start.",
+  createTemplate: "Create a template",
+  noVersions: "No versions yet. Save the template to create version 1.",
+  enterTemplateName: "Enter a template name",
+  nameExists: "A template with this name already exists",
+  emptySection: "Every section needs at least one task",
+  nameRequired: "Every section and task needs a name",
+  saveToLaunch: "Save the template to launch it",
+  cannotBeUndone: "This cannot be undone",
   failed: "Something went wrong. Try again.",
 } as const;
 
@@ -68,18 +77,61 @@ export function versionListRows(rows: readonly VersionRow[]) {
     .map((r) => ({ number: r.number, savedAt: formatVersionDate(r.createdAt), author: r.authorEmail ?? "—" }));
 }
 
-/** Помилка функції бази save_template_version → код для searchParams. */
-export type TemplateErrorCode = "no_required_task" | "not_allowed" | "failed";
+/** Помилка бази (функція save_template_version, унікальний індекс назви) → код для searchParams → текст з AC PM. */
+const DB_ERRORS = {
+  NO_REQUIRED_TASK: "no_required_task", // AC-EDITOR-04
+  EMPTY_SECTION: "empty_section", // AC-EDITOR-15
+  NAME_REQUIRED: "name_required", // AC-EDITOR-20 — функція збереження (порожня назва розділу в чернетці)
+  template_tasks_name_check: "name_required", // AC-EDITOR-20 — обмеження зрізу 1 не пускає порожню назву задачі
+  NO_CHANGES: "no_changes", // AC-EDITOR-12
+  NOT_ALLOWED: "not_allowed",
+  templates_name_unique: "name_exists", // AC-EDITOR-23
+} as const;
+const MESSAGES_BY_CODE = {
+  no_required_task: TEMPLATE_MESSAGES.noRequiredTask,
+  empty_section: TEMPLATE_MESSAGES.emptySection,
+  name_required: TEMPLATE_MESSAGES.nameRequired,
+  name_empty: TEMPLATE_MESSAGES.enterTemplateName,
+  name_exists: TEMPLATE_MESSAGES.nameExists,
+  not_allowed: TEMPLATE_MESSAGES.notEnoughRights,
+  failed: TEMPLATE_MESSAGES.failed,
+} as const;
+export type TemplateErrorCode = (typeof DB_ERRORS)[keyof typeof DB_ERRORS] | "name_empty" | "failed";
+
 export function templateErrorCodeForDb(message: string | undefined): TemplateErrorCode {
-  if (message?.includes("NO_REQUIRED_TASK")) return "no_required_task";
-  if (message?.includes("NOT_ALLOWED")) return "not_allowed";
+  for (const [marker, code] of Object.entries(DB_ERRORS)) if (message?.includes(marker)) return code;
   return "failed";
 }
 export function templateMessageFor(code: unknown): string | undefined {
-  if (code === "no_required_task") return TEMPLATE_MESSAGES.noRequiredTask;
-  if (code === "not_allowed") return TEMPLATE_MESSAGES.notEnoughRights;
-  if (code === "failed") return TEMPLATE_MESSAGES.failed;
-  return undefined;
+  // no_changes: збереження без змін нічого не робить і не показує помилки (AC-EDITOR-12).
+  // Object.hasOwn, не `in`: ?error=__proto__ чи constructor не мають дістатися прототипу.
+  return typeof code === "string" && Object.hasOwn(MESSAGES_BY_CODE, code)
+    ? MESSAGES_BY_CODE[code as keyof typeof MESSAGES_BY_CODE]
+    : undefined;
+}
+
+/** AC-EDITOR-17, AC-EDITOR-18: порожні списки — повідомлення замість порожньої таблиці. */
+export function templatesEmptyState(role: Role) {
+  return role === "admin"
+    ? { message: TEMPLATE_MESSAGES.noTemplatesForAdmin, actionLabel: TEMPLATE_MESSAGES.createTemplate, actionHref: "/templates/new" }
+    : { message: TEMPLATE_MESSAGES.noTemplatesForManager };
+}
+
+/** AC-EDITOR-10: у формі запуску незбережений шаблон адміністратор бачить недоступним з приміткою; менеджер — не бачить. */
+export function launchOption(template: { hasVersion: boolean }) {
+  return template.hasVersion
+    ? { available: true as const }
+    : { available: false as const, note: TEMPLATE_MESSAGES.saveToLaunch };
+}
+
+/** AC-EDITOR-12: «Save» пропонуємо лише за неопублікованих змін. */
+export const canSaveVersion = (hasUnpublishedChanges: boolean) => hasUnpublishedChanges;
+
+/** AC-EDITOR-13, AC-EDITOR-14: що видаляємо після підтвердження (?remove=section:<id> або task:<id>). */
+export function removalTarget(value: unknown): { kind: "section" | "task"; id: string } | null {
+  if (typeof value !== "string") return null;
+  const match = value.match(/^(section|task):([0-9a-f-]{36})$/);
+  return match ? { kind: match[1] as "section" | "task", id: match[2] } : null;
 }
 
 // Переміщення розділу чи задачі на одну позицію: новий порядок 1..n і лише змінені елементи. Порядок — за position,

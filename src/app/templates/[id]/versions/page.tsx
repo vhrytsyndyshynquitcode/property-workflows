@@ -3,7 +3,7 @@ import { NotEnoughRights } from "@/components/app/not-enough-rights";
 import { SignOutButton } from "@/components/app/sign-out-button";
 import { AppShell, PageHeader } from "@/components/ui/page";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { adminPageAccess, versionListRows } from "@/lib/templates/domain";
+import { adminPageAccess, TEMPLATE_MESSAGES, versionListRows } from "@/lib/templates/domain";
 import { currentUser } from "@/lib/templates/server";
 
 // Список версій (AC-EDITOR-05): номер, «DD.MM.YYYY HH:MM» за Києвом, email адміністратора, новіші першими.
@@ -56,7 +56,8 @@ export default async function VersionsPage({ params }: PageProps<"/templates/[id
           </TableBody>
         </Table>
       ) : (
-        <p className="rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">No versions yet.</p>
+        // AC-EDITOR-18: шаблон ще не збережено як версію.
+        <p className="rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">{TEMPLATE_MESSAGES.noVersions}</p>
       )}
     </AppShell>
   );
