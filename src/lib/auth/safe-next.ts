@@ -12,6 +12,9 @@ export function safeNextPath(value: unknown): string {
     return "/";
   }
   if (url.origin !== "http://app.invalid") return "/";
+  // Ще раз — після нормалізації: «/.//evil.example» стає шляхом «//evil.example», а redirect сприйняв би його як
+  // адресу іншого сайту.
+  if (url.pathname.startsWith("//") || url.pathname.startsWith("/\\")) return "/";
   // Повернення на сам вхід зациклило б користувача.
   if (url.pathname === "/login" || url.pathname.startsWith("/login/")) return "/";
   return `${url.pathname}${url.search}${url.hash}`;

@@ -14,8 +14,11 @@ import { NativeSelect } from "./native-select"
 // Вибір «Theme» (AC-DSYS-05, AC-DSYS-06): System / Light / Dark, зберігається на пристрої. Значення читаємо з
 // localStorage через useSyncExternalStore: на сервері — «System», на клієнті — вибір пристрою, синхронно між вкладками.
 const CHANGE_EVENT = "theme-choice-change"
+// Якщо localStorage недоступний (приватний режим, заборонене сховище), вибір діє до перезавантаження з пам'яті.
+let unsavedChoice: ThemeChoice | null = null
 
 function readChoice(): ThemeChoice {
+  if (unsavedChoice) return unsavedChoice
   try {
     return parseThemeChoice(localStorage.getItem(THEME_STORAGE_KEY))
   } catch {
@@ -46,10 +49,12 @@ function ThemeSelect({ className }: { className?: string }) {
   }, [choice])
 
   function onChange(event: React.ChangeEvent<HTMLSelectElement>) {
+    const next = parseThemeChoice(event.target.value)
     try {
-      localStorage.setItem(THEME_STORAGE_KEY, parseThemeChoice(event.target.value))
+      localStorage.setItem(THEME_STORAGE_KEY, next)
+      unsavedChoice = null
     } catch {
-      // Приватний режим без сховища: вибір не збережеться.
+      unsavedChoice = next
     }
     window.dispatchEvent(new Event(CHANGE_EVENT))
   }
