@@ -68,7 +68,7 @@
 | AC-EDITOR-25 | втрачене з'єднання — «Your last change was not kept. Try again.», задача на екрані | — | — | відкладено (чекає реалізації) |
 | AC-EDITOR-26 | прямий запит відвідувача на зміну шаблону — відхилено, сторінка входу, шаблон без змін | — | — | відкладено (чекає реалізації) |
 | AC-EDITOR-27 | запуск до появи версій — «Template version 1» | — | — | відкладено (чекає реалізації) |
-| AC-EDITOR-28 | перенесення задачі в інший розділ — нова версія 3 і 2 задачі | — | — | відкладено (чекає реалізації) |
+| AC-EDITOR-28 | перенесення задачі в інший розділ — нова версія: «Before move-in» 3 задачі, «Move-in day» 2 | — | — | відкладено (чекає реалізації) |
 | AC-EDITOR-29 | прямий запит менеджера на старі версії — відхилено, лише поточна версія | — | — | відкладено (чекає реалізації) |
 | AC-RUN-01 | запуск — один запуск «in progress» з усіма 5 задачами «to do» | `src/lib/runs/domain.ts` (buildRun), `supabase/migrations/20261020073540_workflow_runs.sql` (launch_run), `src/app/runs/new/page.tsx` | `tests/runs/launch.test.ts` | реалізовано |
 | AC-RUN-02 | зміна шаблону після запуску не змінює задачі запуску | `src/lib/runs/domain.ts` (buildRun), `supabase/migrations/20261020073540_workflow_runs.sql` (run_tasks — копія задач) | `tests/runs/launch.test.ts` | реалізовано |
