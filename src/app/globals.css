@@ -38,9 +38,6 @@
   --color-status-done-foreground: var(--status-done-foreground);
   --color-status-draft: var(--status-draft);
   --color-status-draft-foreground: var(--status-draft-foreground);
-  /* Гама талісмана Mochi-Puff (ADR 0005): лише декор — тло, що переливається, і іскри на кліках; не текст і не статус. */
-  --color-mochi-violet: var(--mochi-violet);
-  --color-mochi-pink: var(--mochi-pink);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -79,9 +76,6 @@
   --status-done-foreground: oklch(0.38 0.11 150);
   --status-draft: oklch(0.94 0.07 90);
   --status-draft-foreground: oklch(0.4 0.09 70);
-  --mochi-violet: oklch(0.52 0.27 285);
-  --mochi-pink: oklch(0.8 0.12 354);
-  --aurora-strength: 26%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -113,35 +107,6 @@
     --status-done-foreground: oklch(0.87 0.1 150);
     --status-draft: oklch(0.32 0.06 85);
     --status-draft-foreground: oklch(0.9 0.1 90);
-    --mochi-violet: oklch(0.6 0.25 285);
-    --mochi-pink: oklch(0.78 0.13 354);
-    --aurora-strength: 40%;
-  }
-}
-
-/* Тло робочих сторінок, що переливається (ADR 0005): три м'які плями з гами Mochi, повільно пливуть.
-   Картки й таблиці непрозорі (bg-card), тож контраст тексту не залежить від тла. */
-@utility bg-aurora {
-  background-image:
-    radial-gradient(70% 60% at 10% 5%, color-mix(in oklch, var(--mochi-violet) var(--aurora-strength), transparent), transparent 70%),
-    radial-gradient(60% 55% at 90% 15%, color-mix(in oklch, var(--mochi-pink) var(--aurora-strength), transparent), transparent 70%),
-    radial-gradient(75% 60% at 50% 105%, color-mix(in oklch, var(--primary) var(--aurora-strength), transparent), transparent 70%);
-  background-size: 180% 180%;
-  background-position: 0% 0%;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  @keyframes aurora-drift {
-    0%,
-    100% {
-      background-position: 0% 0%;
-    }
-    50% {
-      background-position: 100% 100%;
-    }
-  }
-  .bg-aurora {
-    animation: aurora-drift 22s ease-in-out infinite;
   }
 }
 

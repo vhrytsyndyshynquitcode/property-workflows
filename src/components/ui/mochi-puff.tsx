@@ -7,7 +7,7 @@ import { cn } from "cn"
 // вантажиться ліниво — лише на сторінках із талісманом. Декоративний: aria-hidden, без тексту й дій.
 // Без WebGL полотно просто лишається порожнім.
 
-// hero — великий талісман сторінки (вхід, 404): поки він на екрані, кутовий MochiCorner ховається.
+// hero — великий талісман сторінки (вхід, 404); data-mascot-hero лишено як маркер для тестів і стилів.
 function MochiPuff({ className, hero = false }: { className?: string; hero?: boolean }) {
   const ref = React.useRef<HTMLDivElement>(null)
 
@@ -50,14 +50,4 @@ function MochiPuff({ className, hero = false }: { className?: string; hero?: boo
   )
 }
 
-// Кутовий талісман робочих екранів: у root layout, тож не перестворюється при переходах між сторінками.
-// Ховається, коли на сторінці є великий талісман (вхід, 404), і на вузьких екранах, де перекривав би кнопки.
-function MochiCorner() {
-  return (
-    <div className="pointer-events-none fixed right-3 bottom-3 z-20 hidden w-32 sm:block lg:w-36 [body:has([data-mascot-hero])_&]:hidden">
-      <MochiPuff className="pointer-events-auto" />
-    </div>
-  )
-}
-
-export { MochiCorner, MochiPuff }
+export { MochiPuff }

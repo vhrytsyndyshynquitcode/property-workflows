@@ -6,8 +6,8 @@ const BRAND_CLASS =
   "rounded-md text-sm font-semibold tracking-tight text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
 
 // Спільний макет сторінок (AC-DSYS-02, AC-DSYS-03): та сама навігація, ширина й місце для повідомлень на кожній
-// сторінці. Робочі сторінки (є nav) — бічна панель зліва від md, на телефоні — верхня смуга; тло — bg-aurora
-// (ADR 0005). Вхід і 404 (без nav) — проста шапка з назвою.
+// сторінці. Робочі сторінки (є nav) — бічна панель зліва від md, на телефоні — верхня смуга (ADR 0005, 0006).
+// Вхід і 404 (без nav) — проста шапка з назвою.
 function AppShell({
   nav,
   actions,
@@ -42,7 +42,7 @@ function AppShell({
   }
 
   return (
-    <div className="bg-aurora flex min-h-full flex-1 flex-col md:flex-row">
+    <div className="flex min-h-full flex-1 flex-col md:flex-row">
       <aside className="sticky top-0 z-10 border-b border-border bg-card/85 backdrop-blur supports-[backdrop-filter]:bg-card/70 md:h-svh md:w-60 md:shrink-0 md:border-r md:border-b-0">
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 md:h-full md:flex-col md:flex-nowrap md:items-stretch md:justify-start md:gap-6 md:px-3 md:py-5">
           <Link href="/" className={cn(BRAND_CLASS, "md:px-3 md:text-base")}>
@@ -55,8 +55,7 @@ function AppShell({
           {actions ? <div className="md:px-3">{actions}</div> : null}
         </div>
       </aside>
-      {/* Права смуга під кутовий MochiCorner (від sm, де він видимий): контент не заходить під талісмана. */}
-      <div className="flex min-w-0 flex-1 sm:pr-36">{content}</div>
+      {content}
     </div>
   )
 }
