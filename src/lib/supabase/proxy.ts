@@ -3,6 +3,7 @@
 // Cache-Control/Expires/Pragma копіюємо у відповідь, щоб CDN не кешував auth-відповіді.
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { nextParamFor } from "@/lib/auth/safe-next";
 import type { Database } from "./database.types";
 
 // Сторінки, доступні без входу.
@@ -48,6 +49,10 @@ export async function updateSession(request: NextRequest) {
   if (!claims && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
+    url.search = "";
+    // Після входу повертаємо на сторінку посилання (AC-DSYS-08); лише для переходів на сторінку, не для дій (POST).
+    const next = request.method === "GET" ? nextParamFor(request.nextUrl.pathname, request.nextUrl.search) : undefined;
+    if (next) url.searchParams.set("next", next);
     return NextResponse.redirect(url);
   }
 

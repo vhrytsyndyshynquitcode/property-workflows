@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MochiPuff } from "@/components/ui/mochi-puff";
 import { AppShell } from "@/components/ui/page";
+import { safeNextPath } from "@/lib/auth/safe-next";
 import { login } from "./actions";
 
 const ERRORS: Record<string, string> = {
@@ -15,8 +16,9 @@ const ERRORS: Record<string, string> = {
 // Сторінка входу в тому самому макеті, що й решта застосунку (AC-DSYS-03, AC-EDITOR-09). Збоку — талісман
 // Mochi-Puff, що стежить за курсором (ADR 0004): на телефоні — над формою й менше.
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
-  const { error } = await searchParams;
+  const { error, next } = await searchParams;
   const message = typeof error === "string" ? ERRORS[error] : undefined;
+  const nextPath = safeNextPath(next);
 
   return (
     <AppShell className="max-w-4xl items-center justify-center">
@@ -34,6 +36,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
           </CardHeader>
           <CardContent>
             <form action={login} className="flex flex-col gap-4">
+              {nextPath === "/" ? null : <input type="hidden" name="next" value={nextPath} />}
               <div className="flex flex-col gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" name="email" type="email" autoComplete="email" required />
