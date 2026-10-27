@@ -2,8 +2,12 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Темна тема — за вибором «Theme» (AC-DSYS-05, AC-DSYS-06, ADR 0007): атрибут data-theme на <html> ставить скрипт у
+   <head> до першого кадру («System» — за пристроєм). Варіант dark: у Tailwind і токени — за тим самим атрибутом. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /* Дизайн-система — DESIGN.md. Значення токенів — лише тут; у сторінках — семантичні класи (bg-primary,
-   text-muted-foreground, bg-status-done…). Темна тема — за системою (prefers-color-scheme), без класу .dark. */
+   text-muted-foreground, bg-status-done…). Темна тема — :root[data-theme="dark"] (вибір «Theme», ADR 0007). */
 
 @theme inline {
   --color-background: var(--background);
@@ -78,46 +82,43 @@
   --status-draft-foreground: oklch(0.4 0.09 70);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: oklch(0.17 0.01 255);
-    --foreground: oklch(0.96 0.005 255);
-    --card: oklch(0.21 0.012 255);
-    --card-foreground: oklch(0.96 0.005 255);
-    --popover: oklch(0.21 0.012 255);
-    --popover-foreground: oklch(0.96 0.005 255);
-    --primary: oklch(0.72 0.14 290);
-    --primary-foreground: oklch(0.17 0.01 255);
-    --secondary: oklch(0.27 0.012 255);
-    --secondary-foreground: oklch(0.96 0.005 255);
-    --muted: oklch(0.26 0.01 255);
-    --muted-foreground: oklch(0.74 0.015 255);
-    --accent: oklch(0.28 0.015 255);
-    --accent-foreground: oklch(0.96 0.005 255);
-    --destructive: oklch(0.7 0.18 25);
-    --destructive-foreground: oklch(0.17 0.01 255);
-    --border: oklch(0.32 0.012 255);
-    --input: oklch(0.55 0.02 255);
-    --ring: oklch(0.72 0.14 290);
-    --status-todo: oklch(0.3 0.01 255);
-    --status-todo-foreground: oklch(0.88 0.01 255);
-    --status-progress: oklch(0.3 0.07 255);
-    --status-progress-foreground: oklch(0.86 0.08 250);
-    --status-done: oklch(0.3 0.06 150);
-    --status-done-foreground: oklch(0.87 0.1 150);
-    --status-draft: oklch(0.32 0.06 85);
-    --status-draft-foreground: oklch(0.9 0.1 90);
-  }
+:root[data-theme="dark"] {
+  --background: oklch(0.17 0.01 255);
+  --foreground: oklch(0.96 0.005 255);
+  --card: oklch(0.21 0.012 255);
+  --card-foreground: oklch(0.96 0.005 255);
+  --popover: oklch(0.21 0.012 255);
+  --popover-foreground: oklch(0.96 0.005 255);
+  --primary: oklch(0.72 0.14 290);
+  --primary-foreground: oklch(0.17 0.01 255);
+  --secondary: oklch(0.27 0.012 255);
+  --secondary-foreground: oklch(0.96 0.005 255);
+  --muted: oklch(0.26 0.01 255);
+  --muted-foreground: oklch(0.74 0.015 255);
+  --accent: oklch(0.28 0.015 255);
+  --accent-foreground: oklch(0.96 0.005 255);
+  --destructive: oklch(0.7 0.18 25);
+  --destructive-foreground: oklch(0.17 0.01 255);
+  --border: oklch(0.32 0.012 255);
+  --input: oklch(0.55 0.02 255);
+  --ring: oklch(0.72 0.14 290);
+  --status-todo: oklch(0.3 0.01 255);
+  --status-todo-foreground: oklch(0.88 0.01 255);
+  --status-progress: oklch(0.3 0.07 255);
+  --status-progress-foreground: oklch(0.86 0.08 250);
+  --status-done: oklch(0.3 0.06 150);
+  --status-done-foreground: oklch(0.87 0.1 150);
+  --status-draft: oklch(0.32 0.06 85);
+  --status-draft-foreground: oklch(0.9 0.1 90);
 }
 
 :root {
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-  }
+/* Нативні поля, автозаповнення й прокрутка — у тій самій темі. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 @layer base {

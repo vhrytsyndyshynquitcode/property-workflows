@@ -116,8 +116,9 @@ OpenSpec 1.14.1 (devDependency + глобальний CLI тієї ж версі
   `Card`, `Table`, `Alert`, `StatusBadge`, `AppShell`/`PageHeader`. Нових кольорів у компонентах не вигадуй і не переносимо
   туди сирі класи сторінок.
 - Статус — завжди `StatusBadge` зі словом статусу; тексти станів і помилок — дослівно з AC PM; інтерфейс англійською.
-- Новий токен: `DESIGN.md` → `:root` і `@media (prefers-color-scheme: dark)` у `src/app/globals.css` → `--color-<назва>`
-  у `@theme inline`. Блоку `.dark` і `@custom-variant dark` не додаємо (тема — за системою).
+- Новий токен: `DESIGN.md` → `:root` і `:root[data-theme="dark"]` у `src/app/globals.css` → `--color-<назва>`
+  у `@theme inline`. Тема — за вибором «Theme» (атрибут `data-theme` на `<html>`, ADR 0007): класу `.dark` і
+  `@media (prefers-color-scheme)` для токенів не додаємо; `dark:` у Tailwind уже прив'язано до `data-theme`.
 - Перевірка: `npm run check:design` (CI: `.github/workflows/architecture.yml`, job «Дизайн-система: лише токени»).
 
 ## База даних (Supabase)

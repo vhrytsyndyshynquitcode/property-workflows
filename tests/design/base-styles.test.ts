@@ -22,6 +22,6 @@ describe("design-system base styles", () => {
 
   it("AC-DSYS-01: native form controls follow the light and dark theme", () => {
     expect(css).toMatch(/:root\s*\{\s*color-scheme: light;/);
-    expect(css).toMatch(/prefers-color-scheme: dark\)\s*\{\s*:root\s*\{\s*color-scheme: dark;/);
+    expect(css).toMatch(/:root\[data-theme="dark"\]\s*\{\s*color-scheme: dark;/);
   });
 });

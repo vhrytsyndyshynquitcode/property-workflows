@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { cn } from "cn"
 import { NavLinks } from "./nav-links"
+import { ThemeSelect } from "./theme-select"
 
 const BRAND_CLASS =
   "rounded-md text-sm font-semibold tracking-tight text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
@@ -33,7 +34,10 @@ function AppShell({
             <Link href="/" className={BRAND_CLASS}>
               Property workflows
             </Link>
-            {actions}
+            <div className="flex items-center gap-3">
+              <ThemeSelect />
+              {actions}
+            </div>
           </div>
         </header>
         {content}
@@ -52,7 +56,10 @@ function AppShell({
             <NavLinks items={nav} orientation="horizontal" className="md:hidden" />
             <NavLinks items={nav} orientation="vertical" className="hidden md:flex" />
           </nav>
-          {actions ? <div className="md:px-3">{actions}</div> : null}
+          <div className="flex flex-wrap items-center gap-3 md:flex-col md:items-stretch md:px-3">
+            <ThemeSelect />
+            {actions}
+          </div>
         </div>
       </aside>
       {content}
