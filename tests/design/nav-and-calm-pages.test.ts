@@ -23,7 +23,7 @@ describe("calm work pages", () => {
 
   it("has no decorative background animation or gradient on work pages", () => {
     const css = read("src/app/globals.css");
-    expect(css).not.toMatch(/bg-aurora|@keyframes aurora|radial-gradient/);
+    expect(css).not.toMatch(/bg-aurora|@keyframes|(?:linear|radial|conic)-gradient\(/);
     expect(read("src/components/ui/page.tsx")).not.toMatch(/bg-aurora|bg-linear|bg-radial/);
   });
 
