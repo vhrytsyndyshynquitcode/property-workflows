@@ -12,6 +12,7 @@ import { NativeSelect } from "@/components/ui/native-select";
 import { AppShell, PageHeader } from "@/components/ui/page";
 import { assigneeOptions, CASE_NAME_MAX, messageFor } from "@/lib/runs/domain";
 import { createClient } from "@/lib/supabase/server";
+import { launchOption } from "@/lib/templates/domain";
 import { launchRun } from "../actions";
 
 // Запуск шаблону: шаблон → назва випадку → виконавець кожної задачі (AC-RUN-01, AC-RUN-03..11).
@@ -26,13 +27,11 @@ export default async function NewRunPage({ searchParams }: PageProps<"/runs/new"
   const claims = data?.claims;
   if (!claims) redirect("/login");
 
-  // Запускаємо лише збережену поточну версію (AC-EDITOR-06): шаблони без версії не показуємо.
-  const { data: templates } = await supabase
-    .from("templates")
-    .select("id, name, current_version_id")
-    .not("current_version_id", "is", null)
-    .order("name");
-  const selected = templates?.find((t) => t.id === templateId);
+  // Запускаємо лише збережену поточну версію (AC-EDITOR-06). Незбережений шаблон адміністратор бачить недоступним з
+  // приміткою «Save the template to launch it», менеджерові RLS його не віддає (AC-EDITOR-10); запуск напряму
+  // відхиляє функція бази launch_run (AC-EDITOR-11).
+  const { data: templates } = await supabase.from("templates").select("id, name, current_version_id").order("name");
+  const selected = templates?.find((t) => t.id === templateId && t.current_version_id);
 
   const { data: tasks } = selected?.current_version_id
     ? await supabase
@@ -52,22 +51,38 @@ export default async function NewRunPage({ searchParams }: PageProps<"/runs/new"
     <AppShell nav={APP_NAV} actions={<SignOutButton />}>
       <PageHeader title="Launch a template" description="Pick a template, name the case and assign tasks." />
       <nav aria-label="Templates" className="flex flex-wrap gap-2">
-        {(templates ?? []).map((t) => (
-          <Link
-            key={t.id}
-            href={`/runs/new?template=${t.id}`}
-            aria-current={t.id === selected?.id ? "page" : undefined}
-            // Усі шаблони — outline; вибраний — ще й тло secondary, рамка й текст primary. Самого secondary замало: у
-            // темній темі outline з рамкою виглядав помітнішим за вибраний.
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              t.id === selected?.id &&
-                "border-primary bg-secondary text-primary hover:bg-secondary hover:text-primary dark:border-primary dark:bg-secondary dark:hover:bg-secondary",
-            )}
-          >
-            {t.name}
-          </Link>
-        ))}
+        {(templates ?? []).map((t) => {
+          const option = launchOption({ hasVersion: Boolean(t.current_version_id) });
+          if (!option.available) {
+            return (
+              <span
+                key={t.id}
+                aria-disabled="true"
+                data-testid="unavailable-template"
+                className={cn(buttonVariants({ variant: "outline", size: "sm" }), "pointer-events-none gap-2 opacity-60")}
+              >
+                {t.name}
+                <span className="font-normal text-muted-foreground">{option.note}</span>
+              </span>
+            );
+          }
+          return (
+            <Link
+              key={t.id}
+              href={`/runs/new?template=${t.id}`}
+              aria-current={t.id === selected?.id ? "page" : undefined}
+              // Усі шаблони — outline; вибраний — ще й тло secondary, рамка й текст primary. Самого secondary замало: у
+              // темній темі outline з рамкою виглядав помітнішим за вибраний.
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                t.id === selected?.id &&
+                  "border-primary bg-secondary text-primary hover:bg-secondary hover:text-primary dark:border-primary dark:bg-secondary dark:hover:bg-secondary",
+              )}
+            >
+              {t.name}
+            </Link>
+          );
+        })}
       </nav>
       {selected ? (
         <Card>

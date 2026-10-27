@@ -37,9 +37,10 @@ function doneOrFailed(templateId: string, result: { error: unknown; data?: reado
 export async function createTemplate(fd: FormData) {
   const supabase = await requireAdmin();
   const name = str(fd, "name");
-  if (!name) redirect("/templates/new?error=failed");
+  // AC-EDITOR-19: порожня назва чи самі пробіли; AC-EDITOR-23: унікальний індекс бази (регістр і крайові пробіли).
+  if (!name) redirect("/templates/new?error=name_empty");
   const { data, error } = await supabase.from("templates").insert({ name }).select("id").single();
-  if (error || !data) redirect("/templates/new?error=failed");
+  if (error || !data) redirect(`/templates/new?error=${templateErrorCodeForDb(error?.message)}`);
   done(data.id);
 }
 
@@ -60,8 +61,8 @@ export async function addSection(fd: FormData) {
 export async function renameSection(fd: FormData) {
   const supabase = await requireAdmin();
   const templateId = str(fd, "templateId");
+  // Порожня назва лишається в неопублікованих змінах; збереження версії відмовить (AC-EDITOR-20).
   const name = str(fd, "name");
-  if (!name) done(templateId, "?error=failed");
   const result = await supabase
     .from("template_sections").update({ name }).eq("id", str(fd, "sectionId")).eq("template_id", templateId)
     .select("id");
@@ -114,7 +115,7 @@ export async function updateTask(fd: FormData) {
   const name = str(fd, "name");
   const { error, data } = await supabase
     .from("template_tasks")
-    .update({ ...(name ? { name } : {}), is_required: fd.get("required") === "on" })
+    .update({ name, is_required: fd.get("required") === "on" }) // порожня назва — див. AC-EDITOR-20
     .eq("id", str(fd, "taskId"))
     .eq("template_id", templateId)
     .select("id");
@@ -126,6 +127,26 @@ export async function removeTask(fd: FormData) {
   const templateId = str(fd, "templateId");
   const result = await supabase
     .from("template_tasks").delete().eq("id", str(fd, "taskId")).eq("template_id", templateId).select("id");
+  doneOrFailed(templateId, result);
+}
+
+// AC-EDITOR-28: перенесення задачі в інший розділ того самого шаблону — останньою в новому розділі.
+export async function moveTaskToSection(fd: FormData) {
+  const supabase = await requireAdmin();
+  const templateId = str(fd, "templateId");
+  const sectionId = str(fd, "toSectionId");
+  const { data: target } = await supabase
+    .from("template_sections").select("id").eq("id", sectionId).eq("template_id", templateId).maybeSingle();
+  if (!target) done(templateId, "?error=failed");
+  const { data: last } = await supabase
+    .from("template_tasks").select("position").eq("section_id", sectionId)
+    .order("position", { ascending: false }).limit(1).maybeSingle();
+  const result = await supabase
+    .from("template_tasks")
+    .update({ section_id: sectionId, position: (last?.position ?? 0) + 1 })
+    .eq("id", str(fd, "taskId"))
+    .eq("template_id", templateId)
+    .select("id");
   doneOrFailed(templateId, result);
 }
 

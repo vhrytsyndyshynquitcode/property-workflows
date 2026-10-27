@@ -6,7 +6,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { AppShell, PageHeader } from "@/components/ui/page";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { showUnpublishedNotice, TEMPLATE_MESSAGES, templateMessageFor } from "@/lib/templates/domain";
+import { showUnpublishedNotice, TEMPLATE_MESSAGES, templateMessageFor, templatesEmptyState } from "@/lib/templates/domain";
 import { currentUser } from "@/lib/templates/server";
 
 // Список шаблонів (AC-EDITOR-01, AC-EDITOR-02): admin бачить усі, з позначкою «Unpublished changes»; manager — лише
@@ -16,6 +16,7 @@ export default async function TemplatesPage({ searchParams }: PageProps<"/templa
   const message = templateMessageFor(error);
   const { supabase, role } = await currentUser();
   const isAdmin = role === "admin";
+  const empty = templatesEmptyState(isAdmin ? "admin" : "manager");
 
   const { data: templates } = await supabase
     .from("templates")
@@ -69,7 +70,15 @@ export default async function TemplatesPage({ searchParams }: PageProps<"/templa
           </TableBody>
         </Table>
       ) : (
-        <p className="rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">{TEMPLATE_MESSAGES.noTemplates}</p>
+        // AC-EDITOR-17: порожній список — повідомлення замість порожньої таблиці; адміністратору — і дія.
+        <div className="flex flex-col items-start gap-3 rounded-lg border border-border bg-card p-6">
+          <p className="text-sm text-muted-foreground">{empty.message}</p>
+          {empty.actionHref ? (
+            <Link href={empty.actionHref} className={buttonVariants()}>
+              {empty.actionLabel}
+            </Link>
+          ) : null}
+        </div>
       )}
     </AppShell>
   );
