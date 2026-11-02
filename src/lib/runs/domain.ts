@@ -2,7 +2,8 @@
 // Ті самі правила база перевіряє у функціях public.launch_run і public.mark_task_done (міграція зрізу):
 // тут вони — для повідомлень користувачу й тестів з AC ID.
 
-export type Role = "manager" | "admin";
+import type { Role } from "@/lib/templates/domain";
+
 export type TaskStatus = "to_do" | "done";
 export type RunStatus = "in_progress" | "completed";
 

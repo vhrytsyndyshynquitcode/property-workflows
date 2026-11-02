@@ -20,11 +20,10 @@ import {
   RUN_STATUS_TONE,
   TASK_STATUS_LABEL,
   TASK_STATUS_TONE,
-  type Role,
   type RunStatus,
   type TaskStatus,
 } from "@/lib/runs/domain";
-import { templateVersionLabel } from "@/lib/templates/domain";
+import { templateVersionLabel, type Role } from "@/lib/templates/domain";
 import { markTaskDone } from "../actions";
 
 // Сторінка запуску: прогрес і статус кожної задачі (AC-TASK-05, AC-TASK-08, AC-DSYS-01), задачі за розділами на момент
