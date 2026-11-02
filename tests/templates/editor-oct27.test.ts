@@ -62,6 +62,13 @@ describe("template-editor oct27 (pages)", () => {
     expect(templateMessageFor("name_empty")).toBe("Enter a template name");
   });
 
+  it('AC-EDITOR-19: the page shows "Enter a template name" only for the empty-name error — any other value shows no message', () => {
+    // Значення ?error= приходить з адреси: успадковані ключі об'єкта не мають стати «повідомленням» на сторінці.
+    for (const value of ["toString", "constructor", "__proto__", "", null, 1]) {
+      expect(templateMessageFor(value)).toBeUndefined();
+    }
+  });
+
   it('AC-EDITOR-20: an empty section or task name shows "Every section and task needs a name"', () => {
     for (const dbMessage of ["NAME_REQUIRED", 'new row for relation "template_tasks" violates check constraint "template_tasks_name_check"']) {
       expect(templateMessageFor(templateErrorCodeForDb(dbMessage))).toBe("Every section and task needs a name");

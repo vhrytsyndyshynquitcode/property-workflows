@@ -105,6 +105,15 @@ describe("template-editor oct27 (db)", () => {
     await t.asUser(ADMIN, "delete from public.template_sections where id = $1", [section.id]);
   });
 
+  it("AC-EDITOR-19: a template name that is empty or only spaces is refused by the database — no template is created", async () => {
+    // Друга лінія під дією createTemplate (вона відмовляє ще до запису): обмеження templates_name_check зрізу 1.
+    const before = await count("select count(*) from public.templates");
+    for (const name of ["", "   "]) {
+      await expect(newTemplate(name)).rejects.toThrow(/templates_name_check/);
+    }
+    expect(await count("select count(*) from public.templates")).toBe(before);
+  });
+
   it("AC-EDITOR-20: a task name cleared to spaces is refused; no version is created and the unpublished changes stay", async () => {
     const [task] = await t.asUser<{ id: string; name: string }>(
       ADMIN,
