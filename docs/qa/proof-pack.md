@@ -8,7 +8,7 @@
 
 - Прод-URL: https://property-workflows-one.vercel.app
 - Вимоги: https://github.com/solomchaak/property-workflows-spec · джерело: issues · знімок 2026-10-27
-- `/api/health` на момент UAT: <!-- заповнюється на кроці C -->
+- `/api/health` на момент UAT: sha `104c72c`, db ok, 02.11.2026
 
 ## 3 AC
 
@@ -102,7 +102,41 @@
 
 ## C. UAT на проді
 
-<!-- заповнюється на кроці C -->
+| AC | Специфікація | Тест (твердження) | Агент | Вердикт | Кадр |
+|---|---|---|---|---|---|
+| AC-EDITOR-07 | [`tests/e2e/templates.spec.ts`](https://github.com/vhrytsyndyshynquitcode/property-workflows/blob/main/tests/e2e/templates.spec.ts) | passed | Haiku: PASS | **PASS** (R6) | [`AC-EDITOR-07-then-1.png`](uat/2026-11-02/frames/AC-EDITOR-07-then-1.png) |
+| AC-EDITOR-09 | [`tests/e2e/templates.spec.ts`](https://github.com/vhrytsyndyshynquitcode/property-workflows/blob/main/tests/e2e/templates.spec.ts) | passed | Haiku: PASS | **PASS** (R6) | [`AC-EDITOR-09-then-1.png`](uat/2026-11-02/frames/AC-EDITOR-09-then-1.png) |
+| AC-EDITOR-19 | [`tests/e2e/templates.spec.ts`](https://github.com/vhrytsyndyshynquitcode/property-workflows/blob/main/tests/e2e/templates.spec.ts) | passed | Haiku: NEEDS-HUMAN → Sonnet: PASS | **PASS** (R6) | [`then-1`](uat/2026-11-02/frames/AC-EDITOR-19-then-1.png), [`then-2`](uat/2026-11-02/frames/AC-EDITOR-19-then-2.png) |
+
+- Звіт: [`docs/qa/uat/2026-11-02/report.md`](uat/2026-11-02/report.md), `manifest.json`, `frames/`
+- Відео: вкладення в описі PR UAT (у git не кладемо)
+- Рецензент: `claude-haiku-5-5`, суперечки — `claude-sonnet-5-5`. Промпт і схема з `materials/` без змін. Розбір
+  трьох AC коштує ≈ $0,05 за цінами API; за підпискою він іде в межах ліміту плану.
+- Негативний контроль (`npm run uat:nc`, `tests/e2e/negative-controls.spec.ts`):
+  - **NC-1** (AC-EDITOR-07): у тесті навмисно очікується «Access denied» → перевірка впала → **FAIL** (R1). Агент на кадрі
+    бачив справжнє «Not enough rights» і сказав PASS, але впалу перевірку він не перекриває.
+  - **NC-2** (AC-EDITOR-07): анотація `ac-text` з «уточненим» текстом («Only administrators can see versions»), тест і
+    застосунок без змін → перевірки зелені, Haiku і Sonnet: FAIL → **NEEDS-HUMAN** (R3).
+- Дані: лише читання. AC-EDITOR-19 відхиляє порожню назву ще до запису (кількість шаблонів до і після однакова).
+  Прибирання: синтетичних `uat-*@example.test` видалено 0, лишилось 0.
+- «Дано» AC-EDITOR-07 на проді: у «Tenant move-in» лише версія 1, а не 1 і 2. На «Тоді» це не впливає: відмова й
+  «жодної версії» не залежать від кількості версій. Версію 2 на спільному проді не створюю, бо UAT лише читає.
+- Що довелося змінити в матеріалах курсу (поза промптом і схемою рецензента):
+  - `playwright.config.ts`: `reducedMotion: "reduce"`. WebGL-талісман на `/login` у headless Chromium без GPU
+    гальмував кожну перевірку до 6–10 с.
+  - `tests/e2e/support/uat.ts`: `attachRuntimeErrors` чекає відповіді на запит щонайбільше 5 с. Запит без відповіді
+    тримав `afterEach` AC-EDITOR-19 до ліміту 60 с, і тест ставав FAIL, хоча обидва «Тоді» вже пройшли.
+  - Середовище, не код: `claude` не був у PATH, бо Claude Code тут вбудований у Claude Desktop. До того ж зі
+    скороченою текою `TEMP` (`C:\Users\OFFICE~1\…`) рецензент отримував відмову в читанні кадрів. Перший прогін тому
+    й дав R2/R3. Повторний прогін з повним шляхом `TEMP` дав вердикти вище.
+
+### Приймання PM
+
+| AC | Рішення PM | Посилання |
+|---|---|---|
+| AC-EDITOR-07 | <!-- PM --> | |
+| AC-EDITOR-09 | <!-- PM --> | |
+| AC-EDITOR-19 | <!-- PM --> | |
 
 ## D. Eval рецензента
 
