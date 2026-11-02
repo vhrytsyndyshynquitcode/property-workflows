@@ -53,7 +53,52 @@
 
 ## B. Якість тестів
 
-<!-- заповнюється на кроці B -->
+Посилання — на `main` після злиття PR B; у файлі здачі — на SHA.
+
+### Рівень для кожного AC
+
+| AC | Де живе правило | Рівень | Чому | Тест |
+|---|---|---|---|---|
+| AC-EDITOR-07 | сторінка `src/app/templates/[id]/versions/page.tsx` → `adminPageAccess` у `src/lib/templates/domain.ts` (не admin — відмова, запит версій не виконується). У базі менеджер версії читати **може**: без них він не запустить шаблон, тож SQL-правила «менеджер не бачить версій» немає | unit + e2e | рішення «хто бачить список» — чиста функція (unit, Stryker); «на екрані „Not enough rights“ і жодної версії» видно лише в браузері (e2e, крок C) | [`tests/templates/ui.test.ts#L129`](https://github.com/vhrytsyndyshynquitcode/property-workflows/blob/main/tests/templates/ui.test.ts#L129) |
+| AC-EDITOR-09 | база: `revoke all … from anon` на шаблонах, робочій копії й версіях (`20261026084454_template_versions.sql:47-58`); proxy (`src/lib/supabase/proxy.ts`) і `currentUser()` ведуть на `/login` | база (PGlite) + unit + e2e | «без входу даних немає» — правило бази, доводимо на справжніх міграціях; «бачить сторінку входу» — e2e | [`tests/db/template-versions.test.ts#L76`](https://github.com/vhrytsyndyshynquitcode/property-workflows/blob/main/tests/db/template-versions.test.ts#L76), [`tests/templates/ui.test.ts#L135`](https://github.com/vhrytsyndyshynquitcode/property-workflows/blob/main/tests/templates/ui.test.ts#L135) |
+| AC-EDITOR-19 | дія `createTemplate` (`src/app/templates/actions.ts:42-49`: порожня після `trim` назва → `?error=name_empty` без запису) + обмеження бази `templates_name_check` (`length(btrim(name)) > 0`, `20261020073540_workflow_runs.sql:50`) + текст у `TEMPLATE_MESSAGES` | unit (дія з підміненим клієнтом Supabase) + база (PGlite) + e2e | дія — перша лінія, база — друга (запит в обхід сторінок); дослівний текст на екрані — e2e | [`tests/templates/editor-actions.test.ts#L66`](https://github.com/vhrytsyndyshynquitcode/property-workflows/blob/main/tests/templates/editor-actions.test.ts#L66), [`tests/db/template-editor-oct27.test.ts#L108`](https://github.com/vhrytsyndyshynquitcode/property-workflows/blob/main/tests/db/template-editor-oct27.test.ts#L108), [`tests/templates/editor-oct27.test.ts#L61`](https://github.com/vhrytsyndyshynquitcode/property-workflows/blob/main/tests/templates/editor-oct27.test.ts#L61) |
+
+### Покриття
+
+`npm run test:coverage` (02.11.2026; разом — рядки 36 %, 155 з 428; загальний відсоток не поріг).
+
+| Файл за AC | Рядки | Гілки | Чим доведено, якщо 0 % |
+|---|---|---|---|
+| `src/lib/templates/domain.ts` (AC-EDITOR-07, 09, 19) | 96 % | 94 % | — (під підлогою 90/85/90/90) |
+| `src/app/templates/actions.ts` (AC-EDITOR-19, `createTemplate`) | 28 % | 22 % | гілку AC-EDITOR-19 виконує `editor-actions.test.ts#L66`; решта дій — тести бази (`tests/db/**`) |
+| `src/lib/supabase/proxy.ts` (AC-EDITOR-09) | 60 % | 87 % | редірект на `/login` — e2e (крок C) |
+| `src/app/templates/[id]/versions/page.tsx` (AC-EDITOR-07) | 0 % | 0 % | e2e: `tests/e2e/templates.spec.ts` (крок C) |
+| `src/app/templates/[id]/edit/page.tsx` (AC-EDITOR-09) | 0 % | 0 % | база (`template-versions.test.ts#L76`) + e2e (крок C) |
+| `src/app/templates/new/page.tsx` (AC-EDITOR-19) | 0 % | 0 % | e2e (крок C) |
+
+### Доказ мутацією
+
+| Мутант (файл:рядок, що змінено) | AC під загрозою | До | Тест, посилений з тексту AC | Після |
+|---|---|---|---|---|
+| **E19** `supabase/migrations/20261020073540_workflow_runs.sql:50` `check (length(btrim(name)) > 0)` → `check (length(name) > 0)` | AC-EDITOR-19 («the name empty or consisting only of spaces … no template is created») | **SURVIVED** (на тестах `main`) | `tests/db/template-editor-oct27.test.ts#L108`: адміністратор вставляє `""` і `"   "` напряму → відмова `templates_name_check`, кількість шаблонів не змінилась | **KILLED** |
+| **T19** `src/app/templates/actions.ts:46` `if (!name)` → `if (name === null)` | AC-EDITOR-19 («no template is created, and A sees the message "Enter a template name"») | **SURVIVED** (на тестах `main`) | `tests/templates/editor-actions.test.ts#L66`: `createTemplate` з `""` і `"   "` → `/templates/new`, текст «Enter a template name», жодного `insert` | **KILLED** |
+| **E09** `supabase/migrations/20261026084454_template_versions.sql:58` + `grant select on template_sections, template_tasks to anon` | AC-EDITOR-09 («no content of the template») | — (тест уже був) | `tests/db/template-versions.test.ts#L76` (без змін) | **KILLED** |
+
+- Stryker (`npm run mutation:ts -- --mutate src/lib/templates/domain.ts`): **87,59 %** (120 убито, 14 вижило, 3 без
+  покриття) і до, і після. На рядках моїх AC (`adminPageAccess`, рядки 38–49; `templateMessageFor`, рядок 108) — 21
+  убитий, 1 вижилий, і він еквівалентний (нижче). Решта вижилих — поза моїми AC: `reorderAfterMove` (рядки 144, 147;
+  AC-EDITOR-01), `removalTarget` (133), `formatVersionDate` (67), `templateErrorCodeForDb` (102).
+- Вижилих на рядках AC Stryker не дав, тому доказ — ручні мутанти T19 і E19 з «до» (вижив) і «після» (убитий).
+- SQL-мутації (`npm run mutation:sql`, PGlite-гарнес `tests/db/supabase-pglite.ts`):
+
+  | Мутант | AC | Статус |
+  |---|---|---|
+  | E09 | AC-EDITOR-09 | KILLED (впали AC-EDITOR-08 і AC-EDITOR-09 у `template-versions.test.ts`) |
+  | E19 | AC-EDITOR-19 | KILLED |
+
+- Еквівалентні мутанти: `src/lib/templates/domain.ts:108`, `typeof code === "string"` → `true`. `Object.hasOwn`
+  зводить ключ до рядка (`null` → `"null"`, `1` → `"1"`), а серед ключів `MESSAGES_BY_CODE` таких немає, тож
+  нерядкове значення однаково не дає повідомлення. Перевірка `typeof` лишається для типів TypeScript.
 
 ## C. UAT на проді
 
