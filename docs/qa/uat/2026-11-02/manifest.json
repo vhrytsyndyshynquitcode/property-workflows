@@ -1,0 +1,169 @@
+{
+  "kind": "uat",
+  "generatedAt": "2026-11-02T10:07:55.312Z",
+  "baseURL": "https://property-workflows-one.vercel.app",
+  "deployedSha": "104c72cbdbcab71b7a5726dcc3664de0aaade92b",
+  "testsCommit": "eafdf7d9a8e56347c1cc9df3c380170f69a19f27",
+  "reviewer": {
+    "model": "claude-haiku-5-5",
+    "disputes": "claude-sonnet-5-5"
+  },
+  "note": "Відео й траси не в git (test-results/ локально, артефакт CI). check-recordings конвеєра WS9 вимагає відео на диску — для нього цей manifest треба доповнити.",
+  "results": [
+    {
+      "id": "AC-EDITOR-07",
+      "proof": "AC-EDITOR-07",
+      "title": "AC-EDITOR-07: manager B opens the list of versions by a direct link — \"Not enough rights\" and no versions",
+      "screenshot": "docs/qa/uat/2026-11-02/frames/AC-EDITOR-07-then-1.png",
+      "video": "test-results/artifacts/templates-менеджер-AC-EDIT-143c6-ough-rights-and-no-versions-chromium/video.webm",
+      "trace": "test-results/artifacts/templates-менеджер-AC-EDIT-143c6-ough-rights-and-no-versions-chromium/trace.zip",
+      "asserted": true,
+      "vision": {
+        "met": true,
+        "readable": true,
+        "notes": "На кадрі frame-then-1.png сторінка має заголовок «Versions», під ним один рядок «Not enough rights» і посилання «Back to templates». Таблиці або списку версій на кадрі немає. Обидві видимі частини «Тоді» підтверджено; «no versions» за правилами не оцінюю."
+      },
+      "agentModel": "claude-haiku-5-5",
+      "agentVerdicts": {
+        "claude-haiku-5-5": "PASS",
+        "claude-sonnet-5-5": null
+      },
+      "escalated": false,
+      "quotesVerified": [
+        {
+          "quote": "Not enough rights",
+          "onPage": true
+        },
+        {
+          "quote": "Versions",
+          "onPage": true
+        }
+      ],
+      "verdict": "PASS",
+      "factoryGate": "PASS",
+      "rule": "R6: перевірки, агент і цитати збігаються",
+      "playwrightMs": 3871,
+      "reviewCostUsd": 0.00204,
+      "reviewWallMs": 9788
+    },
+    {
+      "id": "AC-EDITOR-09",
+      "proof": "AC-EDITOR-09",
+      "title": "AC-EDITOR-09: a visitor who is not signed in opens the editor by a direct link — the sign-in page and no content of the template",
+      "screenshot": "docs/qa/uat/2026-11-02/frames/AC-EDITOR-09-then-1.png",
+      "video": "test-results/artifacts/templates-відвідувач-без-в-46178--no-content-of-the-template-chromium/video.webm",
+      "trace": "test-results/artifacts/templates-відвідувач-без-в-46178--no-content-of-the-template-chromium/trace.zip",
+      "asserted": true,
+      "vision": {
+        "met": true,
+        "readable": true,
+        "notes": "На кадрі frame-then-1.png видно сторінку входу: заголовок «Sign in», поля «Email» і «Password», кнопка «Sign in» і підпис «Property workflows». Кадр чіткий, не обрізаний і не в стані завантаження. Відсутність вмісту шаблону та адреса /login не оцінювалися, бо це частини «Не з кадрів»."
+      },
+      "agentModel": "claude-haiku-5-5",
+      "agentVerdicts": {
+        "claude-haiku-5-5": "PASS",
+        "claude-sonnet-5-5": null
+      },
+      "escalated": false,
+      "quotesVerified": [
+        {
+          "quote": "Sign in",
+          "onPage": true
+        },
+        {
+          "quote": "Email",
+          "onPage": true
+        },
+        {
+          "quote": "Password",
+          "onPage": true
+        }
+      ],
+      "verdict": "PASS",
+      "factoryGate": "PASS",
+      "rule": "R6: перевірки, агент і цитати збігаються",
+      "playwrightMs": 10318,
+      "reviewCostUsd": 0.00189,
+      "reviewWallMs": 6577
+    },
+    {
+      "id": "AC-EDITOR-19",
+      "proof": "AC-EDITOR-19",
+      "title": "AC-EDITOR-19: administrator A creates a template with an empty name or only spaces — no template is created and \"Enter a template name\"",
+      "screenshot": "docs/qa/uat/2026-11-02/frames/AC-EDITOR-19-then-1.png",
+      "video": "test-results/artifacts/templates-адміністратор-AC-3e693--and-Enter-a-template-name--chromium/video.webm",
+      "trace": "test-results/artifacts/templates-адміністратор-AC-3e693--and-Enter-a-template-name--chromium/trace.zip",
+      "asserted": true,
+      "vision": {
+        "met": true,
+        "readable": true,
+        "notes": "На першому кадрі форма «New template» відкрита, під полем «Template name» червоним написано «Enter a template name». У полі сірим видно «Repair», схоже на placeholder. На другому кадрі показано список «Templates» із трьома рядками. Кількість шаблонів до спроби з кадрів не перевіряється."
+      },
+      "agentModel": "claude-sonnet-5-5",
+      "agentVerdicts": {
+        "claude-haiku-5-5": "NEEDS-HUMAN",
+        "claude-sonnet-5-5": "PASS"
+      },
+      "escalated": true,
+      "quotesVerified": [
+        {
+          "quote": "Template name",
+          "onPage": true
+        },
+        {
+          "quote": "Enter a template name",
+          "onPage": true
+        },
+        {
+          "quote": "New template",
+          "onPage": true
+        },
+        {
+          "quote": "Template name",
+          "onPage": true
+        },
+        {
+          "quote": "Create",
+          "onPage": true
+        },
+        {
+          "quote": "Templates",
+          "onPage": true
+        },
+        {
+          "quote": "Template",
+          "onPage": true
+        },
+        {
+          "quote": "Current version",
+          "onPage": true
+        },
+        {
+          "quote": "Changes",
+          "onPage": true
+        },
+        {
+          "quote": "Dev acceptance check",
+          "onPage": true
+        },
+        {
+          "quote": "Tenant move-in",
+          "onPage": true
+        }
+      ],
+      "verdict": "PASS",
+      "factoryGate": "PASS",
+      "rule": "R6: перевірки, агент і цитати збігаються",
+      "playwrightMs": 13272,
+      "reviewCostUsd": 0.04253,
+      "reviewWallMs": 29355
+    }
+  ],
+  "negativeControls": [],
+  "cleanup": {
+    "at": "2026-11-02T10:07:24.908Z",
+    "deleted": [],
+    "remaining": [],
+    "leftoverRequests": 0
+  }
+}
