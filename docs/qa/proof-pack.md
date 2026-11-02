@@ -22,9 +22,9 @@
 
 ## A. Ворота
 
-- PR воріт: <!-- …/pull/N -->
-- Зелений `quality` на `main`: <!-- …/actions/runs/N -->
-- Обов'язкові перевірки в `solo-main` з <!-- дата -->: «Ворота: fallow audit», «Покриття: доменна підлога»
+- PR воріт: https://github.com/vhrytsyndyshynquitcode/property-workflows/pull/32
+- Зелений `quality` на `main`: https://github.com/vhrytsyndyshynquitcode/property-workflows/actions/runs/41413070904
+- Обов'язкові перевірки в `solo-main` з 02.11.2026: «Ворота: fallow audit», «Покриття: доменна підлога» (разом зі `spec`, `app`, `conformance`, `db-check`); «Порада: вразливі залежності» — дорадча
 
 Розбір першого повного прогону `fallow` 3.35.0 на `main` (`npx fallow --no-cache`, 02.11.2026). Ворота в CI —
 `fallow audit` з `gate: new-only`: успадковані знахідки нижче не валять PR, нові — валять.
@@ -109,7 +109,7 @@
 | AC-EDITOR-19 | [`tests/e2e/templates.spec.ts`](https://github.com/vhrytsyndyshynquitcode/property-workflows/blob/main/tests/e2e/templates.spec.ts) | passed | Haiku: NEEDS-HUMAN → Sonnet: PASS | **PASS** (R6) | [`then-1`](uat/2026-11-02/frames/AC-EDITOR-19-then-1.png), [`then-2`](uat/2026-11-02/frames/AC-EDITOR-19-then-2.png) |
 
 - Звіт: [`docs/qa/uat/2026-11-02/report.md`](uat/2026-11-02/report.md), `manifest.json`, `frames/`
-- Відео: вкладення в описі PR UAT (у git не кладемо)
+- Відео: вкладення в описі PR UAT — https://github.com/vhrytsyndyshynquitcode/property-workflows/pull/36 (у git не кладемо)
 - Рецензент: `claude-haiku-5-5`, суперечки — `claude-sonnet-5-5`. Промпт і схема з `materials/` без змін. Розбір
   трьох AC коштує ≈ $0,05 за цінами API; за підпискою він іде в межах ліміту плану.
 - Негативний контроль (`npm run uat:nc`, `tests/e2e/negative-controls.spec.ts`):
@@ -140,4 +140,29 @@
 
 ## D. Eval рецензента
 
-<!-- заповнюється на кроці D -->
+- PR з вадами (закритий, не злитий): https://github.com/vhrytsyndyshynquitcode/property-workflows/pull/37 (гілка `task/templates-list-counts`, нейтральні назва, коміт і опис)
+- Ключ і таблиця: https://github.com/vhrytsyndyshynquitcode/property-workflows/pull/37#issuecomment-6574733748
+- Рецензенти: CodeRabbit (`@coderabbitai review`, профіль ASSERTIVE) і `/code-review high 37` у Claude Code без інтерактиву
+  (`claude -p … --setting-sources project --output-format json`, лише читання; модель `claude-opus-5-5`, 92 с, $0,60)
+
+| # | Вада (ключ) | CodeRabbit | `/code-review high` |
+|---|---|---|---|
+| 1 | права в даних: `public.template_version_counts()` — `security definer` у `public`, без `search_path`, без перевірки ролі й без `revoke … from public, anon` (`20261102101246_template_list_helpers.sql:3-14`) | знайшов, Major: «Не використовуйте `security definer` для публічного агрегатора»; «Відкличте право EXECUTE у `PUBLIC` і `anon`» | знайшов: «security definer у схемі public без перевірки ролі, тому оминає RLS»; «немає set search_path = ''»; «немає revoke execute ... from public, anon» |
+| 2 | авторизація в дії: `requireAdmin` бере роль з `claims.user_metadata` раніше за `profiles` (`src/app/templates/actions.ts:17-20`) | знайшов, але **Trivial**: «це hardening, а не доведений поточний обхід авторизації» | знайшов: «бере роль із claims.user_metadata, яке користувач змінює сам… порушує правило AGENTS.md» |
+| 3 | логіка (межа): `reorderAfterMove` `j >= sorted.length` → `j > sorted.length` (`src/lib/templates/domain.ts:147`) | знайшов, Minor: «Виправте верхню межу індексу… Замініть `>` на `>=`» | знайшов: «Помилка на одиницю: межу j >= sorted.length замінено на j > sorted.length» |
+| П | приманка: `private.template_has_unpublished(uuid)` — правильний `security definer` у `private` | хибної тривоги немає: «SQL-функція відхиляє виклики від неадміністраторів… для `public` і `anon` відкликано» | хибної тривоги щодо прав немає; лише «неможливо викликати з застосунку… дублює наявну колонку» |
+
+- Інші знахідки: `/code-review` — немає тесту «останній елемент вниз» (слушна; той самий вижилий мутант Stryker, розділ B),
+  не оновлено `database.types.ts` (слушна, дрібна), функції без викликів (слушна), коментар `actions.ts` розходиться з кодом
+  (слушна); CodeRabbit pre-merge — зміна поведінки без тестів і рядків `conformance.md` (слушна), «Description check» без
+  AC ID (шум для навмисно нейтрального опису).
+- Пропусків немає (3 з 3 в обох), тому правило загострює найслабшу знахідку — ваду 2 в CodeRabbit (Trivial).
+- Правило, що закриває пропуск: рядок в `AGENTS.md` «роль лише з `profiles.role`; роль з `user_metadata` чи `getSession()` —
+  «must fix» (Critical), а не «hardening»» — https://github.com/vhrytsyndyshynquitcode/property-workflows/pull/38
+- Повторний прогін (https://github.com/vhrytsyndyshynquitcode/property-workflows/pull/37#issuecomment-6575137471, `main` злито в гілку, `@coderabbitai full review` і
+  `/code-review high 37`):
+  - `/code-review` **загострив**: «перевірку адміністратора можна обійти (AGENTS.md: роль з `user_metadata` — вада рівня
+    «must fix», Critical)»;
+  - CodeRabbit **не змінив** рівня: inline-коментар і далі Trivial, у підсумку ризиків — «Low · security · observed: Editor
+    actions now prefer token user_metadata.role over profiles.role…». Висновок: для CodeRabbit рівень серйозності
+    задає path instruction у `.coderabbit.yaml`, а не `AGENTS.md` — це наступний крок, якщо потрібно.
