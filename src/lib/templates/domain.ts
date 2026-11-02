@@ -143,8 +143,8 @@ export function reorderAfterMove<T extends { id: string; position: number }>(
 ): T[] {
   const sorted = [...items].sort((a, b) => a.position - b.position || a.id.localeCompare(b.id));
   const i = sorted.findIndex((x) => x.id === id);
-  const j = direction === "up" ? i - 1 : i + 1;
-  if (i < 0 || j < 0 || j >= sorted.length) return [];
+  const j = i + (direction === "up" ? -1 : 1);
+  if (i < 0 || j < 0 || j > sorted.length) return [];
   [sorted[i], sorted[j]] = [sorted[j], sorted[i]];
   return sorted.flatMap((x, k) => (x.position === k + 1 ? [] : [{ ...x, position: k + 1 }]));
 }

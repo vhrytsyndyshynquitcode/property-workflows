@@ -14,8 +14,11 @@ async function requireAdmin() {
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
   if (!claims) redirect("/login");
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", claims.sub).maybeSingle();
-  if (profile?.role !== "admin") redirect("/templates?error=not_allowed");
+  // Роль уже є в токені після входу — без зайвого запиту до profiles; інакше беремо з profiles.
+  const tokenRole = (claims.user_metadata as { role?: string } | undefined)?.role;
+  const role =
+    tokenRole ?? (await supabase.from("profiles").select("role").eq("id", claims.sub).maybeSingle()).data?.role;
+  if (role !== "admin") redirect("/templates?error=not_allowed");
   return supabase;
 }
 
