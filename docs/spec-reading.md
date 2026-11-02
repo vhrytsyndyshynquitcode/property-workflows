@@ -118,3 +118,34 @@ solomchaak/property-workflows-spec#9 — усі в Open questions зміни `ad
   зміною `2026-10-27-update-template-versions-oct27`.
 - «Вигляд і тон» тепер явно: «What does not fit: bright gradients, decorative animation»; у вимозі #19 «Animations and
   illustrations» — поза межами. Декоративне тло й іскри (ADR 0005) прибираємо окремим PR «Реалізація».
+
+## Зріз 3 (WS9): вендор і права доступу
+
+Вимоги: solomchaak/property-workflows-spec · джерело: issues · знімок 2026-11-02 (solomchaak/property-workflows-spec#39,
+AC-VENDOR-01…10; переклад — `openspec/changes/archive/2026-11-02-add-vendor-access`).
+
+### Скан за таксономією
+
+| # | Категорія | Статус | Де |
+|---|---|---|---|
+| 1 | Функціональний обсяг | Ясно | «Поза межами» solomchaak/property-workflows-spec#39: прийняття чи відхилення, дата візиту, файли, зміна вендора після запуску |
+| 2 | Ролі й доступ | Частково | AC-VENDOR-08, AC-VENDOR-09: відмова на списку шаблонів і прямий запит запуску описані, а форма запуску за прямим посиланням — ні (solomchaak/property-workflows-spec#47, моє); навігація вендора (solomchaak/property-workflows-spec#44); зміна ролі користувача, що вже в запусках (solomchaak/property-workflows-spec#45) |
+| 3 | Домен і модель даних | Частково | AC-VENDOR-03: необов'язкова задача вендора «to do», коли запуск став «completed» (solomchaak/property-workflows-spec#46) |
+| 4 | Потік взаємодії (UX) | Частково | AC-VENDOR-04, AC-VENDOR-05: що ще видно на сторінці запуску (solomchaak/property-workflows-spec#41); назва шаблону в списку запусків вендора (solomchaak/property-workflows-spec#42); підтвердження останньої обов'язкової задачі для вендора (solomchaak/property-workflows-spec#43) |
+| 5 | Нефункціональні вимоги | Ясно | Правил часу немає; київський час — «Припущення» |
+| 6 | Інтеграції й обмеження платформи | Ясно | Сповіщень і запрошень немає («Поза межами») |
+| 7 | Граничні випадки й збої | Частково | Вендор без задач — AC-VENDOR-10; запуск, де всі задачі вендора виконано, — у solomchaak/property-workflows-spec#46 |
+| 8 | Обмеження й компроміси | Ясно | Виконавців — лише під час запуску; вендор ніколи не менеджер запуску |
+| 9 | Термінологія | Ясно | Глосарій `requirements/product.md`: Vendor, Assignee |
+| 10 | Сигнали завершеності | Ясно | «Your tasks: N of K done» визначено в «Припущення» |
+| 11 | Заглушки й розмиті слова | Ясно | — |
+
+### Питання до PM
+
+| # | AC / вимога | Питання | Рекомендація | Issue в репо PM | Відповідь PM | Рішення (що зробили) |
+|---|---|---|---|---|---|---|
+| Q1 | AC-VENDOR-08 (solomchaak/property-workflows-spec#39) | Чи показувати вендору пункти навігації «Templates» і «Launch a template»? | лише «Runs» (і профіль) | solomchaak/property-workflows-spec#44 (питання колеги — не дублював) | очікуємо | Текст PM як є; Open questions Q1 зміни `add-vendor-access` |
+| Q2 | AC-VENDOR-04, AC-VENDOR-05 (solomchaak/property-workflows-spec#39) | Що вендор бачить на сторінці запуску, крім своїх задач (назва випадку, статус)? | назва випадку й «Your tasks: N of K done» | solomchaak/property-workflows-spec#41 (питання колеги — не дублював) | очікуємо | Текст PM як є; Open questions Q2 |
+| Q3 | AC-VENDOR-09 (solomchaak/property-workflows-spec#39) | Що вендор бачить, коли відкриває форму запуску за прямим посиланням? | B: «Not enough rights» і посилання назад до списку запусків | solomchaak/property-workflows-spec#47 | очікуємо | Текст PM як є; Open questions Q3. Друга половина початкового Q3 (позначка чужої задачі через сторінку) відкинута: чужих задач вендор на сторінці не бачить, лишається прямий запит — AC-VENDOR-07 |
+
+Строк питань до зрізу 3 (Нд 01.11) минув; PM попросив додавати питання до issues — Q3 подано 2026-11-02.
