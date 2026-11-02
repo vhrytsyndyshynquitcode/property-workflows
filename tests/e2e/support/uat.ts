@@ -73,14 +73,24 @@ export async function attachRuntimeErrors(page: Page) {
     .filter((m) => m.type() === "error")
     .map((m) => m.text());
   const pageErrors = (await page.pageErrors({ filter: "all" })).map((e) => String(e));
+  // Зміна property-workflows: r.response() без межі чекав запит, що так і не отримав відповіді (prefetch Next.js на
+  // /templates в AC-EDITOR-19), і afterEach вичерпував 60 с тесту. Такий запит — «pending», а не збій: 5 с і далі.
+  const NO_RESPONSE = Symbol("no-response");
   const responses = await Promise.all(
-    (await page.requests()).map(async (r) => ({ r, status: (await r.response())?.status() ?? 0 })),
+    (await page.requests()).map(async (r) => {
+      const response = await Promise.race([
+        r.response(),
+        new Promise<typeof NO_RESPONSE>((resolve) => setTimeout(() => resolve(NO_RESPONSE), 5_000)),
+      ]);
+      return { r, pending: response === NO_RESPONSE, status: response === NO_RESPONSE ? 0 : (response?.status() ?? 0) };
+    }),
   );
   const failed = responses
     .filter(({ r, status }) => r.failure() !== null || status >= 500)
     .map(({ r, status }) => `${r.method()} ${new URL(r.url()).pathname} → ${r.failure()?.errorText ?? status}`);
+  const pending = responses.filter(({ pending }) => pending).map(({ r }) => `${r.method()} ${new URL(r.url()).pathname}`);
   await test.info().attach("runtime-errors.json", {
-    body: JSON.stringify({ console: consoleErrors, pageErrors, failed }, null, 2),
+    body: JSON.stringify({ console: consoleErrors, pageErrors, failed, pending }, null, 2),
     contentType: "application/json",
   });
 }
