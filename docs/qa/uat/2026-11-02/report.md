@@ -1,17 +1,17 @@
 # Звіт UAT — 02.11.2026
 
 - **Застосунок:** https://property-workflows-one.vercel.app (/api/health: коміт `104c72c`)
-- **Код тестів:** `task/uat` @ `1703a32` + незакомічені зміни
-- **Прогін:** 02.11.2026, 12:02 (Київ), Playwright 67.0 с; AC: 3 — PASS 3, FAIL 0, NEEDS-HUMAN 0
-- **Рецензент:** `claude-haiku-5-5`; суперечки → `claude-sonnet-5-5`. Разом за розбір: $0.0456 (ціни API; за підпискою — у межах ліміту плану)
+- **Код тестів:** `task/uat` @ `eafdf7d`
+- **Прогін:** 02.11.2026, 12:06 (Київ), Playwright 56.1 с; AC: 3 — PASS 3, FAIL 0, NEEDS-HUMAN 0
+- **Рецензент:** `claude-haiku-5-5`; суперечки → `claude-sonnet-5-5`. Разом за розбір: $0.0465 (ціни API; за підпискою — у межах ліміту плану)
 - **Прибирання:** синтетичних uat-*@example.test видалено 0, лишилось 0, їхніх рядків, що лишились: 0
 - **Відео й траси:** не в git — `test-results/` локально або артефакт CI; трасу відкриває `npx playwright show-trace <trace.zip>`
 
 | AC | Перевірки | Агент | Підсумок | Чому | Playwright | Розбір |
 |---|---|---|---|---|---|---|
-| AC-EDITOR-07 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 3.4 с | $0.0020, 12.1 с |
-| AC-EDITOR-09 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 12.7 с | $0.0022, 9.6 с |
-| AC-EDITOR-19 | пройшли | Haiku: NEEDS-HUMAN, Sonnet: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 11.9 с | $0.0414, 34.7 с |
+| AC-EDITOR-07 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 3.9 с | $0.0020, 9.8 с |
+| AC-EDITOR-09 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 10.3 с | $0.0019, 6.6 с |
+| AC-EDITOR-19 | пройшли | Haiku: NEEDS-HUMAN, Sonnet: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 13.3 с | $0.0425, 29.4 с |
 
 ## AC-EDITOR-07 — PASS
 
@@ -25,7 +25,7 @@
 
 **Кроки:** ✔ Дано: manager B signed in and the template "Tenant move-in" with versions → ✔ Коли: B opens the list of versions of this template by a direct link → ✔ Тоді: B sees the message "Not enough rights" and no versions.
 
-**Агент (claude-haiku-5-5, PASS):** На кадрі frame-then-1.png видно заголовок «Versions», під ним один рядок повідомлення «Not enough rights» і посилання «Back to templates». Таблиці чи рядків із версіями на сторінці немає. Частина «no versions» з розділу «Не з кадрів» не оцінювалась.
+**Агент (claude-haiku-5-5, PASS):** На кадрі frame-then-1.png сторінка має заголовок «Versions», під ним один рядок «Not enough rights» і посилання «Back to templates». Таблиці або списку версій на кадрі немає. Обидві видимі частини «Тоді» підтверджено; «no versions» за правилами не оцінюю.
 
 **Цитати агента, звірені зі сторінкою (aria):**
 - «Not enough rights» — є на сторінці
@@ -49,7 +49,7 @@
 
 **Кроки:** ✔ Дано: a visitor who is not signed in → ✔ Коли: the visitor opens the editor of the template "Tenant move-in" by a direct link → ✔ Тоді: the visitor sees the sign-in page and no content of the template.
 
-**Агент (claude-haiku-5-5, PASS):** На кадрі видно сторінку входу: заголовок «Sign in», поля «Email» і «Password», кнопка «Sign in», а також підпис «Property workflows». Кадр повний і читабельний; частини про відсутність вмісту шаблону й адресу /login не оцінювалися, бо це не видно з кадру.
+**Агент (claude-haiku-5-5, PASS):** На кадрі frame-then-1.png видно сторінку входу: заголовок «Sign in», поля «Email» і «Password», кнопка «Sign in» і підпис «Property workflows». Кадр чіткий, не обрізаний і не в стані завантаження. Відсутність вмісту шаблону та адреса /login не оцінювалися, бо це частини «Не з кадрів».
 
 **Цитати агента, звірені зі сторінкою (aria):**
 - «Sign in» — є на сторінці
@@ -75,7 +75,7 @@
 
 **Кроки:** ✔ Дано: administrator A → ✔ Коли: A creates a new template with the name consisting only of spaces → ✔ Тоді: A sees the message "Enter a template name". → ✔ Тоді: no template is created
 
-**Агент (claude-sonnet-5-5, PASS):** На першому кадрі на сторінці «New template» під полем «Template name» червоним видно «Enter a template name», форма лишається відкритою. На другому кадрі показано список шаблонів на сторінці «Templates». У полі сіріє слово «Repair», схоже на плейсхолдер.
+**Агент (claude-sonnet-5-5, PASS):** На першому кадрі форма «New template» відкрита, під полем «Template name» червоним написано «Enter a template name». У полі сірим видно «Repair», схоже на placeholder. На другому кадрі показано список «Templates» із трьома рядками. Кількість шаблонів до спроби з кадрів не перевіряється.
 
 Haiku сказав NEEDS-HUMAN, тож розбір повторив Sonnet; рішення агента — за Sonnet.
 
