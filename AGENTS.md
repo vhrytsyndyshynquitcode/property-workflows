@@ -144,6 +144,10 @@ OpenSpec 1.14.1 (devDependency + глобальний CLI тієї ж версі
   репозиторію `koldovsky/2026-quitcode-06-leave-portal-demo`): `security invoker`, або `security definer` лише в
   схемі `private` з `set search_path = ''`.
 - Авторизація на сервері — `supabase.auth.getClaims()`, ніколи `getSession()`.
+- Роль у Server Actions, Route Handlers і сторінках — лише з `profiles.role` після `getClaims()`. Роль з
+  `user_metadata` (його користувач змінює сам через `auth.updateUser`) чи з `getSession()` — вада рівня «must fix»
+  (Critical) для рецензентів, а не «hardening»: RLS бази — другий рубіж, і дія не має покладатися на те, що база
+  відхилить запис.
 
 ## Секрети
 
