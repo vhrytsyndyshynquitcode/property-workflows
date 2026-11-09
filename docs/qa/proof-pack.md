@@ -9,7 +9,7 @@ Proof pack WS8 (3 AC зрізу 2) — docs/qa/proof-pack-ws8.md. Посилан
 - Зріз 3: менеджер призначає вендора на задачу під час запуску; вендор бачить і виконує лише свої задачі; доступ кожної ролі тримає база (рядок WS8 Roadmap PM, реалізуємо у WS9).
 - Вимоги: https://github.com/solomchaak/property-workflows-spec · джерело: issues · знімок 2026-11-02
 - Спека: https://github.com/vhrytsyndyshynquitcode/property-workflows/blob/main/openspec/specs/vendor-access/spec.md
-- `/api/health` на момент UAT: sha `3f076f3`, db ok, 09.11.2026
+- `/api/health` на момент UAT: sha `3f076f3`, db ok, 09.11.2026 (прогін 11:53, код тестів `eea84db`)
 
 ## Доказ на кожен AC зрізу 3
 

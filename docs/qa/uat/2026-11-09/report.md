@@ -1,27 +1,27 @@
 # Звіт UAT — 09.11.2026
 
 - **Застосунок:** https://property-workflows-one.vercel.app (/api/health: коміт `3f076f3`)
-- **Код тестів:** `task/vendor-uat` @ `003bc7e`
-- **Прогін:** 09.11.2026, 11:23 (Київ), Playwright 138.4 с; AC: 13 — PASS 13, FAIL 0, NEEDS-HUMAN 0
-- **Рецензент:** `claude-haiku-5-5`; суперечки → `claude-sonnet-5-5`. Разом за розбір: $0.0671 (ціни API; за підпискою — у межах ліміту плану)
+- **Код тестів:** `task/vendor-uat` @ `eea84db`
+- **Прогін:** 09.11.2026, 11:53 (Київ), Playwright 232.7 с; AC: 13 — PASS 13, FAIL 0, NEEDS-HUMAN 0
+- **Рецензент:** `claude-haiku-5-5`; суперечки → `claude-sonnet-5-5`. Разом за розбір: $0.0672 (ціни API; за підпискою — у межах ліміту плану)
 - **Прибирання:** синтетичних uat-*@example.test видалено 3, лишилось 0, їхніх рядків, що лишились: 0
 - **Відео й траси:** не в git — `test-results/` локально або артефакт CI; трасу відкриває `npx playwright show-trace <trace.zip>`
 
 | AC | Перевірки | Агент | Підсумок | Чому | Playwright | Розбір |
 |---|---|---|---|---|---|---|
-| AC-EDITOR-07 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 3.1 с | $0.0019, 6.4 с |
-| AC-EDITOR-09 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 9.0 с | $0.0019, 6.4 с |
-| AC-EDITOR-19 | пройшли | Haiku: NEEDS-HUMAN, Sonnet: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 13.0 с | $0.0422, 23.3 с |
-| AC-VENDOR-01 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 9.2 с | $0.0023, 9.0 с |
-| AC-VENDOR-02 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 3.5 с | $0.0021, 7.9 с |
-| AC-VENDOR-03 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 6.5 с | $0.0022, 7.9 с |
-| AC-VENDOR-04 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 3.0 с | $0.0023, 9.2 с |
-| AC-VENDOR-05 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 4.9 с | $0.0023, 8.3 с |
-| AC-VENDOR-06 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 2.4 с | $0.0018, 5.1 с |
-| AC-VENDOR-07 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 3.8 с | $0.0021, 8.1 с |
-| AC-VENDOR-08 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 2.7 с | $0.0019, 5.9 с |
-| AC-VENDOR-09 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 3.5 с | $0.0022, 8.5 с |
-| AC-VENDOR-10 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 2.1 с | $0.0019, 6.5 с |
+| AC-EDITOR-07 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 5.2 с | $0.0021, 9.8 с |
+| AC-EDITOR-09 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 15.5 с | $0.0022, 10.5 с |
+| AC-EDITOR-19 | пройшли | Haiku: NEEDS-HUMAN, Sonnet: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 16.2 с | $0.0420, 26.2 с |
+| AC-VENDOR-01 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 13.5 с | $0.0024, 11.7 с |
+| AC-VENDOR-02 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 5.6 с | $0.0021, 8.6 с |
+| AC-VENDOR-03 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 9.1 с | $0.0020, 8.0 с |
+| AC-VENDOR-04 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 5.1 с | $0.0024, 11.0 с |
+| AC-VENDOR-05 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 6.3 с | $0.0021, 9.3 с |
+| AC-VENDOR-06 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 3.7 с | $0.0019, 7.3 с |
+| AC-VENDOR-07 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 5.3 с | $0.0021, 8.5 с |
+| AC-VENDOR-08 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 4.4 с | $0.0019, 7.0 с |
+| AC-VENDOR-09 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 4.9 с | $0.0023, 10.9 с |
+| AC-VENDOR-10 | пройшли | Haiku: PASS | **PASS** | R6: перевірки, агент і цитати збігаються | 2.8 с | $0.0019, 6.7 с |
 
 ## AC-EDITOR-07 — PASS
 
@@ -35,7 +35,7 @@
 
 **Кроки:** ✔ Дано: manager B signed in and the template "Tenant move-in" with versions → ✔ Коли: B opens the list of versions of this template by a direct link → ✔ Тоді: B sees the message "Not enough rights" and no versions.
 
-**Агент (claude-haiku-5-5, PASS):** На кадрі frame-then-1.png видно заголовок сторінки «Versions», під ним один блок із текстом «Not enough rights» і посилання «Back to templates». Таблиці чи рядків із версіями на кадрі немає. Обидві видимі частини «Тоді» підтверджено; частину «no versions» (таблиця, рядки) я не оцінював, бо це перевіряють автоматичні тести.
+**Агент (claude-haiku-5-5, PASS):** На кадрі frame-then-1.png видно заголовок сторінки «Versions» і рядок повідомлення «Not enough rights» посимвольно збігається з критерієм. Таблиці чи списку версій на сторінці немає; посилання «Back to templates» і меню зліва не суперечать критерію. Частина «no versions» віднесена до автоматичних перевірок і не оцінювалась.
 
 **Цитати агента, звірені зі сторінкою (aria):**
 - «Not enough rights» — є на сторінці
@@ -59,7 +59,7 @@
 
 **Кроки:** ✔ Дано: a visitor who is not signed in → ✔ Коли: the visitor opens the editor of the template "Tenant move-in" by a direct link → ✔ Тоді: the visitor sees the sign-in page and no content of the template.
 
-**Агент (claude-haiku-5-5, PASS):** На кадрі frame-then-1.png видно сторінку входу: заголовок «Sign in», поля «Email» і «Password», кнопка «Sign in», підпис «Property workflows». Текст не обрізаний і читається. Вміст шаблону «Tenant move-in» на кадрі не видно, але це перевіряють не кадри.
+**Агент (claude-haiku-5-5, PASS):** На кадрі видно сторінку входу: заголовок «Sign in», підпис «Property workflows», поля «Email» і «Password» та кнопка «Sign in». Вмісту шаблону «Tenant move-in» на кадрі немає, але ця частина і адресна строка (/login) не з кадрів, тому я їх не оцінював.
 
 **Цитати агента, звірені зі сторінкою (aria):**
 - «Sign in» — є на сторінці
@@ -85,7 +85,7 @@
 
 **Кроки:** ✔ Дано: administrator A → ✔ Коли: A creates a new template with the name consisting only of spaces → ✔ Тоді: A sees the message "Enter a template name". → ✔ Тоді: no template is created
 
-**Агент (claude-sonnet-5-5, PASS):** На першому кадрі форма «New template» відкрита, під полем «Template name» червоним написано «Enter a template name». У полі сірий текст «Repair», схожий на плейсхолдер. На другому кадрі видно список шаблонів. Незмінність кількості шаблонів за кадрами не оцінювалась.
+**Агент (claude-sonnet-5-5, PASS):** На першому кадрі сторінка «New template» залишається відкритою, під полем «Template name» червоний напис «Enter a template name». На другому кадрі видно таблицю шаблонів (1, Dev acceptance check, Tenant move-in). Кількість шаблонів до спроби з кадрів не оцінювалась.
 
 Haiku сказав NEEDS-HUMAN, тож розбір повторив Sonnet; рішення агента — за Sonnet.
 
@@ -120,14 +120,19 @@ Haiku сказав NEEDS-HUMAN, тож розбір повторив Sonnet; р�
 
 **Кроки:** ✔ Дано: manager A, vendor V and the template "Tenant move-in" with 5 tasks → ✔ Коли: A launches the template for the case "Apartment 12, move-in" and assigns V as the assignee of tasks 3 and 4 → ✔ Тоді: tasks 3 and 4 have V as the assignee, and tasks 1, 2 and 5 have A.
 
-**Агент (claude-haiku-5-5, PASS):** На кадрі видно сторінку запуску «Apartment 12, move-in» з 5 завданнями в правильному порядку. Біля «Order cleaning» (3) і «Hand over the keys» (4) стоїть адреса vendor, а біля «Sign the lease» (1), «Collect the deposit» (2) і «Record meter readings» (5) — адреса manager. Відповідність логінів manager/vendor до ролей A/V зроблена за назвами на кадрі (run manager — manager), прямо з кадру це не підтверджується.
+**Агент (claude-haiku-5-5, PASS):** На кадрі frame-then-1.png видно run «Apartment 12, move-in» із 5 завданнями у порядку: Sign the lease, Collect the deposit, Order cleaning, Hand over the keys, Record meter readings. Email vendor-а стоїть біля Order cleaning (завдання 3) і Hand over the keys (завдання 4), а email manager-а — біля завдань 1, 2 і 5, що відповідає критерію.
 
 **Цитати агента, звірені зі сторінкою (aria):**
-- «uat-261109092305-vendor@example.test» — є на сторінці
-- «uat-261109092305-vendor@example.test» — є на сторінці
-- «uat-261109092305-manager@example.test» — є на сторінці
-- «uat-261109092305-manager@example.test» — є на сторінці
-- «uat-261109092305-manager@example.test» — є на сторінці
+- «Order cleaning» — є на сторінці
+- «uat-261109095347-vendor@example.test» — є на сторінці
+- «Hand over the keys» — є на сторінці
+- «uat-261109095347-vendor@example.test» — є на сторінці
+- «Sign the lease» — є на сторінці
+- «uat-261109095347-manager@example.test» — є на сторінці
+- «Collect the deposit» — є на сторінці
+- «uat-261109095347-manager@example.test» — є на сторінці
+- «Record meter readings» — є на сторінці
+- «uat-261109095347-manager@example.test» — є на сторінці
 
 **Правило:** R6: перевірки, агент і цитати збігаються
 
@@ -147,10 +152,10 @@ Haiku сказав NEEDS-HUMAN, тож розбір повторив Sonnet; р�
 
 **Кроки:** ✔ Дано: managers A and B, an administrator and vendor V, and A launching a template → ✔ Коли: A opens the assignee picker → ✔ Тоді: A sees the emails of B, of the administrator and of V, and no names, roles or other profile data.
 
-**Агент (claude-haiku-5-5, PASS):** На кадрі сторінки «Launch a template» у рядку «Order cleaning (Before move-in · optional)» вибрано значення uat-261109092305-vendor@example.test, а не «Me (run manager)». Список відкритих опцій на кадрі не видно, тому перевірку вмісту пікера (email B, адміністратора, відсутність імен і ролей) не оцінюю — це «не з кадрів».
+**Агент (claude-haiku-5-5, PASS):** На кадрі сторінка «Launch a template» з рядком «Order cleaning», де в полі вибору виконавця видно «uat-261109095347-vendor@example.test» — це email вендора V, як вимагає видима частина «Тоді». Список варіантів у розкритому виді на кадрі не показаний, тож склад picker (email B і адміністратора, відсутність імен і ролей) не перевірявся з кадрів і позначений як cannot-tell.
 
 **Цитати агента, звірені зі сторінкою (aria):**
-- «uat-261109092305-vendor@example.test» — є на сторінці
+- «uat-261109095347-vendor@example.test» — є на сторінці
 
 **Правило:** R6: перевірки, агент і цитати збігаються
 
@@ -170,7 +175,7 @@ Haiku сказав NEEDS-HUMAN, тож розбір повторив Sonnet; р�
 
 **Кроки:** ✔ Дано: vendor V who is the assignee of 2 tasks in the run "Apartment 12, move-in" and of no task in the run "Apartment 14, repair" → ✔ Коли: V opens the list of runs → ✔ Тоді: V sees only the run "Apartment 12, move-in" with its run status and "Your tasks: 0 of 2 done", and does not see "Apartment 14, repair".
 
-**Агент (claude-haiku-5-5, PASS):** На кадрі /runs видно один рядок таблиці: «Apartment 12, move-in», статус «in progress» і «Your tasks: 0 of 2 done». Рядка «Apartment 14, repair» на кадрі немає, але це частина «Не з кадрів», тож я її не оцінював.
+**Агент (claude-haiku-5-5, PASS):** На кадрі сторінки «Runs» видно один рядок з «Apartment 12, move-in», статусом «in progress» і написом «Your tasks: 0 of 2 done». Рядка «Apartment 14, repair» на кадрі немає, що узгоджується з критерієм (ця частина з кадрів не оцінюється окремо).
 
 **Цитати агента, звірені зі сторінкою (aria):**
 - «Apartment 12, move-in» — є на сторінці
@@ -195,7 +200,7 @@ Haiku сказав NEEDS-HUMAN, тож розбір повторив Sonnet; р�
 
 **Кроки:** ✔ Дано: vendor V who is the assignee of tasks 3 and 4 in the run "Apartment 12, move-in" (5 tasks) → ✔ Коли: V opens this run → ✔ Тоді: V sees exactly tasks 3 and 4, each with its name, its section, the mark "required" or "optional" and its status, and does not see tasks 1, 2 and 5, the emails of other users or the progress of the whole run.
 
-**Агент (claude-haiku-5-5, PASS):** На кадрі видно рівно два завдання: «Order cleaning» (Before move-in, optional, to do) і «Hand over the keys» (Move-in day, required, to do), що відповідає завданням 3 і 4. Напис «Your tasks: 0 of 2 done» стосується лише завдань цього користувача, а не всього прогресу run із 5 завдань, тому це не порушення. Частини з розділу «Не з кадрів» не оцінювалися.
+**Агент (claude-haiku-5-5, PASS):** На кадрі frame-then-1.png видно два завдання V: "Order cleaning" у розділі "Before move-in" (optional, to do) і "Hand over the keys" у розділі "Move-in day" (required, to do). Рядок "Your tasks: 0 of 2 done" стосується лише завдань V, а не всього run із 5 завдань, тож суперечності з критерієм немає. Відсутність інших завдань, email і загального прогресу перевіряють автоматичні перевірки, тому тут їх не оцінювано.
 
 **Цитати агента, звірені зі сторінкою (aria):**
 - «Order cleaning» — є на сторінці
@@ -225,7 +230,7 @@ Haiku сказав NEEDS-HUMAN, тож розбір повторив Sonnet; р�
 
 **Кроки:** ✔ Дано: vendor V who is the assignee of task 3 with status "to do", which is not the last required task of the run "Apartment 12, move-in" → ✔ Коли: V marks task 3 as done → ✔ Тоді: task 3 has status "done", and V sees "Your tasks: 1 of 2 done".
 
-**Агент (claude-haiku-5-5, PASS):** На кадрі frame-then-1.png у картці «Before move-in» видно рядок «Order cleaning» з бейджем «done», а вгорі сторінки — «Your tasks: 1 of 2 done». Обидві видимі частини «Тоді» збігаються з критерієм посимвольно. Кадр не містить ідентифікатора завдання, тож відповідність «Order cleaning» саме task 3 підтверджується лише назвою з критерію, а не самим кадром.
+**Агент (claude-haiku-5-5, PASS):** На кадрі видно картку «Order cleaning» у блоці «Before move-in» зі значком «done», а над картками написано «Your tasks: 1 of 2 done». Обидві видимі частини «Тоді» збігаються дослівно з критерієм. Кадр читабельний і повний; на кадрі немає ідентифікатора задачі, тому відповідність «Order cleaning» задачі 3 перевіряється через перелік видимих частин в ac.md.
 
 **Цитати агента, звірені зі сторінкою (aria):**
 - «Order cleaning» — є на сторінці
@@ -250,7 +255,7 @@ Haiku сказав NEEDS-HUMAN, тож розбір повторив Sonnet; р�
 
 **Кроки:** ✔ Дано: the run "Apartment 14, repair" in which vendor V has no task → ✔ Коли: V opens the page of this run by a direct link → ✔ Тоді: V sees the message "Run not found" and none of the tasks of the run.
 
-**Агент (claude-haiku-5-5, PASS):** На кадрі в основній області видно напис «Run not found» дослівно, без зайвих символів. Задач вишукування немає; на сторінці показані лише сайдбар з «Runs», посилання «All runs» і налаштування теми та виходу. Частини «Не з кадрів» не оцінювалися.
+**Агент (claude-haiku-5-5, PASS):** На кадрі видно сторінку з написом «Run not found» у верхній частині основної області, а також посилання «All runs» і бічну навігацію «Runs». Жодних задач або назви «Apartment 14, repair» на кадрі немає. Видима частина «Тоді» підтверджена дослівно; решта частин не з кадрів.
 
 **Цитати агента, звірені зі сторінкою (aria):**
 - «Run not found» — є на сторінці
@@ -273,12 +278,10 @@ Haiku сказав NEEDS-HUMAN, тож розбір повторив Sonnet; р�
 
 **Кроки:** ✔ Дано: the run "Apartment 12, move-in" in which task 1 is assigned to manager A and tasks 3 and 4 to vendor V → ✔ Коли: V tries to mark task 1 as done directly, bypassing the pages of the application → ✔ Тоді: task 1 stays "to do".
 
-**Агент (claude-haiku-5-5, PASS):** На кадрі сторінка «Apartment 12, move-in» з полем run manager uat-261109092305-manager@example.test. У рядку «Sign the lease», призначеному цьому менеджеру, статус «to do», а загальний прогрес «1 of 5 done». Пряма спроба вендора позначити завдання не видна на кадрі, це не оцінювалось.
+**Агент (claude-haiku-5-5, PASS):** На кадрі видно сторінку «Apartment 12, move-in» з рядком «Sign the lease» (required), статус «to do», виконавець uat-261109095347-manager@example.test, тобто manager A. Частина «the direct request of V was refused» не з кадрів, тому не оцінювалась.
 
 **Цитати агента, звірені зі сторінкою (aria):**
 - «Sign the lease» — є на сторінці
-- «uat-261109092305-manager@example.test» — є на сторінці
-- «required» — є на сторінці
 - «to do» — є на сторінці
 
 **Правило:** R6: перевірки, агент і цитати збігаються
@@ -299,7 +302,7 @@ Haiku сказав NEEDS-HUMAN, тож розбір повторив Sonnet; р�
 
 **Кроки:** ✔ Дано: vendor V signed in → ✔ Коли: V opens the list of templates by a direct link → ✔ Тоді: V sees the message "Not enough rights" and no template.
 
-**Агент (claude-haiku-5-5, PASS):** На кадрі frame-then-1.png (сторінка Templates) у блоці під заголовком видно текст «Not enough rights», який збігається з критерієм посимвольно. Під повідомленням є лише посилання «All runs», шаблонів і таблиці не видно; ця частина належить до перевірок поза кадрами.
+**Агент (claude-haiku-5-5, PASS):** На кадрі сторінки «Templates» у блоці під заголовком видно текст «Not enough rights» дослівно, без зайвих знаків. Таблиці шаблонів на кадрі немає, але за правилами це частина «Не з кадрів», тому я її не оцінюю.
 
 **Цитати агента, звірені зі сторінкою (aria):**
 - «Not enough rights» — є на сторінці
@@ -322,7 +325,7 @@ Haiku сказав NEEDS-HUMAN, тож розбір повторив Sonnet; р�
 
 **Кроки:** ✔ Дано: vendor V signed in and the template "Tenant move-in" with current version 1 → ✔ Коли: V tries to launch this template directly, bypassing the pages of the application → ✔ Тоді: no run is created, and the list of runs does not change.
 
-**Агент (claude-haiku-5-5, PASS):** На кадрі сторінка /runs ("Runs") з одним рядком: "Apartment 12, move-in", статус "in progress", "Your tasks: 1 of 2 done". Видима частина «Тоді» виконана. Один кадр показує лише стан після дії, тому "same" (незмінність порівняно з попереднім станом) цим кадром не перевіряється; це має підтвердити автоматична перевірка. Ознак "Apartment 20, move-in" на кадрі немає.
+**Агент (claude-haiku-5-5, PASS):** На кадрі frame-then-1.png (сторінка «Runs») видно список з одним рядком: «Apartment 12, move-in», статус «in progress», «Your tasks: 1 of 2 done». Кадр один, тому порівняти список із станом до запуску за ним не можна; видима частина «Тоді» підтверджується, а дві інші частини з розділу «Не з кадрів» не оцінюю.
 
 **Цитати агента, звірені зі сторінкою (aria):**
 - «Apartment 12, move-in» — є на сторінці
@@ -345,7 +348,7 @@ Haiku сказав NEEDS-HUMAN, тож розбір повторив Sonnet; р�
 
 **Кроки:** ✔ Дано: vendor V to whom no task is assigned → ✔ Коли: V opens the list of runs → ✔ Тоді: V sees the message "No tasks assigned to you yet." and no empty table.
 
-**Агент (claude-haiku-5-5, PASS):** На кадрі сторінки «Runs» у рамці видно текст «No tasks assigned to you yet.», він збігається з критерієм посимвольно (регістр, крапка). Таблиці на кадрі немає, але частина «no table on the page» не оцінюється з кадрів, тому позначена як cannot-tell.
+**Агент (claude-haiku-5-5, PASS):** На кадрі сторінки «Runs» у білій картці видно текст «No tasks assigned to you yet.», він збігається з критерієм посимвольно. Таблиці на кадрі немає, але за правилами це не оцінюється з кадрів.
 
 **Цитати агента, звірені зі сторінкою (aria):**
 - «No tasks assigned to you yet.» — є на сторінці
