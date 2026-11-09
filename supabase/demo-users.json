@@ -28,5 +28,10 @@
     "email": "pm-manager@example.test",
     "full_name": "PM Manager",
     "role": "manager"
+  },
+  {
+    "email": "pm-vendor@example.test",
+    "full_name": "Вендор Демо",
+    "role": "vendor"
   }
 ]
