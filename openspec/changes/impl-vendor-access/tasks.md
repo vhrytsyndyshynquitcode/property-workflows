@@ -8,10 +8,10 @@ Done when: AC-VENDOR-01, AC-VENDOR-02, AC-VENDOR-03, AC-VENDOR-04, AC-VENDOR-06,
 
 ## 2. Сторінки вендора
 
-- [ ] 2.1 Навігація без «Templates» і «Launch a template» для вендора; `/templates*` і `/runs/new` — «Not enough rights»
-- [ ] 2.2 `/runs`: запуски вендора з «Your tasks: N of K done», порожній стан «No tasks assigned to you yet.»
-- [ ] 2.3 `/runs/[id]`: лише власні задачі вендора, «Your tasks: N of K done», позначка своєї задачі
-- [ ] 2.4 Unit-тести з AC ID; рядки `docs/conformance.md`
+- [x] 2.1 Навігація без «Templates» і «Launch a template» для вендора; `/templates*` і `/runs/new` — «Not enough rights»
+- [x] 2.2 `/runs`: запуски вендора з «Your tasks: N of K done», порожній стан «No tasks assigned to you yet.»
+- [x] 2.3 `/runs/[id]`: лише власні задачі вендора, «Your tasks: N of K done», позначка своєї задачі
+- [x] 2.4 Unit-тести з AC ID; рядки `docs/conformance.md`
 
 Done when: AC-VENDOR-03, AC-VENDOR-04, AC-VENDOR-05, AC-VENDOR-08, AC-VENDOR-09, AC-VENDOR-10 працюють на прод-URL і мають тест логіки
 

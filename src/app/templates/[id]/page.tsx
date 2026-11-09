@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { APP_NAV } from "@/components/app/app-nav";
+import { navFor } from "@/components/app/app-nav";
+import { NotEnoughRights, RUNS_BACK } from "@/components/app/not-enough-rights";
 import { SignOutButton } from "@/components/app/sign-out-button";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AppShell, PageHeader } from "@/components/ui/page";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { groupBySection } from "@/lib/runs/domain";
-import { showUnpublishedNotice, TEMPLATE_MESSAGES } from "@/lib/templates/domain";
+import { showUnpublishedNotice, TEMPLATE_MESSAGES, templatesPageAccess } from "@/lib/templates/domain";
 import { currentUser } from "@/lib/templates/server";
 
 // Шаблон у поточній збереженій версії (AC-EDITOR-02): менеджер бачить версію без неопублікованих змін і без позначки;
@@ -15,6 +16,15 @@ import { currentUser } from "@/lib/templates/server";
 export default async function TemplatePage({ params }: PageProps<"/templates/[id]">) {
   const { id } = await params;
   const { supabase, role } = await currentUser();
+  // AC-VENDOR-08: вендор — «Not enough rights» і жодного шаблону (RLS бази шаблонів вендору теж не віддає).
+  if (templatesPageAccess(role).kind === "denied") {
+    return (
+      <AppShell nav={navFor(role)} actions={<SignOutButton />}>
+        <PageHeader title="Templates" />
+        <NotEnoughRights back={RUNS_BACK} />
+      </AppShell>
+    );
+  }
   const isAdmin = role === "admin";
 
   const { data: template } = await supabase
@@ -25,7 +35,7 @@ export default async function TemplatePage({ params }: PageProps<"/templates/[id
 
   if (!template) {
     return (
-      <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+      <AppShell nav={navFor(role)} actions={<SignOutButton />}>
         <Alert>
           <AlertTitle>{TEMPLATE_MESSAGES.templateNotFound}</AlertTitle>
         </Alert>
@@ -47,7 +57,7 @@ export default async function TemplatePage({ params }: PageProps<"/templates/[id
     .map((t) => ({ ...t, sectionName: t.section?.name ?? "" }));
 
   return (
-    <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+    <AppShell nav={navFor(role)} actions={<SignOutButton />}>
       <PageHeader
         title={template.name}
         description={template.current_version ? `Version ${template.current_version.number}` : "No saved version yet"}

@@ -1,7 +1,8 @@
 import { cn } from "cn";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { APP_NAV } from "@/components/app/app-nav";
+import { navFor } from "@/components/app/app-nav";
+import { NotEnoughRights, RUNS_BACK } from "@/components/app/not-enough-rights";
 import { SignOutButton } from "@/components/app/sign-out-button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import { NativeSelect } from "@/components/ui/native-select";
 import { AppShell, PageHeader } from "@/components/ui/page";
 import { assigneeOptions, CASE_NAME_MAX, messageFor } from "@/lib/runs/domain";
 import { createClient } from "@/lib/supabase/server";
-import { launchOption } from "@/lib/templates/domain";
+import { launchOption, type Role } from "@/lib/templates/domain";
 import { launchRun } from "../actions";
 
 // Запуск шаблону: шаблон → назва випадку → виконавець кожної задачі (AC-RUN-01, AC-RUN-03..11).
@@ -26,6 +27,19 @@ export default async function NewRunPage({ searchParams }: PageProps<"/runs/new"
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
   if (!claims) redirect("/login");
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", claims.sub).maybeSingle();
+  const role = (profile?.role ?? null) as Role | null;
+
+  // AC-VENDOR-09: вендор не запускає шаблони — «Not enough rights» без форми й шаблонів (рішення до відповіді PM,
+  // solomchaak/property-workflows-spec#47); запит напряму відхиляє функція бази launch_run.
+  if (role === "vendor") {
+    return (
+      <AppShell nav={navFor(role)} actions={<SignOutButton />}>
+        <PageHeader title="Launch a template" />
+        <NotEnoughRights back={RUNS_BACK} />
+      </AppShell>
+    );
+  }
 
   // Запускаємо лише збережену поточну версію (AC-EDITOR-06). Незбережений шаблон адміністратор бачить недоступним з
   // приміткою «Save the template to launch it», менеджерові RLS його не віддає (AC-EDITOR-10); запуск напряму
@@ -48,7 +62,7 @@ export default async function NewRunPage({ searchParams }: PageProps<"/runs/new"
   const others = assigneeOptions(users ?? [], claims.sub);
 
   return (
-    <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+    <AppShell nav={navFor(role)} actions={<SignOutButton />}>
       <PageHeader title="Launch a template" description="Pick a template, name the case and assign tasks." />
       <nav aria-label="Templates" className="flex flex-wrap gap-2">
         {(templates ?? []).map((t) => {

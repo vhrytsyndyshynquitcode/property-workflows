@@ -21,7 +21,7 @@ export const ERROR_MESSAGES = {
   case_name_too_long: MESSAGES.caseNameTooLong,
   not_allowed: MESSAGES.notAllowedToMark,
   template_not_found: "Pick a template",
-  invalid_assignee: "An assignee must be a manager or an administrator",
+  invalid_assignee: "An assignee must be a manager, an administrator or a vendor",
   failed: "Something went wrong. Try again.",
 } as const;
 export type ErrorCode = keyof typeof ERROR_MESSAGES;
@@ -202,6 +202,31 @@ export function runsListView(rowCount: number):
   return rowCount === 0
     ? { kind: "empty", message: NO_RUNS, actionLabel: "Launch a template", actionHref: "/runs/new" }
     : { kind: "table" };
+}
+
+// ── Зріз 3: вендор (openspec/specs/vendor-access) ─────────────────────────────────────────────────────────────
+// Що бачить вендор, вирішує RLS бази (міграція 20261109083715_vendor_access.sql); ці функції — для сторінок і тестів.
+
+/** AC-VENDOR-10: вендор без жодної задачі — дослівно з AC. */
+export const NO_VENDOR_TASKS = "No tasks assigned to you yet.";
+
+/** AC-VENDOR-03, AC-VENDOR-05: «Your tasks: N of K done» — лише задачі цього користувача в цьому запуску. */
+export function yourTasksLabel(tasks: readonly Pick<RunTask, "assigneeId" | "status">[], userId: string): string {
+  const own = tasks.filter((t) => t.assigneeId === userId);
+  return `Your tasks: ${own.filter((t) => t.status === "done").length} of ${own.length} done`;
+}
+
+/** AC-VENDOR-04: вендор бачить у запуску лише свої задачі (другий рубіж після RLS). */
+export function tasksVisibleTo<T extends Pick<RunTask, "assigneeId">>(actor: Actor, tasks: readonly T[]): T[] {
+  return actor.role === "vendor" ? tasks.filter((t) => t.assigneeId === actor.id) : [...tasks];
+}
+
+/** AC-VENDOR-10, AC-DSYS-04: порожній список запусків — для вендора без дії запуску (він не запускає шаблони). */
+export function runsListViewFor(role: Role | null | undefined, rowCount: number):
+  | ReturnType<typeof runsListView>
+  | { kind: "empty"; message: typeof NO_VENDOR_TASKS } {
+  if (role === "vendor") return rowCount === 0 ? { kind: "empty", message: NO_VENDOR_TASKS } : { kind: "table" };
+  return runsListView(rowCount);
 }
 
 /** Помилка функції бази (raise exception 'CASE_NAME_EMPTY' тощо) → код для searchParams. */

@@ -1,17 +1,28 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { APP_NAV } from "@/components/app/app-nav";
+import { navFor } from "@/components/app/app-nav";
 import { SignOutButton } from "@/components/app/sign-out-button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
 import { AppShell, PageHeader } from "@/components/ui/page";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { messageFor, RUN_STATUS_TONE, runListRows, runsListView, type RunStatus, type TaskStatus } from "@/lib/runs/domain";
+import {
+  messageFor,
+  RUN_STATUS_TONE,
+  runListRows,
+  runsListViewFor,
+  yourTasksLabel,
+  type RunStatus,
+  type TaskStatus,
+} from "@/lib/runs/domain";
+import type { Role } from "@/lib/templates/domain";
 import { createClient } from "@/lib/supabase/server";
 
 // Список запусків (AC-TASK-06, AC-TASK-09, AC-TASK-13, AC-TASK-14, AC-TASK-17, AC-DSYS-01, AC-DSYS-04). Які запуски
 // видно, вирішує RLS (private.can_see_run): менеджер — свої й ті, де він виконавець; адміністратор — усі.
+// Вендор (AC-VENDOR-03, AC-VENDOR-10): лише запуски, де він виконавець, — випадок, статус і «Your tasks: N of K done»
+// (RLS віддає вендору лише його задачі); без шаблону й без «Launch a template»; без задач — «No tasks assigned to you yet.».
 export default async function RunsPage({ searchParams }: PageProps<"/runs">) {
   const { error } = await searchParams;
   const message = messageFor(error);
@@ -19,10 +30,14 @@ export default async function RunsPage({ searchParams }: PageProps<"/runs">) {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   if (!data?.claims) redirect("/login");
+  const userId = data.claims.sub;
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
+  const role = (profile?.role ?? null) as Role | null;
+  const isVendor = role === "vendor";
 
   const { data: runs } = await supabase
     .from("runs")
-    .select("id, case_name, template_name, status, created_at, run_tasks(status)");
+    .select("id, case_name, template_name, status, created_at, run_tasks(status, assignee_id)");
 
   const rows = runListRows(
     (runs ?? []).map((r) => ({
@@ -34,15 +49,21 @@ export default async function RunsPage({ searchParams }: PageProps<"/runs">) {
       tasks: r.run_tasks.map((t) => ({ status: t.status as TaskStatus })),
     })),
   );
-  const view = runsListView(rows.length);
+  const yourTasks = new Map(
+    (runs ?? []).map((r) => [
+      r.id,
+      yourTasksLabel(r.run_tasks.map((t) => ({ assigneeId: t.assignee_id, status: t.status as TaskStatus })), userId),
+    ]),
+  );
+  const view = runsListViewFor(role, rows.length);
   const statusOf = new Map((runs ?? []).map((r) => [r.id, r.status as RunStatus]));
 
   return (
-    <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+    <AppShell nav={navFor(role)} actions={<SignOutButton />}>
       <PageHeader
         title="Runs"
         actions={
-          view.kind === "table" ? (
+          view.kind === "table" && !isVendor ? (
             <Link href="/runs/new" className={buttonVariants()}>
               Launch a template
             </Link>
@@ -60,8 +81,8 @@ export default async function RunsPage({ searchParams }: PageProps<"/runs">) {
             <TableRow>
               <TableHead>Case</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Progress</TableHead>
-              <TableHead className="hidden sm:table-cell">Template</TableHead>
+              <TableHead>{isVendor ? "Your tasks" : "Progress"}</TableHead>
+              {isVendor ? null : <TableHead className="hidden sm:table-cell">Template</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -71,15 +92,15 @@ export default async function RunsPage({ searchParams }: PageProps<"/runs">) {
                   <Link href={`/runs/${row.id}`} className="text-primary underline-offset-4 hover:underline">
                     {row.caseName}
                   </Link>
-                  <span className="block text-muted-foreground sm:hidden">{row.templateName}</span>
+                  {isVendor ? null : <span className="block text-muted-foreground sm:hidden">{row.templateName}</span>}
                 </TableCell>
                 <TableCell>
                   <StatusBadge tone={RUN_STATUS_TONE[statusOf.get(row.id) ?? "in_progress"]}>{row.status}</StatusBadge>
                 </TableCell>
                 <TableCell data-testid="run-progress" className="tabular-nums">
-                  {row.progress}
+                  {isVendor ? yourTasks.get(row.id) : row.progress}
                 </TableCell>
-                <TableCell className="hidden sm:table-cell">{row.templateName}</TableCell>
+                {isVendor ? null : <TableCell className="hidden sm:table-cell">{row.templateName}</TableCell>}
               </TableRow>
             ))}
           </TableBody>
@@ -87,9 +108,11 @@ export default async function RunsPage({ searchParams }: PageProps<"/runs">) {
       ) : (
         <div className="flex flex-col items-start gap-3 rounded-lg border border-border bg-card p-6">
           <p className="text-sm text-muted-foreground">{view.message}</p>
-          <Link href={view.actionHref} className={buttonVariants()}>
-            {view.actionLabel}
-          </Link>
+          {"actionHref" in view ? (
+            <Link href={view.actionHref} className={buttonVariants()}>
+              {view.actionLabel}
+            </Link>
+          ) : null}
         </div>
       )}
     </AppShell>

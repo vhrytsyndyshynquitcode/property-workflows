@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { APP_NAV } from "@/components/app/app-nav";
+import { navFor } from "@/components/app/app-nav";
+import { NotEnoughRights, RUNS_BACK } from "@/components/app/not-enough-rights";
 import { SignOutButton } from "@/components/app/sign-out-button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
 import { AppShell, PageHeader } from "@/components/ui/page";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { showUnpublishedNotice, TEMPLATE_MESSAGES, templateMessageFor, templatesEmptyState } from "@/lib/templates/domain";
+import { showUnpublishedNotice, TEMPLATE_MESSAGES, templateMessageFor, templatesEmptyState, templatesPageAccess } from "@/lib/templates/domain";
 import { currentUser } from "@/lib/templates/server";
 
 // Список шаблонів (AC-EDITOR-01, AC-EDITOR-02): admin бачить усі, з позначкою «Unpublished changes»; manager — лише
@@ -15,6 +16,15 @@ export default async function TemplatesPage({ searchParams }: PageProps<"/templa
   const { error } = await searchParams;
   const message = templateMessageFor(error);
   const { supabase, role } = await currentUser();
+  // AC-VENDOR-08: вендор — «Not enough rights» і жодного шаблону (RLS бази шаблонів вендору теж не віддає).
+  if (templatesPageAccess(role).kind === "denied") {
+    return (
+      <AppShell nav={navFor(role)} actions={<SignOutButton />}>
+        <PageHeader title="Templates" />
+        <NotEnoughRights back={RUNS_BACK} />
+      </AppShell>
+    );
+  }
   const isAdmin = role === "admin";
   const empty = templatesEmptyState(isAdmin ? "admin" : "manager");
 
@@ -24,7 +34,7 @@ export default async function TemplatesPage({ searchParams }: PageProps<"/templa
     .order("name");
 
   return (
-    <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+    <AppShell nav={navFor(role)} actions={<SignOutButton />}>
       <PageHeader
         title="Templates"
         actions={
