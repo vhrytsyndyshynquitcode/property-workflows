@@ -67,6 +67,8 @@ describe("template-editor oct27 (pages)", () => {
     for (const value of ["toString", "constructor", "__proto__", "", null, 1]) {
       expect(templateMessageFor(value)).toBeUndefined();
     }
+    // ?error=…&error=… дає масив: Object.hasOwn звів би ["name_empty"] до рядка "name_empty" — лише рядок дає текст.
+    expect(templateMessageFor(["name_empty"])).toBeUndefined();
   });
 
   it('AC-EDITOR-20: an empty section or task name shows "Every section and task needs a name"', () => {

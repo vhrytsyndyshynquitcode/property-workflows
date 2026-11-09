@@ -9,7 +9,7 @@
 //   що робить його еквівалентним (рядок міграції, інший тест). Без reason скрипт мутант не приймає.
 // Новий AC з відмовою, правило якого живе в SQL (політика, grant, функція, тригер), — новий мутант тут.
 //
-// Мутанти на правила моїх 3 AC WS8 (AC-EDITOR-07, AC-EDITOR-09, AC-EDITOR-19; docs/qa/proof-pack.md).
+// Мутанти на правила моїх 3 AC WS8 (AC-EDITOR-07, AC-EDITOR-09, AC-EDITOR-19; docs/qa/proof-pack-ws8.md).
 // P1/P2 з materials/ не беремо: гарнес бази в репо вже є (tests/db/supabase-pglite.ts), а tests/db/profiles-db.test.ts
 // з матеріалів немає. AC-EDITOR-07 — правило сторінки (adminPageAccess у src/lib/templates/domain.ts): його мутує
 // Stryker (npm run mutation:ts), а в базі менеджер версії читати може — без них він не запустить шаблон.
@@ -72,6 +72,18 @@ export const mutants = [
     what: "list_assignable_users: вендорів немає у виборі виконавця",
     find: "and p.role in ('manager', 'admin', 'vendor')",
     replace: "and p.role in ('manager', 'admin')",
+  },
+  {
+    id: "V01", kind: "sql", ac: "AC-VENDOR-01", file: VENDOR_SQL, tests: [VENDOR_DB],
+    what: "launch_run: вендора не можна призначити виконавцем",
+    find: "where p.id is null or p.role not in ('manager', 'admin', 'vendor')",
+    replace: "where p.id is null or p.role not in ('manager', 'admin')",
+  },
+  {
+    id: "V06", kind: "sql", ac: "AC-VENDOR-06", file: RUNS_SQL, tests: [VENDOR_DB],
+    what: "can_see_run: вендор бачить усі запуски, як адміністратор",
+    find: "select (select private.current_app_role()) = 'admin'",
+    replace: "select (select private.current_app_role()) in ('admin', 'vendor')",
   },
 ];
 

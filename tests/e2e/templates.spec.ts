@@ -1,4 +1,4 @@
-// UAT зрізу 2 (редактор шаблонів) на проді: 3 AC WS8 — AC-EDITOR-07, AC-EDITOR-09, AC-EDITOR-19 (docs/qa/proof-pack.md).
+// UAT зрізу 2 (редактор шаблонів) на проді: 3 AC WS8 — AC-EDITOR-07, AC-EDITOR-09, AC-EDITOR-19 (docs/qa/proof-pack-ws8.md).
 // Усі три лише читають: відмови й помилка порожньої назви, яку дія відхиляє ще до запису в базу.
 // Тексти «Тоді» — дослівно з вимоги PM (requirements/ → openspec/specs/template-editor/spec.md).
 import { expect, test, type Page } from "@playwright/test";
