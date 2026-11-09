@@ -132,6 +132,20 @@ describe("vendor-access (db)", () => {
     expect(await runCount()).toBe(before);
   });
 
+  it("AC-VENDOR-05: vendor V's required task 4 asks for confirmation only when it is the last required task of the run", async () => {
+    const isLast = async (user: string, taskId: string) =>
+      (await t.asUser<{ last: boolean }>(user, "select public.is_last_required_task($1) as last", [taskId]))[0].last;
+    const [task1, task2, , task4] = await tasksOf(RUN_12);
+    // Обов'язкові задачі 1 і 2 менеджера A ще «to do»: для вендора задача 4 — не остання, підтвердження немає.
+    expect(await isLast(VENDOR, task4.id)).toBe(false);
+    await t.asUser(MANAGER_A, "select public.mark_task_done($1)", [task1.id]);
+    await t.asUser(MANAGER_A, "select public.mark_task_done($1)", [task2.id]);
+    expect(await isLast(VENDOR, task4.id)).toBe(true);
+    // Хто задачу позначити не може, відповіді не отримує (лише «ні»).
+    expect(await isLast(MANAGER_B, task4.id)).toBe(false);
+    expect(await isLast(VENDOR, task1.id)).toBe(false);
+  });
+
   it("a vendor cannot make themselves a manager or an administrator", async () => {
     await expect(
       t.asUser(VENDOR, "update public.profiles set role = 'admin' where id = $1", [VENDOR]),

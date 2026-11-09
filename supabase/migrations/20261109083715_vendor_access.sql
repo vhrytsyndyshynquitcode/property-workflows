@@ -139,3 +139,46 @@ create policy version_tasks_select on public.version_tasks for select to authent
       and (private.is_current_version(version_id) or private.is_version_of_visible_run(version_id))
     )
   );
+
+-- ── 6. Підтвердження останньої обов'язкової задачі й для вендора (припущення PM; AC-TASK-04, AC-VENDOR-05) ───────
+-- Вендор бачить лише свої задачі, тож «остання обов'язкова задача запуску» сторінка порахувати не може: рахує база.
+-- Відповідь — лише так / ні і лише тому, хто може позначити цю задачу (адміністратор, виконавець, менеджер запуску);
+-- інші задачі запуску вендору не розкриваються.
+create or replace function private.is_last_required_task(p_task_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select coalesce((
+    select t.is_required
+      and t.status = 'to_do'
+      and not exists (
+        select 1 from public.run_tasks o
+        where o.run_id = t.run_id and o.id <> t.id and o.is_required and o.status <> 'done'
+      )
+    from public.run_tasks t
+    join public.runs r on r.id = t.run_id
+    where t.id = p_task_id
+      and (
+        (select private.current_app_role()) = 'admin'
+        or t.assignee_id = (select auth.uid())
+        or r.run_manager_id = (select auth.uid())
+      )
+  ), false);
+$$;
+revoke execute on function private.is_last_required_task(uuid) from public, anon;
+grant execute on function private.is_last_required_task(uuid) to authenticated;
+
+create or replace function public.is_last_required_task(p_task_id uuid)
+returns boolean
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  select private.is_last_required_task(p_task_id);
+$$;
+revoke execute on function public.is_last_required_task(uuid) from public, anon;
+grant execute on function public.is_last_required_task(uuid) to authenticated;
