@@ -65,6 +65,9 @@ Proof pack WS8 (3 AC зрізу 2) — docs/qa/proof-pack-ws8.md. Посилан
 - Негативний контроль (`npm run uat:nc`, 09.11.2026): NC-1 (навмисно хибний текст у твердженні) → **FAIL** (R1); NC-2 («уточнений» `ac-text`) → **NEEDS-HUMAN** (R3).
 - Дані: `@writes` — синтетичні `uat-<прогін>-manager`, `-vendor`, `-idle-vendor@example.test`, запуски «Apartment 12, move-in» і «Apartment 14, repair» створює синтетичний менеджер; прибирання — видалено 3, лишилось 0, рядків, що лишились, — 0 (рядок «Прибирання» звіту).
 
-## D. Ретро
+## D. Прод, акаунти, ретро
+
+- Акаунти для PM (D0.5): нова роль зрізу 3 — `pm-vendor@example.test` (vendor), створено на проді `npm run users:demo` 09.11.2026; адміністратор — `pm-admin@example.test`, менеджер — `pm-manager@example.test`. Паролі — лише в `accounts.zip` (AES-256, пароль курсу).
+- Ретро:
 
 [`docs/qa/retro-ws9.md`](retro-ws9.md)

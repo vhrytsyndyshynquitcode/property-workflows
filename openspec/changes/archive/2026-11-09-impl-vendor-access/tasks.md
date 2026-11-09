@@ -17,8 +17,8 @@ Done when: AC-VENDOR-03, AC-VENDOR-04, AC-VENDOR-05, AC-VENDOR-08, AC-VENDOR-09,
 
 ## 3. Акаунт вендора, UAT і proof pack
 
-- [ ] 3.1 `pm-vendor@example.test` у `supabase/demo-users.json`; `npm run users:demo`; оновлений `accounts.zip`
+- [x] 3.1 `pm-vendor@example.test` у `supabase/demo-users.json`; `npm run users:demo`; оновлений `accounts.zip`
 - [x] 3.2 Специфікації Playwright на кожен AC-VENDOR (`tests/e2e/vendor.spec.ts`), прогін на проді, звіт і негативний контроль
-- [ ] 3.3 `docs/qa/proof-pack.md` на кожен AC зрізу 3; archive `impl-vendor-access`
+- [x] 3.3 `docs/qa/proof-pack.md` на кожен AC зрізу 3; archive `impl-vendor-access`
 
 Done when: AC-VENDOR-01 … AC-VENDOR-10 мають UAT-запис на проді й рядок proof pack
