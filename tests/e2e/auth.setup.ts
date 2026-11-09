@@ -37,6 +37,8 @@ const UAT_USERS = { "uat-manager": "manager", "uat-vendor": "vendor", "uat-idle-
 
 if (hasAdminKey()) {
   setup("вхід: синтетичні менеджер і вендори зрізу 3", async ({ browser }) => {
+    // Три користувачі й три входи підряд: на повільному проді (до 25 с на вхід) 60 с не вистачало.
+    setup.setTimeout(180_000);
     const emails: Record<string, string> = {};
     for (const [key, role] of Object.entries(UAT_USERS)) {
       const user = await createUatUser(key.replace(/^uat-/, ""), role);
