@@ -2,7 +2,7 @@
 // функції: хто що бачить, тексти дослівно з AC PM, формат дати версії. Права даних перевіряє база
 // (міграція 20261026084454_template_versions.sql): ці функції — для сторінок, дій і тестів з AC ID.
 
-export type Role = "manager" | "admin";
+export type Role = "manager" | "admin" | "vendor";
 
 export const TEMPLATE_MESSAGES = {
   notEnoughRights: "Not enough rights",
@@ -46,6 +46,15 @@ export function adminPageAccess(role: Role | null | undefined): AdminPageAccess 
     };
   }
   return { kind: "allowed" };
+}
+
+/**
+ * AC-VENDOR-08: список і сторінка шаблону. Без входу — сторінка входу; вендор — «Not enough rights» і жодного шаблону
+ * (RLS бази вендору шаблонів теж не віддає); менеджер і адміністратор — дозволено.
+ */
+export function templatesPageAccess(role: Role | null | undefined): AdminPageAccess {
+  if (!role) return { kind: "login" };
+  return role === "vendor" ? adminPageAccess(role) : { kind: "allowed" };
 }
 
 /** AC-EDITOR-01, AC-EDITOR-02: позначка «Unpublished changes» — лише адміністратору. */

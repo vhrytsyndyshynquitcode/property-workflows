@@ -1,5 +1,5 @@
-import { APP_NAV } from "@/components/app/app-nav";
-import { NotEnoughRights } from "@/components/app/not-enough-rights";
+import { navFor } from "@/components/app/app-nav";
+import { NotEnoughRights, RUNS_BACK } from "@/components/app/not-enough-rights";
 import { SignOutButton } from "@/components/app/sign-out-button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -21,10 +21,10 @@ export default async function NewTemplatePage({ searchParams }: PageProps<"/temp
   const access = adminPageAccess(role);
 
   return (
-    <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+    <AppShell nav={navFor(role)} actions={<SignOutButton />}>
       <PageHeader title="New template" />
       {access.kind !== "allowed" ? (
-        <NotEnoughRights />
+        <NotEnoughRights back={role === "vendor" ? RUNS_BACK : undefined} />
       ) : (
         <Card>
           <CardContent>

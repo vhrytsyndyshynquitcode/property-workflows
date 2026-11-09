@@ -1,5 +1,5 @@
-import { APP_NAV } from "@/components/app/app-nav";
-import { NotEnoughRights } from "@/components/app/not-enough-rights";
+import { navFor } from "@/components/app/app-nav";
+import { NotEnoughRights, RUNS_BACK } from "@/components/app/not-enough-rights";
 import { SignOutButton } from "@/components/app/sign-out-button";
 import { AppShell, PageHeader } from "@/components/ui/page";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -15,9 +15,9 @@ export default async function VersionsPage({ params }: PageProps<"/templates/[id
 
   if (access.kind !== "allowed") {
     return (
-      <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+      <AppShell nav={navFor(role)} actions={<SignOutButton />}>
         <PageHeader title="Versions" />
-        <NotEnoughRights />
+        <NotEnoughRights back={role === "vendor" ? RUNS_BACK : undefined} />
       </AppShell>
     );
   }
@@ -34,7 +34,7 @@ export default async function VersionsPage({ params }: PageProps<"/templates/[id
   );
 
   return (
-    <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+    <AppShell nav={navFor(role)} actions={<SignOutButton />}>
       <PageHeader title="Versions" description={template?.name} />
       {rows.length > 0 ? (
         <Table>

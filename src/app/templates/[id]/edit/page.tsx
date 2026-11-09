@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { APP_NAV } from "@/components/app/app-nav";
-import { NotEnoughRights } from "@/components/app/not-enough-rights";
+import { navFor } from "@/components/app/app-nav";
+import { NotEnoughRights, RUNS_BACK } from "@/components/app/not-enough-rights";
 import { SignOutButton } from "@/components/app/sign-out-button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -46,9 +46,9 @@ export default async function EditTemplatePage({ params, searchParams }: PagePro
 
   if (access.kind !== "allowed") {
     return (
-      <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+      <AppShell nav={navFor(role)} actions={<SignOutButton />}>
         <PageHeader title="Edit template" />
-        <NotEnoughRights />
+        <NotEnoughRights back={role === "vendor" ? RUNS_BACK : undefined} />
       </AppShell>
     );
   }
@@ -60,7 +60,7 @@ export default async function EditTemplatePage({ params, searchParams }: PagePro
     .maybeSingle();
   if (!template) {
     return (
-      <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+      <AppShell nav={navFor(role)} actions={<SignOutButton />}>
         <PageHeader title="Edit template" />
         <Alert>
           <AlertTitle>{TEMPLATE_MESSAGES.templateNotFound}</AlertTitle>
@@ -77,7 +77,7 @@ export default async function EditTemplatePage({ params, searchParams }: PagePro
   const savedNumber = typeof saved === "string" ? Number(saved) : NaN;
 
   return (
-    <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+    <AppShell nav={navFor(role)} actions={<SignOutButton />}>
       <PageHeader
         title={template.name}
         description="Changes are kept automatically. Save to publish them as a new version."

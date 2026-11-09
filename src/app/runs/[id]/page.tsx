@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { APP_NAV } from "@/components/app/app-nav";
+import { navFor } from "@/components/app/app-nav";
 import { SignOutButton } from "@/components/app/sign-out-button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -20,6 +20,8 @@ import {
   RUN_STATUS_TONE,
   TASK_STATUS_LABEL,
   TASK_STATUS_TONE,
+  tasksVisibleTo,
+  yourTasksLabel,
   type RunStatus,
   type TaskStatus,
 } from "@/lib/runs/domain";
@@ -38,6 +40,11 @@ export default async function RunPage({ params, searchParams }: PageProps<"/runs
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
   if (!claims) redirect("/login");
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", claims.sub).maybeSingle();
+  const actor = { id: claims.sub, role: (profile?.role ?? "manager") as Role };
+  // AC-VENDOR-04: вендор бачить лише свої задачі — назву, розділ, «required»/«optional», статус і «Your tasks: N of K
+  // done»; без шаблону, версії, менеджера запуску, email, статусу й прогресу всього запуску (RLS віддає лише його задачі).
+  const isVendor = actor.role === "vendor";
 
   const { data: run } = await supabase
     .from("runs")
@@ -47,7 +54,7 @@ export default async function RunPage({ params, searchParams }: PageProps<"/runs
 
   if (!run) {
     return (
-      <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+      <AppShell nav={navFor(actor.role)} actions={<SignOutButton />}>
         <Alert>
           <AlertTitle>{RUN_NOT_FOUND}</AlertTitle>
         </Alert>
@@ -58,22 +65,28 @@ export default async function RunPage({ params, searchParams }: PageProps<"/runs
     );
   }
 
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", claims.sub).maybeSingle();
-  const actor = { id: claims.sub, role: (profile?.role ?? "manager") as Role };
-  const { data: users } = await supabase.rpc("list_assignable_users");
+  const { data: users } = isVendor ? { data: [] } : await supabase.rpc("list_assignable_users");
 
-  const tasks = [...run.run_tasks]
-    .sort((a, b) => a.position - b.position)
-    .map((t) => ({ ...t, sectionName: t.section_name, status: t.status as TaskStatus }));
+  const tasks = tasksVisibleTo(
+    actor,
+    [...run.run_tasks]
+      .sort((a, b) => a.position - b.position)
+      .map((t) => ({ ...t, assigneeId: t.assignee_id, sectionName: t.section_name, status: t.status as TaskStatus })),
+  );
   const confirmTask = typeof confirm === "string" ? tasks.find((t) => t.id === confirm && t.status === "to_do") : undefined;
   const runStatus = run.status as RunStatus;
 
   return (
-    <AppShell nav={APP_NAV} actions={<SignOutButton />}>
+    <AppShell nav={navFor(actor.role)} actions={<SignOutButton />}>
       <PageHeader
         title={run.case_name}
-        description={`${run.template_name}${run.template_version ? ` · ${templateVersionLabel(run.template_version.number)}` : ""} · run manager: ${assigneeLabel(users ?? [], run.run_manager_id)}`}
+        description={isVendor ? undefined : `${run.template_name}${run.template_version ? ` · ${templateVersionLabel(run.template_version.number)}` : ""} · run manager: ${assigneeLabel(users ?? [], run.run_manager_id)}`}
       />
+      {isVendor ? (
+        <p data-testid="your-tasks" className="text-sm tabular-nums">
+          {yourTasksLabel(tasks, actor.id)}
+        </p>
+      ) : (
       <dl className="grid grid-cols-[max-content_1fr] items-center gap-x-4 gap-y-2 text-sm">
         <dt className="text-muted-foreground">Status</dt>
         <dd data-testid="run-status">
@@ -84,6 +97,7 @@ export default async function RunPage({ params, searchParams }: PageProps<"/runs
           {progressLabel(tasks)}
         </dd>
       </dl>
+      )}
       {confirmTask ? (
         <Alert role="alertdialog" aria-labelledby="confirm-title">
           <AlertTitle id="confirm-title">{confirmTask.name}</AlertTitle>
@@ -114,7 +128,11 @@ export default async function RunPage({ params, searchParams }: PageProps<"/runs
                 <li key={task.id} className="flex flex-wrap items-center justify-between gap-3 py-2 text-sm" data-testid="task-row">
                   <div className="flex flex-col">
                     <span>{task.name}</span>
-                    <span className="text-muted-foreground">{assigneeLabel(users ?? [], task.assignee_id)}</span>
+                    {isVendor ? (
+                      <span className="text-muted-foreground">{task.sectionName}</span>
+                    ) : (
+                      <span className="text-muted-foreground">{assigneeLabel(users ?? [], task.assignee_id)}</span>
+                    )}
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-muted-foreground">{requiredLabel(task.is_required)}</span>
