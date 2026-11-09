@@ -73,6 +73,18 @@ export const mutants = [
     find: "and p.role in ('manager', 'admin', 'vendor')",
     replace: "and p.role in ('manager', 'admin')",
   },
+  {
+    id: "V01", kind: "sql", ac: "AC-VENDOR-01", file: VENDOR_SQL, tests: [VENDOR_DB],
+    what: "launch_run: вендора не можна призначити виконавцем",
+    find: "where p.id is null or p.role not in ('manager', 'admin', 'vendor')",
+    replace: "where p.id is null or p.role not in ('manager', 'admin')",
+  },
+  {
+    id: "V06", kind: "sql", ac: "AC-VENDOR-06", file: RUNS_SQL, tests: [VENDOR_DB],
+    what: "can_see_run: вендор бачить усі запуски, як адміністратор",
+    find: "select (select private.current_app_role()) = 'admin'",
+    replace: "select (select private.current_app_role()) in ('admin', 'vendor')",
+  },
 ];
 
 // Приклади з демо (інша схема — у вашому репо цих файлів немає, тож не розкоментовуйте як є):

@@ -12,7 +12,8 @@ let MANAGER_B: string;
 let VENDOR: string;
 /** id задач версії «Tenant move-in» у порядку запуску (позиції 1–5). */
 let VERSION_TASKS: string[];
-/** «Apartment 12, move-in»: задачі 3 і 4 — вендору V; «Apartment 14, repair»: жодної задачі V. */
+/** «Apartment 12, move-in» (запускає тест AC-VENDOR-01; на ньому стоять наступні): задачі 3 і 4 — вендору V;
+ * «Apartment 14, repair»: жодної задачі V. */
 let RUN_12: string;
 let RUN_14: string;
 
@@ -47,15 +48,15 @@ beforeAll(async () => {
       [TEMPLATE],
     )
   ).map((r) => r.id);
-  RUN_12 = await launch(MANAGER_A, "Apartment 12, move-in", {
-    [VERSION_TASKS[2]]: VENDOR,
-    [VERSION_TASKS[3]]: VENDOR,
-  });
   RUN_14 = await launch(MANAGER_A, "Apartment 14, repair");
 }, 60_000);
 
 describe("vendor-access (db)", () => {
   it("AC-VENDOR-01: manager A assigns vendor V to tasks 3 and 4 — tasks 3 and 4 have V, tasks 1, 2 and 5 have A", async () => {
+    RUN_12 = await launch(MANAGER_A, "Apartment 12, move-in", {
+      [VERSION_TASKS[2]]: VENDOR,
+      [VERSION_TASKS[3]]: VENDOR,
+    });
     const tasks = await tasksOf(RUN_12);
     expect(tasks.map((x) => x.assignee_id)).toEqual([MANAGER_A, MANAGER_A, VENDOR, VENDOR, MANAGER_A]);
   });
