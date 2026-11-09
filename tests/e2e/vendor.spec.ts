@@ -4,7 +4,7 @@
 // (користувачі разом із запусками й задачами, OWNED_ROWS у support/admin.ts). Тому всі тести — @writes.
 // Послідовно: AC-VENDOR-01 створює «Apartment 12, move-in», на ньому стоять AC-VENDOR-03 … AC-VENDOR-07, AC-VENDOR-09.
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { rpcAs, uatUsers } from "./support/direct";
+import { freshState, rpcAs, uatUsers } from "./support/direct";
 import { attachRuntimeErrors, given, thenStep, when } from "./support/uat";
 
 test.describe.configure({ mode: "serial" });
@@ -43,6 +43,17 @@ async function launchAs(page: Page, caseName: string, assignments: Record<string
   await page.getByRole("button", { name: "Launch" }).click();
   await page.waitForURL(/\/runs\/[0-9a-f-]{36}$/);
   return page.url();
+}
+
+/**
+ * Запуски, на яких стоять AC-VENDOR-03 … AC-VENDOR-09: створює AC-VENDOR-01 (і «Apartment 14, repair» — AC-VENDOR-03),
+ * а при окремому прогоні (--grep AC-VENDOR-04) — цей помічник: менеджер A запускає їх у власному контексті.
+ */
+async function ensureRuns(browser: Browser) {
+  if (run12Url && run14Url) return;
+  const manager = await pageAs(browser, "manager");
+  if (!run12Url) run12Url = await launchAs(manager, RUN_12, { [TASKS[2]]: users["uat-vendor"], [TASKS[3]]: users["uat-vendor"] });
+  if (!run14Url) run14Url = await launchAs(manager, RUN_14);
 }
 
 test.beforeAll(() => {
@@ -130,9 +141,8 @@ test.describe("вендор V", () => {
     `AC-VENDOR-03: vendor V opens the list of runs — only "${RUN_12}" with its run status and "Your tasks: 0 of 2 done"`,
     { tag: ["@uat", "@writes"], annotation: { type: "ac", description: "AC-VENDOR-03" } },
     async ({ page, browser }) => {
-      const manager = await pageAs(browser, "manager");
       await given(`vendor V who is the assignee of 2 tasks in the run "${RUN_12}" and of no task in the run "${RUN_14}"`, async () => {
-        run14Url = await launchAs(manager, RUN_14);
+        await ensureRuns(browser);
       });
       await when("V opens the list of runs", async () => {
         await page.goto("/runs");
@@ -159,8 +169,10 @@ test.describe("вендор V", () => {
   test(
     `AC-VENDOR-04: vendor V opens the run "${RUN_12}" — exactly tasks 3 and 4, no other tasks, emails or progress of the run`,
     { tag: ["@uat", "@writes"], annotation: { type: "ac", description: "AC-VENDOR-04" } },
-    async ({ page }) => {
-      await given(`vendor V who is the assignee of tasks 3 and 4 in the run "${RUN_12}" (5 tasks)`, async () => {});
+    async ({ page, browser }) => {
+      await given(`vendor V who is the assignee of tasks 3 and 4 in the run "${RUN_12}" (5 tasks)`, async () => {
+        await ensureRuns(browser);
+      });
       await when("V opens this run", async () => {
         await page.goto(run12Url);
       });
@@ -199,8 +211,9 @@ test.describe("вендор V", () => {
   test(
     'AC-VENDOR-05: vendor V marks task 3 as done — task 3 has status "done", and V sees "Your tasks: 1 of 2 done"',
     { tag: ["@uat", "@writes"], annotation: { type: "ac", description: "AC-VENDOR-05" } },
-    async ({ page }) => {
+    async ({ page, browser }) => {
       await given(`vendor V who is the assignee of task 3 with status "to do", which is not the last required task of the run "${RUN_12}"`, async () => {
+        await ensureRuns(browser);
         await page.goto(run12Url);
         await expect(taskRow(page, TASKS[2]).getByTestId("task-status")).toHaveText("to do");
       });
@@ -226,8 +239,10 @@ test.describe("вендор V", () => {
   test(
     `AC-VENDOR-06: vendor V opens the run "${RUN_14}" by a direct link — "Run not found" and none of its tasks`,
     { tag: ["@uat", "@writes"], annotation: { type: "ac", description: "AC-VENDOR-06" } },
-    async ({ page }) => {
-      await given(`the run "${RUN_14}" in which vendor V has no task`, async () => {});
+    async ({ page, browser }) => {
+      await given(`the run "${RUN_14}" in which vendor V has no task`, async () => {
+        await ensureRuns(browser);
+      });
       await when("V opens the page of this run by a direct link", async () => {
         await page.goto(run14Url);
       });
@@ -278,15 +293,16 @@ test.describe("вендор V", () => {
   test(
     "AC-VENDOR-09: vendor V launches the template directly, bypassing the pages — no run is created and the list of runs does not change",
     { tag: ["@uat", "@writes"], annotation: { type: "ac", description: "AC-VENDOR-09" } },
-    async ({ page }) => {
+    async ({ page, browser }) => {
       let before: string[] = [];
       let response = { status: 0, body: "" };
       await given('vendor V signed in and the template "Tenant move-in" with current version 1', async () => {
+        await ensureRuns(browser);
         await page.goto("/runs");
         before = await page.getByTestId("run-row").evaluateAll((rows) => rows.map((r) => r.textContent ?? ""));
       });
       await when("V tries to launch this template directly, bypassing the pages of the application", async () => {
-        response = await rpcAs(STATE.vendor, "launch_run", {
+        response = await rpcAs(await freshState(browser, STATE.vendor), "launch_run", {
           p_template_id: TENANT_MOVE_IN,
           p_case_name: "Apartment 20, move-in",
           p_assignments: {},
@@ -318,15 +334,16 @@ test.describe("менеджер A після запиту вендора нап�
   test(
     'AC-VENDOR-07: vendor V marks task 1 of manager A directly, bypassing the pages — task 1 stays "to do"',
     { tag: ["@uat", "@writes"], annotation: { type: "ac", description: "AC-VENDOR-07" } },
-    async ({ page: manager }) => {
+    async ({ page: manager, browser }) => {
       let task1 = "";
       let response = { status: 0, body: "" };
       await given(`the run "${RUN_12}" in which task 1 is assigned to manager A and tasks 3 and 4 to vendor V`, async () => {
+        await ensureRuns(browser);
         await manager.goto(run12Url);
         task1 = await taskRow(manager, TASKS[0]).locator('input[name="taskId"]').first().inputValue();
       });
       await when("V tries to mark task 1 as done directly, bypassing the pages of the application", async () => {
-        response = await rpcAs(STATE.vendor, "mark_task_done", { p_task_id: task1 });
+        response = await rpcAs(await freshState(browser, STATE.vendor), "mark_task_done", { p_task_id: task1 });
       });
       await thenStep(
         manager,

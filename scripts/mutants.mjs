@@ -9,7 +9,7 @@
 //   що робить його еквівалентним (рядок міграції, інший тест). Без reason скрипт мутант не приймає.
 // Новий AC з відмовою, правило якого живе в SQL (політика, grant, функція, тригер), — новий мутант тут.
 //
-// Мутанти на правила моїх 3 AC WS8 (AC-EDITOR-07, AC-EDITOR-09, AC-EDITOR-19; docs/qa/proof-pack.md).
+// Мутанти на правила моїх 3 AC WS8 (AC-EDITOR-07, AC-EDITOR-09, AC-EDITOR-19; docs/qa/proof-pack-ws8.md).
 // P1/P2 з materials/ не беремо: гарнес бази в репо вже є (tests/db/supabase-pglite.ts), а tests/db/profiles-db.test.ts
 // з матеріалів немає. AC-EDITOR-07 — правило сторінки (adminPageAccess у src/lib/templates/domain.ts): його мутує
 // Stryker (npm run mutation:ts), а в базі менеджер версії читати може — без них він не запустить шаблон.

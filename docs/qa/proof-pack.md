@@ -1,5 +1,7 @@
 # QA proof pack: зріз 3 — вендор і права доступу
 
+> Докази WS8 (3 AC зрізу 2: AC-EDITOR-07, AC-EDITOR-09, AC-EDITOR-19) — у [`proof-pack-ws8.md`](proof-pack-ws8.md).
+
 <!--
 Шаблон з koldovsky/2026-quitcode-09-software-factory-hw/materials/templates/proof-pack.template.md.
 Proof pack WS8 (3 AC зрізу 2) — docs/qa/proof-pack-ws8.md. Посилання на файли — blob/main; у файлі здачі — на SHA.

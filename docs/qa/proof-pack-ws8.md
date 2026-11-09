@@ -86,7 +86,7 @@
 
 - Stryker (`npm run mutation:ts -- --mutate src/lib/templates/domain.ts`): **87,59 %** (120 убито, 14 вижило, 3 без
   покриття) і до, і після. На рядках моїх AC (`adminPageAccess`, рядки 38–49; `templateMessageFor`, рядок 108) — 21
-  убитий, 1 вижилий, і він еквівалентний (нижче). Решта вижилих — поза моїми AC: `reorderAfterMove` (рядки 144, 147;
+  убитий, 1 вижилий (нижче: помилково названий еквівалентним, убитий у WS9). Решта вижилих — поза моїми AC: `reorderAfterMove` (рядки 144, 147;
   AC-EDITOR-01), `removalTarget` (133), `formatVersionDate` (67), `templateErrorCodeForDb` (102).
 - Вижилих на рядках AC Stryker не дав, тому доказ — ручні мутанти T19 і E19 з «до» (вижив) і «після» (убитий).
 - SQL-мутації (`npm run mutation:sql`, PGlite-гарнес `tests/db/supabase-pglite.ts`):
@@ -96,9 +96,11 @@
   | E09 | AC-EDITOR-09 | KILLED (впали AC-EDITOR-08 і AC-EDITOR-09 у `template-versions.test.ts`) |
   | E19 | AC-EDITOR-19 | KILLED |
 
-- Еквівалентні мутанти: `src/lib/templates/domain.ts:108`, `typeof code === "string"` → `true`. `Object.hasOwn`
-  зводить ключ до рядка (`null` → `"null"`, `1` → `"1"`), а серед ключів `MESSAGES_BY_CODE` таких немає, тож
-  нерядкове значення однаково не дає повідомлення. Перевірка `typeof` лишається для типів TypeScript.
+- ~~Еквівалентні мутанти: `src/lib/templates/domain.ts:108`, `typeof code === "string"` → `true`.~~ **Виправлено у WS9
+  (знахідка CodeRabbit у PR #47):** мутант НЕ еквівалентний. `Object.hasOwn` зводить ключ до рядка, тож масив
+  `["name_empty"]` став би ключем `"name_empty"` і дав би повідомлення, а оригінал повертає `undefined`. Тест
+  посилено (`tests/templates/editor-oct27.test.ts`, AC-EDITOR-19: `templateMessageFor(["name_empty"])` → `undefined`);
+  мутант убитий — вивід Stryker у PR #47. Еквівалентних мутантів на рядках моїх AC немає.
 
 ## C. UAT на проді
 
