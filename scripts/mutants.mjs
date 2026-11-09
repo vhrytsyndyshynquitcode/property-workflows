@@ -17,6 +17,9 @@ const VERSIONS_SQL = "supabase/migrations/20261026084454_template_versions.sql";
 const RUNS_SQL = "supabase/migrations/20261020073540_workflow_runs.sql";
 const VERSIONS_DB = "tests/db/template-versions.test.ts";
 const EDITOR_DB = "tests/db/template-editor-oct27.test.ts";
+// Зріз 3 (WS9): роль вендора — міграція 20261109083715_vendor_access.sql і mark_task_done зрізу 1.
+const VENDOR_SQL = "supabase/migrations/20261109083715_vendor_access.sql";
+const VENDOR_DB = "tests/db/vendor-access.test.ts";
 
 export const mutants = [
   {
@@ -39,6 +42,36 @@ export const mutants = [
     what: "createTemplate: перевірка порожньої назви прибрана — назва йде в базу",
     find: 'if (!name) redirect("/templates/new?error=name_empty");',
     replace: 'if (name === null) redirect("/templates/new?error=name_empty");',
+  },
+  {
+    id: "V04", kind: "sql", ac: "AC-VENDOR-04", file: VENDOR_SQL, tests: [VENDOR_DB],
+    what: "run_tasks: вендор бачить усі задачі запуску, а не лише свої",
+    find: "    and ((select private.current_app_role()) <> 'vendor' or assignee_id = (select auth.uid()))\n",
+    replace: "",
+  },
+  {
+    id: "V08", kind: "sql", ac: "AC-VENDOR-08", file: VENDOR_SQL, tests: [VENDOR_DB],
+    what: "templates: шаблон з поточною версією бачить будь-хто з входом, зокрема вендор",
+    find: "or ((select private.current_app_role()) = 'manager' and current_version_id is not null)",
+    replace: "or current_version_id is not null",
+  },
+  {
+    id: "V09", kind: "sql", ac: "AC-VENDOR-09", file: VENDOR_SQL, tests: [VENDOR_DB],
+    what: "launch_run: запускати шаблон може й вендор",
+    find: "v_role not in ('manager', 'admin') then",
+    replace: "v_role not in ('manager', 'admin', 'vendor') then",
+  },
+  {
+    id: "V07", kind: "sql", ac: "AC-VENDOR-07", file: RUNS_SQL, tests: [VENDOR_DB],
+    what: "mark_task_done: вендор позначає будь-яку задачу запуску, де він виконавець хоча б однієї",
+    find: "v_role = 'admin' or v_task.assignee_id = v_uid or v_run.run_manager_id = v_uid",
+    replace: "v_role in ('admin', 'vendor') or v_task.assignee_id = v_uid or v_run.run_manager_id = v_uid",
+  },
+  {
+    id: "V02", kind: "sql", ac: "AC-VENDOR-02", file: VENDOR_SQL, tests: [VENDOR_DB],
+    what: "list_assignable_users: вендорів немає у виборі виконавця",
+    find: "and p.role in ('manager', 'admin', 'vendor')",
+    replace: "and p.role in ('manager', 'admin')",
   },
 ];
 

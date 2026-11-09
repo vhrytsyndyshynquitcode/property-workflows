@@ -1,8 +1,8 @@
 ## 1. Роль вендора в базі: міграція, RLS, функції, тести бази
 
-- [ ] 1.1 Міграція `vendor_access`: `profiles_role_check` з `vendor` (порядок з AGENTS.md), `list_assignable_users` з вендорами, `launch_run` приймає вендора як виконавця
-- [ ] 1.2 RLS: `run_tasks` — вендор бачить лише свої задачі; `templates` і версії — вендор не бачить нічого
-- [ ] 1.3 Тести бази на PGlite з AC ID (відмова + незмінні дані) і SQL-мутанти на відмови (`npm run mutation:sql` → KILLED)
+- [x] 1.1 Міграція `vendor_access`: `profiles_role_check` з `vendor` (порядок з AGENTS.md), `list_assignable_users` з вендорами, `launch_run` приймає вендора як виконавця
+- [x] 1.2 RLS: `run_tasks` — вендор бачить лише свої задачі; `templates` і версії — вендор не бачить нічого
+- [x] 1.3 Тести бази на PGlite з AC ID (відмова + незмінні дані) і SQL-мутанти на відмови (`npm run mutation:sql` → KILLED)
 
 Done when: AC-VENDOR-01, AC-VENDOR-02, AC-VENDOR-03, AC-VENDOR-04, AC-VENDOR-06, AC-VENDOR-07, AC-VENDOR-08, AC-VENDOR-09 мають тест бази; міграція пройшла `db-check` і `db-deploy`
 
