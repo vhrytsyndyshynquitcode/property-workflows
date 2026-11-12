@@ -4,7 +4,7 @@
 // (користувачі разом із запусками й задачами, OWNED_ROWS у support/admin.ts). Тому всі тести — @writes.
 // Послідовно: AC-VENDOR-01 створює «Apartment 12, move-in», на ньому стоять AC-VENDOR-03 … AC-VENDOR-07, AC-VENDOR-09.
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { freshState, rpcAs, uatUsers } from "./support/direct";
+import { freshState, rpcAs, selectAllAs, uatUsers } from "./support/direct";
 import { attachRuntimeErrors, given, thenStep, when } from "./support/uat";
 
 test.describe.configure({ mode: "serial" });
@@ -285,6 +285,52 @@ test.describe("вендор V", () => {
           await expect(page.getByRole("main").getByRole("alert")).toHaveText("Not enough rights");
           await expect(page.getByRole("table")).toHaveCount(0);
           await expect(page.getByText("Tenant move-in")).toHaveCount(0);
+        },
+      );
+    },
+  );
+
+  test(
+    `AC-VENDOR-04: vendor V requests runs and tasks directly, bypassing the pages — no template, version or run manager of "${RUN_12}"`,
+    { tag: ["@uat", "@writes"], annotation: { type: "ac", description: "AC-VENDOR-04" } },
+    async ({ page, browser }) => {
+      let runs = { status: 0, rows: [] as Record<string, unknown>[] };
+      let tasks = { status: 0, rows: [] as Record<string, unknown>[] };
+      let viaRuns = { status: 0, body: "" };
+      let viaTasks = { status: 0, body: "" };
+      await given(`vendor V who is the assignee of tasks 3 and 4 in the run "${RUN_12}" (5 tasks)`, async () => {
+        await ensureRuns(browser);
+        await page.goto("/runs");
+      });
+      await when("V requests the runs and the tasks directly with own token and the publishable key (GET /rest/v1, POST /rest/v1/rpc)", async () => {
+        const state = await freshState(browser, STATE.vendor);
+        runs = await selectAllAs(state, "runs");
+        tasks = await selectAllAs(state, "run_tasks");
+        viaRuns = await rpcAs(state, "vendor_runs", {});
+        viaTasks = await rpcAs(state, "vendor_tasks", {});
+      });
+      await thenStep(
+        page,
+        {
+          clause: "V receives only own tasks 3 and 4 and the case name and status of the run — no template name, version or run manager.",
+          visible: [`the list of runs of V with the run "${RUN_12}"`],
+          hidden: [
+            "GET /rest/v1/runs?select=* — 0 rows",
+            "GET /rest/v1/run_tasks?select=* — 0 rows",
+            "vendor_runs — only id, case_name, status",
+            "vendor_tasks — 2 own tasks, no assignee or done_by",
+          ],
+        },
+        async () => {
+          expect(runs).toEqual({ status: 200, rows: [] });
+          expect(tasks).toEqual({ status: 200, rows: [] });
+          const ownRuns = JSON.parse(viaRuns.body) as Record<string, unknown>[];
+          expect(ownRuns.map((r) => r.case_name)).toEqual([RUN_12]);
+          expect(Object.keys(ownRuns[0]).sort()).toEqual(["case_name", "id", "status"]);
+          const ownTasks = JSON.parse(viaTasks.body) as Record<string, unknown>[];
+          expect(ownTasks.map((t) => t.position)).toEqual([3, 4]);
+          expect(Object.keys(ownTasks[0]).sort()).toEqual(["id", "is_required", "name", "position", "run_id", "section_name", "status"]);
+          await expect(page.getByTestId("run-row")).toHaveCount(1);
         },
       );
     },
