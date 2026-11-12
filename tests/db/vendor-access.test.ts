@@ -17,6 +17,10 @@ let VERSION_TASKS: string[];
 let RUN_12: string;
 let RUN_14: string;
 
+/** Білий список колонок, які вендор отримує з функцій (ADR 0008): без шаблону, версії, менеджера запуску й done_by. */
+const VENDOR_RUN_COLUMNS = ["case_name", "id", "status"];
+const VENDOR_TASK_COLUMNS = ["id", "is_required", "name", "position", "run_id", "section_name", "status"];
+
 const tasksOf = (runId: string) =>
   t.asService<{ id: string; position: number; assignee_id: string; status: string }>(
     "select id, position, assignee_id, status from public.run_tasks where run_id = $1 order by position",
@@ -71,27 +75,50 @@ describe("vendor-access (db)", () => {
   });
 
   it('AC-VENDOR-03: vendor V sees only the run "Apartment 12, move-in", with 2 own tasks, and not "Apartment 14, repair"', async () => {
-    const runs = await t.asUser<{ case_name: string; status: string }>(VENDOR, "select case_name, status from public.runs");
-    expect(runs).toEqual([{ case_name: "Apartment 12, move-in", status: "in_progress" }]);
-    const own = await t.asUser<{ status: string }>(VENDOR, "select status from public.run_tasks where run_id = $1", [RUN_12]);
+    const runs = await t.asUser<Record<string, unknown>>(VENDOR, "select * from public.vendor_runs()");
+    expect(runs).toEqual([{ id: RUN_12, case_name: "Apartment 12, move-in", status: "in_progress" }]);
+    // Лише колонки з білого списку: без шаблону, версії й менеджера запуску (рядок справді прийшов — перевірка вище).
+    expect(Object.keys(runs[0]).sort()).toEqual(VENDOR_RUN_COLUMNS);
+    const own = await t.asUser<{ status: string }>(VENDOR, "select status from public.vendor_tasks($1)", [RUN_12]);
     expect(own.map((x) => x.status)).toEqual(["to_do", "to_do"]);
+    // Функція — лише для вендора: менеджер свої запуски читає з таблиці, тут нічого не отримує.
+    expect(await t.asUser(MANAGER_A, "select * from public.vendor_runs()")).toEqual([]);
   });
 
   it("AC-VENDOR-04: vendor V sees exactly tasks 3 and 4 of the run, not tasks 1, 2 and 5", async () => {
-    const visible = await t.asUser<{ position: number; assignee_id: string }>(
-      VENDOR,
-      "select position, assignee_id from public.run_tasks where run_id = $1 order by position",
-      [RUN_12],
-    );
+    const visible = await t.asUser<Record<string, unknown>>(VENDOR, "select * from public.vendor_tasks($1)", [RUN_12]);
     expect(visible.map((x) => x.position)).toEqual([3, 4]);
-    expect(visible.every((x) => x.assignee_id === VENDOR)).toBe(true);
-    // Менеджер запуску й далі бачить усі 5 задач.
+    // Назва, розділ, required/optional і статус — і нічого про інших користувачів (assignee_id, done_by).
+    expect(Object.keys(visible[0]).sort()).toEqual(VENDOR_TASK_COLUMNS);
+    const ids = (await tasksOf(RUN_12)).map((x) => x.id);
+    expect(visible.map((x) => x.id)).toEqual([ids[2], ids[3]]);
+    // Менеджер запуску й далі бачить усі 5 задач у таблиці.
     expect(await t.asUser(MANAGER_A, "select id from public.run_tasks where run_id = $1", [RUN_12])).toHaveLength(5);
+  });
+
+  it("AC-VENDOR-04: a direct select * as vendor V returns nothing from the tables of public except V's own profile", async () => {
+    // Запит напряму, в обхід сторінок (GET /rest/v1/<таблиця>?select=* з токеном вендора): RLS фільтрує рядки, а не
+    // колонки, тож таблиця, рядок якої вендору дозволено, віддала б і шаблон, і менеджера запуску.
+    const tables = (
+      await t.asService<{ name: string }>(
+        "select table_name as name from information_schema.tables where table_schema = 'public' and table_type in ('BASE TABLE', 'VIEW') order by 1",
+      )
+    ).map((r) => r.name);
+    expect(tables).toEqual(expect.arrayContaining(["runs", "run_tasks", "profiles", "templates"]));
+    const seen: Record<string, (string | undefined)[]> = {};
+    for (const table of tables) {
+      seen[table] = (await t.asUser<{ id?: string }>(VENDOR, `select * from public.${table}`)).map((r) => r.id);
+    }
+    // Лише власний профіль; з усіх інших таблиць і view — 0 рядків.
+    expect(seen).toEqual(Object.fromEntries(tables.map((table) => [table, table === "profiles" ? [VENDOR] : []])));
   });
 
   it('AC-VENDOR-06: vendor V gets nothing of the run "Apartment 14, repair" in which V has no task', async () => {
     expect(await t.asUser(VENDOR, "select id from public.runs where id = $1", [RUN_14])).toEqual([]);
     expect(await t.asUser(VENDOR, "select id from public.run_tasks where run_id = $1", [RUN_14])).toEqual([]);
+    expect(await t.asUser(VENDOR, "select * from public.vendor_tasks($1)", [RUN_14])).toEqual([]);
+    const runs = await t.asUser<{ id: string }>(VENDOR, "select id from public.vendor_runs()");
+    expect(runs.map((r) => r.id)).toEqual([RUN_12]);
   });
 
   it('AC-VENDOR-07: vendor V marks task 1 of manager A directly — the request is refused and task 1 stays "to do"', async () => {
@@ -107,7 +134,7 @@ describe("vendor-access (db)", () => {
     const task3 = (await tasksOf(RUN_12))[2];
     await t.asUser(VENDOR, "select public.mark_task_done($1)", [task3.id]);
     expect((await tasksOf(RUN_12))[2].status).toBe("done");
-    const own = await t.asUser<{ status: string }>(VENDOR, "select status from public.run_tasks where run_id = $1", [RUN_12]);
+    const own = await t.asUser<{ status: string }>(VENDOR, "select status from public.vendor_tasks($1)", [RUN_12]);
     expect(own.filter((x) => x.status === "done")).toHaveLength(1);
     expect(own).toHaveLength(2);
   });

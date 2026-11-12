@@ -17,12 +17,14 @@ import {
   type TaskStatus,
 } from "@/lib/runs/domain";
 import type { Role } from "@/lib/templates/domain";
+import { loadRunsList } from "@/lib/runs/vendor-reads";
 import { createClient } from "@/lib/supabase/server";
 
 // Список запусків (AC-TASK-06, AC-TASK-09, AC-TASK-13, AC-TASK-14, AC-TASK-17, AC-DSYS-01, AC-DSYS-04). Які запуски
 // видно, вирішує RLS (private.can_see_run): менеджер — свої й ті, де він виконавець; адміністратор — усі.
 // Вендор (AC-VENDOR-03, AC-VENDOR-10): лише запуски, де він виконавець, — випадок, статус і «Your tasks: N of K done»
-// (RLS віддає вендору лише його задачі); без шаблону й без «Launch a template»; без задач — «No tasks assigned to you yet.».
+// з функцій vendor_runs() і vendor_tasks(), які самі віддають лише ці колонки (база, а не сторінка, ховає шаблон і
+// менеджера); без «Launch a template»; без задач — «No tasks assigned to you yet.».
 export default async function RunsPage({ searchParams }: PageProps<"/runs">) {
   const { error } = await searchParams;
   const message = messageFor(error);
@@ -35,9 +37,8 @@ export default async function RunsPage({ searchParams }: PageProps<"/runs">) {
   const role = (profile?.role ?? null) as Role | null;
   const isVendor = role === "vendor";
 
-  const { data: runs } = await supabase
-    .from("runs")
-    .select("id, case_name, template_name, status, created_at, run_tasks(status, assignee_id)");
+  // Вендор таблиць runs і run_tasks не читає (RLS їх закриває, ADR 0008): лише функції з білим списком колонок.
+  const runs = await loadRunsList(supabase, userId, isVendor);
 
   const rows = runListRows(
     (runs ?? []).map((r) => ({

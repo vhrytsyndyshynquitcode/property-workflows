@@ -7,6 +7,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AppShell, PageHeader } from "@/components/ui/page";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { loadRunPage } from "@/lib/runs/vendor-reads";
 import { createClient } from "@/lib/supabase/server";
 import {
   assigneeLabel,
@@ -43,14 +44,11 @@ export default async function RunPage({ params, searchParams }: PageProps<"/runs
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", claims.sub).maybeSingle();
   const actor = { id: claims.sub, role: (profile?.role ?? "manager") as Role };
   // AC-VENDOR-04: вендор бачить лише свої задачі — назву, розділ, «required»/«optional», статус і «Your tasks: N of K
-  // done»; без шаблону, версії, менеджера запуску, email, статусу й прогресу всього запуску (RLS віддає лише його задачі).
+  // done»; без шаблону, версії, менеджера запуску, email, статусу й прогресу всього запуску. Таблиці runs і run_tasks
+  // для вендора закриті (ADR 0008): дані — лише з функцій vendor_runs() і vendor_tasks(), які віддають тільки ці колонки.
   const isVendor = actor.role === "vendor";
 
-  const { data: run } = await supabase
-    .from("runs")
-    .select("id, case_name, template_name, status, run_manager_id, template_version:template_versions(number), run_tasks(id, name, section_name, is_required, position, assignee_id, status)")
-    .eq("id", id)
-    .maybeSingle();
+  const run = await loadRunPage(supabase, id, actor.id, isVendor);
 
   if (!run) {
     return (
