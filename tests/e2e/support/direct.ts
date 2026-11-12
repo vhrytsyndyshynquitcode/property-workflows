@@ -37,6 +37,20 @@ function accessToken(state: StorageState): string {
   return (JSON.parse(json) as { access_token: string }).access_token;
 }
 
+/**
+ * Читання таблиці напряму (GET /rest/v1/<table>?select=*) від імені користувача з сесією state — те, що бачить
+ * будь-хто з DevTools (ADR 0008: RLS фільтрує рядки, а не колонки) → статус і розібране тіло.
+ */
+export async function selectAllAs(state: StorageState, table: string) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key) throw new Error("Для запиту напряму потрібні NEXT_PUBLIC_SUPABASE_URL і NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
+  const response = await fetch(`${url}/rest/v1/${table}?select=*`, {
+    headers: { apikey: key, Authorization: `Bearer ${accessToken(state)}` },
+  });
+  return { status: response.status, rows: (await response.json()) as Record<string, unknown>[] };
+}
+
 /** Виклик функції бази (POST /rest/v1/rpc/<fn>) від імені користувача з сесією state → статус і текст відповіді. */
 export async function rpcAs(state: StorageState, fn: string, args: Record<string, unknown>) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
