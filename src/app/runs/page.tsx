@@ -17,6 +17,7 @@ import {
   type TaskStatus,
 } from "@/lib/runs/domain";
 import type { Role } from "@/lib/templates/domain";
+import { loadRunsList } from "@/lib/runs/vendor-reads";
 import { createClient } from "@/lib/supabase/server";
 
 // Список запусків (AC-TASK-06, AC-TASK-09, AC-TASK-13, AC-TASK-14, AC-TASK-17, AC-DSYS-01, AC-DSYS-04). Які запуски
@@ -36,21 +37,8 @@ export default async function RunsPage({ searchParams }: PageProps<"/runs">) {
   const role = (profile?.role ?? null) as Role | null;
   const isVendor = role === "vendor";
 
-  // Вендор таблиць runs і run_tasks не читає (RLS їх закриває, ADR 0008): лише функції з білим списком колонок —
-  // без шаблону й менеджера запуску. Порядок (новіші вище) задає vendor_runs(); стабільне сортування його зберігає.
-  const runs = isVendor
-    ? await (async () => {
-        const [{ data: own }, { data: tasks }] = await Promise.all([supabase.rpc("vendor_runs"), supabase.rpc("vendor_tasks", {})]);
-        return (own ?? []).map((r) => ({
-          id: r.id,
-          case_name: r.case_name,
-          template_name: "",
-          status: r.status,
-          created_at: "",
-          run_tasks: (tasks ?? []).filter((t) => t.run_id === r.id).map((t) => ({ status: t.status, assignee_id: userId })),
-        }));
-      })()
-    : (await supabase.from("runs").select("id, case_name, template_name, status, created_at, run_tasks(status, assignee_id)")).data;
+  // Вендор таблиць runs і run_tasks не читає (RLS їх закриває, ADR 0008): лише функції з білим списком колонок.
+  const runs = await loadRunsList(supabase, userId, isVendor);
 
   const rows = runListRows(
     (runs ?? []).map((r) => ({
