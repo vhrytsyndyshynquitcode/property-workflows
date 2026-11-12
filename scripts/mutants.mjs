@@ -20,6 +20,7 @@ const EDITOR_DB = "tests/db/template-editor-oct27.test.ts";
 // Зріз 3 (WS9): роль вендора — міграція 20261109083715_vendor_access.sql і mark_task_done зрізу 1.
 const VENDOR_SQL = "supabase/migrations/20261109083715_vendor_access.sql";
 const VENDOR_DB = "tests/db/vendor-access.test.ts";
+const VENDOR_READS_SQL = "supabase/migrations/20261112142948_vendor_reads_by_function.sql";
 
 export const mutants = [
   {
@@ -43,12 +44,8 @@ export const mutants = [
     find: 'if (!name) redirect("/templates/new?error=name_empty");',
     replace: 'if (name === null) redirect("/templates/new?error=name_empty");',
   },
-  {
-    id: "V04", kind: "sql", ac: "AC-VENDOR-04", file: VENDOR_SQL, tests: [VENDOR_DB],
-    what: "run_tasks: вендор бачить усі задачі запуску, а не лише свої",
-    find: "    and ((select private.current_app_role()) <> 'vendor' or assignee_id = (select auth.uid()))\n",
-    replace: "",
-  },
+  // V04 (run_tasks у VENDOR_SQL) прибрано: міграція ADR 0008 видаляє й створює цю політику заново, тож мутант у старому
+  // файлі еквівалентний. AC-VENDOR-04 тепер стережуть V10, V11 і V12 у VENDOR_READS_SQL.
   {
     id: "V08", kind: "sql", ac: "AC-VENDOR-08", file: VENDOR_SQL, tests: [VENDOR_DB],
     what: "templates: шаблон з поточною версією бачить будь-хто з входом, зокрема вендор",
@@ -79,11 +76,38 @@ export const mutants = [
     find: "where p.id is null or p.role not in ('manager', 'admin', 'vendor')",
     replace: "where p.id is null or p.role not in ('manager', 'admin')",
   },
+  // V06: до ADR 0008 запуски вендору віддавала can_see_run (RUNS_SQL); тепер вендор читає їх лише з vendor_runs(),
+  // і мутант у can_see_run для вендора еквівалентний — захист AC-VENDOR-06 живе у фільтрі функції.
   {
-    id: "V06", kind: "sql", ac: "AC-VENDOR-06", file: RUNS_SQL, tests: [VENDOR_DB],
-    what: "can_see_run: вендор бачить усі запуски, як адміністратор",
-    find: "select (select private.current_app_role()) = 'admin'",
-    replace: "select (select private.current_app_role()) in ('admin', 'vendor')",
+    id: "V06", kind: "sql", ac: "AC-VENDOR-06", file: VENDOR_READS_SQL, tests: [VENDOR_DB],
+    what: "vendor_runs: вендор бачить запуски без жодної своєї задачі",
+    find: "where t.run_id = r.id and t.assignee_id = (select auth.uid())",
+    replace: "where t.run_id = r.id",
+  },
+  // ADR 0008: вендор читає runs і run_tasks лише через функції з білим списком колонок.
+  {
+    id: "V10", kind: "sql", ac: "AC-VENDOR-04", file: VENDOR_READS_SQL, tests: [VENDOR_DB],
+    what: "runs_select_visible: вендор знову читає рядок runs цілком (шаблон, версія, менеджер запуску)",
+    find: "(select private.current_app_role()) <> 'vendor'\n    and private.can_see_run(id)",
+    replace: "private.can_see_run(id)",
+  },
+  {
+    id: "V11", kind: "sql", ac: "AC-VENDOR-04", file: VENDOR_READS_SQL, tests: [VENDOR_DB],
+    what: "run_tasks_select_visible: вендор знову читає рядки run_tasks (зокрема done_by)",
+    find: "(select private.current_app_role()) <> 'vendor'\n    and private.can_see_run(run_id)",
+    replace: "private.can_see_run(run_id)",
+  },
+  {
+    id: "V12", kind: "sql", ac: "AC-VENDOR-04", file: VENDOR_READS_SQL, tests: [VENDOR_DB],
+    what: "vendor_tasks: вендор отримує всі задачі запуску, де він виконавець, а не лише свої",
+    find: "    and t.assignee_id = (select auth.uid())\n    and (p_run_id",
+    replace: "    and private.can_see_run(t.run_id)\n    and (p_run_id",
+  },
+  {
+    id: "V13", kind: "sql", ac: "AC-VENDOR-03", file: VENDOR_READS_SQL, tests: [VENDOR_DB],
+    what: "vendor_runs: функцію вендора отримує будь-яка роль",
+    find: "where (select private.current_app_role()) = 'vendor'\n    and exists",
+    replace: "where exists",
   },
 ];
 

@@ -325,6 +325,22 @@ export type Database = {
         Args: { p_task_id: string };
         Returns: boolean;
       };
+      vendor_runs: {
+        Args: Record<PropertyKey, never>;
+        Returns: { id: string; case_name: string; status: string }[];
+      };
+      vendor_tasks: {
+        Args: { p_run_id?: string };
+        Returns: {
+          id: string;
+          run_id: string;
+          section_name: string;
+          name: string;
+          is_required: boolean;
+          position: number;
+          status: string;
+        }[];
+      };
     };
     Enums: {
       [_ in never]: never;

@@ -43,14 +43,35 @@ export default async function RunPage({ params, searchParams }: PageProps<"/runs
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", claims.sub).maybeSingle();
   const actor = { id: claims.sub, role: (profile?.role ?? "manager") as Role };
   // AC-VENDOR-04: вендор бачить лише свої задачі — назву, розділ, «required»/«optional», статус і «Your tasks: N of K
-  // done»; без шаблону, версії, менеджера запуску, email, статусу й прогресу всього запуску (RLS віддає лише його задачі).
+  // done»; без шаблону, версії, менеджера запуску, email, статусу й прогресу всього запуску. Таблиці runs і run_tasks
+  // для вендора закриті (ADR 0008): дані — лише з функцій vendor_runs() і vendor_tasks(), які віддають тільки ці колонки.
   const isVendor = actor.role === "vendor";
 
-  const { data: run } = await supabase
-    .from("runs")
-    .select("id, case_name, template_name, status, run_manager_id, template_version:template_versions(number), run_tasks(id, name, section_name, is_required, position, assignee_id, status)")
-    .eq("id", id)
-    .maybeSingle();
+  const run = isVendor
+    ? await (async () => {
+        const [{ data: own }, { data: tasks }] = await Promise.all([
+          supabase.rpc("vendor_runs"),
+          supabase.rpc("vendor_tasks", { p_run_id: id }),
+        ]);
+        const found = (own ?? []).find((r) => r.id === id);
+        if (!found) return null;
+        return {
+          id: found.id,
+          case_name: found.case_name,
+          template_name: "",
+          status: found.status,
+          run_manager_id: "",
+          template_version: null,
+          run_tasks: (tasks ?? []).map((t) => ({ ...t, assignee_id: actor.id })),
+        };
+      })()
+    : (
+        await supabase
+          .from("runs")
+          .select("id, case_name, template_name, status, run_manager_id, template_version:template_versions(number), run_tasks(id, name, section_name, is_required, position, assignee_id, status)")
+          .eq("id", id)
+          .maybeSingle()
+      ).data;
 
   if (!run) {
     return (
