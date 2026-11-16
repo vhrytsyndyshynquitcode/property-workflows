@@ -19,11 +19,11 @@
 
 ## 4. Evals
 
-- [ ] 4.1 `cases.json` з 10 кейсів PM, офлайн-реплей з AC ID, тести збоїв і ін'єкції; живий прогін і звіт у
+- [x] 4.1 `cases.json` з 10 кейсів PM, офлайн-реплей з AC ID, тести збоїв і ін'єкції; живий прогін і звіт у
   `evals/reports/`.
   Done when: AC-DOCAI-01, AC-DOCAI-02, AC-DOCAI-06, AC-DOCAI-07, AC-DOCAI-08, AC-DOCAI-09, AC-DOCAI-10, AC-DOCAI-13
 
 ## 5. Прод і UAT
 
-- [ ] 5.1 Прод, UAT на 2 AC (AC-DOCAI-04 — підтвердження людиною, AC-DOCAI-14 — відмова), `docs/conformance.md`.
+- [x] 5.1 Прод, UAT на 2 AC (AC-DOCAI-04 — підтвердження людиною, AC-DOCAI-14 — відмова), `docs/conformance.md`.
   Done when: AC-DOCAI-04, AC-DOCAI-14
