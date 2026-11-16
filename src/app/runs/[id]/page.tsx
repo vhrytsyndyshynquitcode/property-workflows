@@ -7,6 +7,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AppShell, PageHeader } from "@/components/ui/page";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { DocSection } from "@/components/app/doc-records";
+import { loadDocParsing } from "@/lib/runs/doc-records";
 import { loadRunPage } from "@/lib/runs/vendor-reads";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -64,6 +66,7 @@ export default async function RunPage({ params, searchParams }: PageProps<"/runs
   }
 
   const { data: users } = isVendor ? { data: [] } : await supabase.rpc("list_assignable_users");
+  const docs = await loadDocParsing(supabase, run.id, isVendor);
 
   const tasks = tasksVisibleTo(
     actor,
@@ -154,6 +157,7 @@ export default async function RunPage({ params, searchParams }: PageProps<"/runs
           </CardContent>
         </Card>
       ))}
+      <DocSection runId={run.id} docs={docs} />
       <Link href="/runs" className="text-sm text-primary underline-offset-4 hover:underline">
         All runs
       </Link>

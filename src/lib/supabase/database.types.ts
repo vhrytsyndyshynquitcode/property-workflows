@@ -181,6 +181,36 @@ export type Database = {
           },
         ];
       };
+      doc_records: {
+        Row: {
+          id: string;
+          run_id: string;
+          document_type: string;
+          values: Json;
+          confirmed_by: string;
+          confirmed_by_email: string;
+          confirmed_at: string;
+        };
+        Insert: {
+          id?: string;
+          run_id: string;
+          document_type: string;
+          values: Json;
+          confirmed_by: string;
+          confirmed_by_email: string;
+          confirmed_at?: string;
+        };
+        Update: {
+          id?: string;
+          run_id?: string;
+          document_type?: string;
+          values?: Json;
+          confirmed_by?: string;
+          confirmed_by_email?: string;
+          confirmed_at?: string;
+        };
+        Relationships: [];
+      };
       runs: {
         Row: {
           id: string;
@@ -324,6 +354,14 @@ export type Database = {
       is_last_required_task: {
         Args: { p_task_id: string };
         Returns: boolean;
+      };
+      can_parse_documents: {
+        Args: { p_run_id: string };
+        Returns: boolean;
+      };
+      save_doc_record: {
+        Args: { p_run_id: string; p_document_type: string; p_values: Json };
+        Returns: string;
       };
       vendor_runs: {
         Args: Record<PropertyKey, never>;
