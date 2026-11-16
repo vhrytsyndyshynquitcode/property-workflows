@@ -33,6 +33,22 @@
 
 | AC | Що перевіряє | Код | Тест | Статус |
 |---|---|---|---|---|
+| AC-DOCAI-01 | заявка про кран — тип, телефон, опис, plumbing, not urgent; нічого не збережено | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-02 | кошторис зі збіжною сумою — 3 позиції, Total 220.00, без попередження | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-03 | поки AI працює — «Reading the document…», кнопка вимкнена | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-04 | виправлена Urgency «urgent» збережена з email і часом підтвердження | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-05 | «Discard» — блок порожній, запису немає | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-06 | без телефону — Phone «not found», appliance | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-07 | дві проблеми — опис обох, plumbing, примітка «the email has two problems» | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-08 | сума не збігається — попередження «items add up to 220.00, the stated total is 200.00» | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-09 | меню — «This document is not a maintenance request or an estimate.» | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-10 | ін’єкція в тексті ігнорується, примітка про проігноровані інструкції | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-11 | порожній текст — «Paste the text of a document» | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-12 | photo.png — «Only plain text files (.txt) are accepted» | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-13 | помічник недоступний — ручне заповнення й збереження | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-14 | вендор не бачить блоку «Parse a document» | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-15 | виконавець-менеджер не бачить блоку | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-16 | запит напряму без прав — «Not enough rights», нічого не збережено | — | — | відкладено (чекає реалізації) |
 | AC-DSYS-01 | ті самі слова й кольори статусів у списку й на сторінках запусків | `src/components/ui/status-badge.tsx`, `src/lib/runs/domain.ts` (RUN_STATUS_TONE), `src/app/runs/page.tsx`, `src/app/runs/[id]/page.tsx` | `tests/templates/ui.test.ts` | реалізовано |
 | AC-DSYS-02 | менеджер у редакторі — «Not enough rights» і «Back to templates», шаблон без змін | `src/lib/templates/domain.ts` (adminPageAccess), `src/components/app/not-enough-rights.tsx`, `src/app/templates/[id]/edit/page.tsx`, `src/components/ui/page.tsx` (AppShell — той самий макет із бічною навігацією) | `tests/templates/ui.test.ts` | реалізовано |
 | AC-DSYS-03 | відвідувач без входу на сторінці запуску — сторінка входу, без даних | `src/lib/templates/server.ts` (currentUser), `src/app/runs/[id]/page.tsx`, `src/app/login/page.tsx` | `tests/templates/ui.test.ts` | реалізовано |
