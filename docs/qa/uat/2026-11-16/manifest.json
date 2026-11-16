@@ -1,0 +1,114 @@
+{
+  "kind": "uat",
+  "generatedAt": "2026-11-16T21:55:29.227Z",
+  "baseURL": "https://property-workflows-one.vercel.app",
+  "deployedSha": "2378758ffba1733287ba60fbd8848ed3f9ab0458",
+  "testsCommit": "2378758ffba1733287ba60fbd8848ed3f9ab0458",
+  "reviewer": {
+    "model": "claude-haiku-5-5",
+    "disputes": "claude-sonnet-5-5"
+  },
+  "note": "Відео й траси не в git (test-results/ локально, артефакт CI). check-recordings конвеєра WS9 вимагає відео на диску — для нього цей manifest треба доповнити.",
+  "results": [
+    {
+      "id": "AC-DOCAI-04",
+      "proof": "AC-DOCAI-04",
+      "title": "AC-DOCAI-04: run manager A changes Urgency to \"urgent\" and chooses \"Save values\" — one saved record with A's email and the time",
+      "screenshot": "docs/qa/uat/2026-11-16/frames/AC-DOCAI-04-then-1.png",
+      "video": "test-results/artifacts/doc-parsing-менеджер-запус-c87f1-with-A-s-email-and-the-time-chromium/video.webm",
+      "trace": "test-results/artifacts/doc-parsing-менеджер-запус-c87f1-with-A-s-email-and-the-time-chromium/trace.zip",
+      "asserted": true,
+      "vision": {
+        "met": true,
+        "readable": true,
+        "notes": "На кадрі в блоці «Saved values» один запис: Document type: Maintenance request, Phone 555-0101, Category plumbing, Urgency urgent. Рядок «Confirmed by uat-261116215322-manager@example.test, 16 Nov 2026, 23:54» показує email і дату з часом. Походження значень від AI з кадру не оцінювалося."
+      },
+      "agentModel": "claude-sonnet-5-5",
+      "agentVerdicts": {
+        "claude-haiku-5-5": "PASS",
+        "claude-sonnet-5-5": "PASS"
+      },
+      "escalated": true,
+      "quotesVerified": [
+        {
+          "quote": "Saved values",
+          "onPage": true
+        },
+        {
+          "quote": "Document type: Maintenance request",
+          "onPage": true
+        },
+        {
+          "quote": "Phone 555-0101",
+          "onPage": false
+        },
+        {
+          "quote": "Category plumbing",
+          "onPage": false
+        },
+        {
+          "quote": "Urgency urgent",
+          "onPage": false
+        },
+        {
+          "quote": "Confirmed by uat-261116215322-manager@example.test, 16 Nov 2026, 23:54",
+          "onPage": true
+        }
+      ],
+      "verdict": "NEEDS-HUMAN",
+      "factoryGate": "NOT-EARNED",
+      "rule": "R4: цитати агента немає на сторінці (aria) — не підтверджено",
+      "playwrightMs": 21500,
+      "reviewCostUsd": 0.03529,
+      "reviewWallMs": 19324
+    },
+    {
+      "id": "AC-DOCAI-14",
+      "proof": "AC-DOCAI-14",
+      "title": "AC-DOCAI-14: vendor V opens the page of the run — no block \"Parse a document\"",
+      "screenshot": "docs/qa/uat/2026-11-16/frames/AC-DOCAI-14-then-1.png",
+      "video": "test-results/artifacts/doc-parsing-вендор-V-AC-DO-fa629--no-block-Parse-a-document--chromium/video.webm",
+      "trace": "test-results/artifacts/doc-parsing-вендор-V-AC-DO-fa629--no-block-Parse-a-document--chromium/trace.zip",
+      "asserted": true,
+      "vision": {
+        "met": true,
+        "readable": true,
+        "notes": "На кадрі видно сторінку запуску із заголовком «Apartment 12, leak». У ній є власне завдання виконавця «Order cleaning» зі статусом «to do». Блоку «Parse a document» на кадрі немає, але цю частину я за правилами не оцінював."
+      },
+      "agentModel": "claude-sonnet-5-5",
+      "agentVerdicts": {
+        "claude-haiku-5-5": "NEEDS-HUMAN",
+        "claude-sonnet-5-5": "PASS"
+      },
+      "escalated": true,
+      "quotesVerified": [
+        {
+          "quote": "Apartment 12, leak",
+          "onPage": true
+        },
+        {
+          "quote": "Order cleaning",
+          "onPage": true
+        }
+      ],
+      "verdict": "PASS",
+      "factoryGate": "PASS",
+      "rule": "R6: перевірки, агент і цитати збігаються",
+      "playwrightMs": 2358,
+      "reviewCostUsd": 0.03564,
+      "reviewWallMs": 24045
+    }
+  ],
+  "negativeControls": [],
+  "cleanup": {
+    "at": "2026-11-16T21:55:03.858Z",
+    "deleted": [
+      "uat-261116215322-doc-vendor@example.test",
+      "uat-261116215322-idle-vendor@example.test",
+      "uat-261116215322-vendor@example.test",
+      "uat-261116215322-manager@example.test"
+    ],
+    "remaining": [],
+    "leftoverRequests": 0
+  }
+}

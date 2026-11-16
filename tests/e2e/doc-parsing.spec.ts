@@ -100,6 +100,8 @@ test.describe("менеджер запуску A", () => {
           await expect(record.getByTestId("doc-record-phone")).toHaveText("555-0101");
           await expect(record.getByTestId("doc-record-category")).toHaveText("plumbing");
           await expect(record.getByTestId("doc-record-urgency")).toHaveText("urgent");
+          // Кадр «Тоді» знімає видиму частину сторінки — запис має бути в кадрі для агента й PM.
+          await record.scrollIntoViewIfNeeded();
           await expect(record.getByTestId("doc-record-confirmed")).toHaveText(
             new RegExp(`^Confirmed by ${users["uat-manager"].replace(/[.+]/g, "\\$&")}, \\d{2} [A-Z][a-z]{2} \\d{4}, \\d{2}:\\d{2}$`),
           );
