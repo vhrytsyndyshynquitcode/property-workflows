@@ -19,6 +19,8 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 // property-workflows (зріз 3): запуски синтетичного менеджера (їхні задачі видаляє on delete cascade) і задачі, де
 // синтетичний вендор — виконавець чи той, хто позначив задачу (FK на profiles без cascade).
 const OWNED_ROWS: { table: string; column: string }[] = [
+  // Зріз 4: записи документів, які підтвердив синтетичний користувач (confirmed_by без каскаду на профіль).
+  { table: "doc_records", column: "confirmed_by" },
   { table: "runs", column: "run_manager_id" },
   { table: "run_tasks", column: "assignee_id" },
   { table: "run_tasks", column: "done_by" },
