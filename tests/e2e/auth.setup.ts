@@ -33,12 +33,14 @@ for (const [role, email] of Object.entries(ROLES)) {
 // Менеджер A і вендор V для сценаріїв, що пишуть у базу (запуск, позначка), і вендор без задач (AC-VENDOR-10):
 // uat-<прогін>-…@example.test, пароль випадковий і живе лише в пам'яті цього кроку (без запису й trace). Прибирає їх
 // разом із запусками cleanup.teardown.ts. Адреси (без паролів) — у playwright/.auth/uat-users.json (.gitignore).
-const UAT_USERS = { "uat-manager": "manager", "uat-vendor": "vendor", "uat-idle-vendor": "vendor" } as const;
+// uat-doc-vendor — окремий вендор для UAT зрізу 4 (tests/e2e/doc-parsing.spec.ts), щоб його запуск не змінював
+// список запусків вендора V зрізу 3.
+const UAT_USERS = { "uat-manager": "manager", "uat-vendor": "vendor", "uat-idle-vendor": "vendor", "uat-doc-vendor": "vendor" } as const;
 
 if (hasAdminKey()) {
   setup("вхід: синтетичні менеджер і вендори зрізу 3", async ({ browser }) => {
     // Три користувачі й три входи підряд: на повільному проді (до 25 с на вхід) 60 с не вистачало.
-    setup.setTimeout(180_000);
+    setup.setTimeout(240_000);
     const emails: Record<string, string> = {};
     for (const [key, role] of Object.entries(UAT_USERS)) {
       const user = await createUatUser(key.replace(/^uat-/, ""), role);

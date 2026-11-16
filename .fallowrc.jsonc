@@ -42,6 +42,11 @@
       "scripts/zip-accounts.mjs",
       "scripts/mutation-check.mjs",
       "scripts/coverage-summary.mjs",
+      // Набір WS10 materials/ai-feature (ADR 0009): живий eval і скрипти моделей / ліміту запускає людина вручну,
+      // у npm test і CI їх немає; структуру лишаємо як у курсі.
+      "evals/golden.live.eval.ts",
+      "scripts/free-models.mjs",
+      "scripts/quota.mjs",
       // Талісман Mochi (ADR 0004): WebGL-код перенесено з демо «3D GPU Fur Simulation» майже без змін; розбивати його
       // на дрібні функції — ризик зламати шейдери без тестів (WebGL у Vitest не запускається). Мертвий код і
       // залежності тут fallow перевіряє й далі.

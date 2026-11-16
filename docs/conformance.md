@@ -33,22 +33,22 @@
 
 | AC | Що перевіряє | Код | Тест | Статус |
 |---|---|---|---|---|
-| AC-DOCAI-01 | заявка про кран — тип, телефон, опис, plumbing, not urgent; нічого не збережено | — | — | відкладено (чекає реалізації) |
-| AC-DOCAI-02 | кошторис зі збіжною сумою — 3 позиції, Total 220.00, без попередження | — | — | відкладено (чекає реалізації) |
-| AC-DOCAI-03 | поки AI працює — «Reading the document…», кнопка вимкнена | — | — | відкладено (чекає реалізації) |
-| AC-DOCAI-04 | виправлена Urgency «urgent» збережена з email і часом підтвердження | — | — | відкладено (чекає реалізації) |
-| AC-DOCAI-05 | «Discard» — блок порожній, запису немає | — | — | відкладено (чекає реалізації) |
-| AC-DOCAI-06 | без телефону — Phone «not found», appliance | — | — | відкладено (чекає реалізації) |
-| AC-DOCAI-07 | дві проблеми — опис обох, plumbing, примітка «the email has two problems» | — | — | відкладено (чекає реалізації) |
-| AC-DOCAI-08 | сума не збігається — попередження «items add up to 220.00, the stated total is 200.00» | — | — | відкладено (чекає реалізації) |
-| AC-DOCAI-09 | меню — «This document is not a maintenance request or an estimate.» | — | — | відкладено (чекає реалізації) |
-| AC-DOCAI-10 | ін’єкція в тексті ігнорується, примітка про проігноровані інструкції | — | — | відкладено (чекає реалізації) |
-| AC-DOCAI-11 | порожній текст — «Paste the text of a document» | — | — | відкладено (чекає реалізації) |
-| AC-DOCAI-12 | photo.png — «Only plain text files (.txt) are accepted» | — | — | відкладено (чекає реалізації) |
-| AC-DOCAI-13 | помічник недоступний — ручне заповнення й збереження | — | — | відкладено (чекає реалізації) |
-| AC-DOCAI-14 | вендор не бачить блоку «Parse a document» | — | — | відкладено (чекає реалізації) |
-| AC-DOCAI-15 | виконавець-менеджер не бачить блоку | — | — | відкладено (чекає реалізації) |
-| AC-DOCAI-16 | запит напряму без прав — «Not enough rights», нічого не збережено | — | — | відкладено (чекає реалізації) |
+| AC-DOCAI-01 | заявка про кран — тип, телефон, опис, plumbing, not urgent; нічого не збережено | `src/lib/ai/doc-values.ts` (toProposal, normalizePhone), `src/lib/ai/prompts/draft.ts`, `src/app/runs/[id]/doc-actions.ts` (requestDocValues) | `tests/golden.test.ts`, `tests/doc-parsing/doc-values.test.ts` | реалізовано |
+| AC-DOCAI-02 | кошторис зі збіжною сумою — 3 позиції, Total 220.00, без попередження | `src/lib/ai/doc-values.ts` (toProposal, totalWarning), `src/lib/ai/prompts/draft.ts` | `tests/golden.test.ts`, `tests/doc-parsing/doc-values.test.ts` | реалізовано |
+| AC-DOCAI-03 | поки AI працює — «Reading the document…», кнопка вимкнена | `src/lib/ai/doc-values.ts` (docBlockView), `src/components/app/doc-parse-block.tsx` | `tests/doc-parsing/block.test.ts` | реалізовано |
+| AC-DOCAI-04 | виправлена Urgency «urgent» збережена з email і часом підтвердження | `supabase/migrations/20261116161535_doc_records.sql` (save_doc_record), `src/app/runs/[id]/doc-actions.ts` (saveDocValues), `src/lib/runs/doc-records.ts`, `src/components/app/doc-records.tsx` | `tests/db/doc-records.test.ts`, `tests/doc-parsing/doc-values.test.ts`, `tests/doc-parsing/actions.test.ts`, `tests/doc-parsing/block.test.ts` | реалізовано |
+| AC-DOCAI-05 | «Discard» — блок порожній, запису немає | `src/lib/ai/doc-values.ts` (docBlockView), `src/components/app/doc-parse-block.tsx` (Discard) | `tests/doc-parsing/block.test.ts` | реалізовано |
+| AC-DOCAI-06 | без телефону — Phone «not found», appliance | `src/lib/ai/doc-values.ts` (MESSAGES.notFound), `src/components/app/doc-parse-block.tsx` (NotFound), `src/lib/ai/prompts/draft.ts` | `tests/golden.test.ts` | реалізовано |
+| AC-DOCAI-07 | дві проблеми — опис обох, plumbing, примітка «the email has two problems» | `src/lib/ai/doc-values.ts` (NOTES.twoProblems), `src/lib/ai/prompts/draft.ts` | `tests/golden.test.ts`, `tests/doc-parsing/doc-values.test.ts` | реалізовано |
+| AC-DOCAI-08 | сума не збігається — попередження «items add up to 220.00, the stated total is 200.00» | `src/lib/ai/doc-values.ts` (totalWarning) | `tests/golden.test.ts`, `tests/doc-parsing/doc-values.test.ts` | реалізовано |
+| AC-DOCAI-09 | меню — «This document is not a maintenance request or an estimate.» | `src/lib/ai/doc-values.ts` (MESSAGES.notADocument), `src/lib/ai/prompts/draft.ts` | `tests/golden.test.ts`, `tests/doc-parsing/doc-values.test.ts` | реалізовано |
+| AC-DOCAI-10 | ін’єкція в тексті ігнорується, примітка про проігноровані інструкції | `src/lib/ai/prompts/draft.ts` (межа <document>), `src/lib/ai/doc-values.ts` (NOTES.ignoredInstructions) | `tests/golden.test.ts`, `tests/doc-parsing/doc-values.test.ts` | реалізовано |
+| AC-DOCAI-11 | порожній текст — «Paste the text of a document» | `src/app/runs/[id]/doc-actions.ts` (requestDocValues), `src/lib/ai/doc-values.ts` (MESSAGES.emptyText) | `tests/doc-parsing/actions.test.ts`, `tests/doc-parsing/block.test.ts` | реалізовано |
+| AC-DOCAI-12 | photo.png — «Only plain text files (.txt) are accepted» | `src/lib/ai/doc-values.ts` (isPlainTextFile), `src/components/app/doc-parse-block.tsx` | `tests/doc-parsing/block.test.ts` | реалізовано |
+| AC-DOCAI-13 | помічник недоступний — ручне заповнення й збереження | `src/lib/ai/openrouter.ts`, `src/lib/ai/draft.ts` (classifyError), `src/app/runs/[id]/doc-actions.ts` | `tests/golden.test.ts`, `tests/doc-parsing/actions.test.ts`, `tests/doc-parsing/block.test.ts` | реалізовано |
+| AC-DOCAI-14 | вендор не бачить блоку «Parse a document» | `supabase/migrations/20261116161535_doc_records.sql` (can_parse_documents), `src/lib/runs/doc-records.ts` (loadDocParsing), `src/components/app/doc-records.tsx` (DocSection) | `tests/db/doc-records.test.ts`, `tests/doc-parsing/block.test.ts` | реалізовано |
+| AC-DOCAI-15 | виконавець-менеджер не бачить блоку | `supabase/migrations/20261116161535_doc_records.sql` (can_parse_documents), `src/lib/runs/doc-records.ts` (loadDocParsing) | `tests/db/doc-records.test.ts`, `tests/doc-parsing/block.test.ts` | реалізовано |
+| AC-DOCAI-16 | запит напряму без прав — «Not enough rights», нічого не збережено | `src/app/runs/[id]/doc-actions.ts` (mayParse — до виклику моделі), `supabase/migrations/20261116161535_doc_records.sql` (save_doc_record, RLS doc_records) | `tests/db/doc-records.test.ts`, `tests/doc-parsing/actions.test.ts` | реалізовано |
 | AC-DSYS-01 | ті самі слова й кольори статусів у списку й на сторінках запусків | `src/components/ui/status-badge.tsx`, `src/lib/runs/domain.ts` (RUN_STATUS_TONE), `src/app/runs/page.tsx`, `src/app/runs/[id]/page.tsx` | `tests/templates/ui.test.ts` | реалізовано |
 | AC-DSYS-02 | менеджер у редакторі — «Not enough rights» і «Back to templates», шаблон без змін | `src/lib/templates/domain.ts` (adminPageAccess), `src/components/app/not-enough-rights.tsx`, `src/app/templates/[id]/edit/page.tsx`, `src/components/ui/page.tsx` (AppShell — той самий макет із бічною навігацією) | `tests/templates/ui.test.ts` | реалізовано |
 | AC-DSYS-03 | відвідувач без входу на сторінці запуску — сторінка входу, без даних | `src/lib/templates/server.ts` (currentUser), `src/app/runs/[id]/page.tsx`, `src/app/login/page.tsx` | `tests/templates/ui.test.ts` | реалізовано |

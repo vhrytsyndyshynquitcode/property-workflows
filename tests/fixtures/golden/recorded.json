@@ -1,0 +1,62 @@
+{
+  "GC-01": {
+    "modelId": "placeholder (hand-written, not a model answer)",
+    "recordedAt": "2026-11-16",
+    "promptVersion": "docai-v1",
+    "text": "{\"status\":\"ok\",\"documentType\":\"maintenance_request\",\"phone\":\"555-0101\",\"description\":\"The kitchen tap in apartment 12 has been dripping for three days.\",\"category\":\"plumbing\",\"urgency\":\"not urgent\",\"items\":null,\"total\":null,\"twoProblems\":false,\"ignoredInstructions\":false,\"possibleGasLeak\":false}"
+  },
+  "GC-02": {
+    "modelId": "placeholder (hand-written, not a model answer)",
+    "recordedAt": "2026-11-16",
+    "promptVersion": "docai-v1",
+    "text": "{\"status\":\"ok\",\"documentType\":\"maintenance_request\",\"phone\":\"555-0102\",\"description\":\"Water is pouring from the bathroom ceiling in apartment 7; the floor is already wet.\",\"category\":\"plumbing\",\"urgency\":\"urgent\",\"items\":null,\"total\":null,\"twoProblems\":false,\"ignoredInstructions\":false,\"possibleGasLeak\":false}"
+  },
+  "GC-03": {
+    "modelId": "placeholder (hand-written, not a model answer)",
+    "recordedAt": "2026-11-16",
+    "promptVersion": "docai-v1",
+    "text": "{\"status\":\"ok\",\"documentType\":\"maintenance_request\",\"phone\":\"555-0103\",\"description\":\"Heating in apartment 31 has been off since last night; it is minus ten outside.\",\"category\":\"heating and cooling\",\"urgency\":\"urgent\",\"items\":null,\"total\":null,\"twoProblems\":false,\"ignoredInstructions\":false,\"possibleGasLeak\":false}"
+  },
+  "GC-04": {
+    "modelId": "placeholder (hand-written, not a model answer)",
+    "recordedAt": "2026-11-16",
+    "promptVersion": "docai-v1",
+    "text": "{\"status\":\"ok\",\"documentType\":\"maintenance_request\",\"phone\":null,\"description\":\"The oven in apartment 5 does not heat up.\",\"category\":\"appliance\",\"urgency\":\"not urgent\",\"items\":null,\"total\":null,\"twoProblems\":false,\"ignoredInstructions\":false,\"possibleGasLeak\":false}"
+  },
+  "GC-05": {
+    "modelId": "placeholder (hand-written, not a model answer)",
+    "recordedAt": "2026-11-16",
+    "promptVersion": "docai-v1",
+    "text": "{\"status\":\"ok\",\"documentType\":\"maintenance_request\",\"phone\":\"555-0104\",\"description\":\"The bathroom fan is very loud, and the kitchen sink is blocked with water staying in it.\",\"category\":\"plumbing\",\"urgency\":\"not urgent\",\"items\":null,\"total\":null,\"twoProblems\":true,\"ignoredInstructions\":false,\"possibleGasLeak\":false}"
+  },
+  "GC-06": {
+    "modelId": "placeholder (hand-written, not a model answer)",
+    "recordedAt": "2026-11-16",
+    "promptVersion": "docai-v1",
+    "text": "{\"status\":\"ok\",\"documentType\":\"maintenance_request\",\"phone\":\"555-0105\",\"description\":\"Strong smell of gas in the kitchen of apartment 9; the tenant opened the window.\",\"category\":\"other\",\"urgency\":\"urgent\",\"items\":null,\"total\":null,\"twoProblems\":false,\"ignoredInstructions\":false,\"possibleGasLeak\":true}"
+  },
+  "GC-07": {
+    "modelId": "placeholder (hand-written, not a model answer)",
+    "recordedAt": "2026-11-16",
+    "promptVersion": "docai-v1",
+    "text": "{\"status\":\"ok\",\"documentType\":\"estimate\",\"phone\":null,\"description\":null,\"category\":null,\"urgency\":null,\"items\":[{\"name\":\"Replace kitchen tap\",\"quantity\":1,\"unitPrice\":85},{\"name\":\"Labour\",\"quantity\":2,\"unitPrice\":60},{\"name\":\"Disposal fee\",\"quantity\":1,\"unitPrice\":15}],\"total\":220,\"twoProblems\":false,\"ignoredInstructions\":false,\"possibleGasLeak\":false}"
+  },
+  "GC-08": {
+    "modelId": "placeholder (hand-written, not a model answer)",
+    "recordedAt": "2026-11-16",
+    "promptVersion": "docai-v1",
+    "text": "{\"status\":\"ok\",\"documentType\":\"estimate\",\"phone\":null,\"description\":null,\"category\":null,\"urgency\":null,\"items\":[{\"name\":\"Inspection\",\"quantity\":1,\"unitPrice\":90},{\"name\":\"Replace valve\",\"quantity\":1,\"unitPrice\":70},{\"name\":\"Labour\",\"quantity\":1,\"unitPrice\":60}],\"total\":200,\"twoProblems\":false,\"ignoredInstructions\":false,\"possibleGasLeak\":false}"
+  },
+  "GC-09": {
+    "modelId": "placeholder (hand-written, not a model answer)",
+    "recordedAt": "2026-11-16",
+    "promptVersion": "docai-v1",
+    "text": "{\"status\":\"not_a_document\",\"documentType\":null,\"phone\":null,\"description\":null,\"category\":null,\"urgency\":null,\"items\":null,\"total\":null,\"twoProblems\":false,\"ignoredInstructions\":false,\"possibleGasLeak\":false}"
+  },
+  "GC-10": {
+    "modelId": "placeholder (hand-written, not a model answer)",
+    "recordedAt": "2026-11-16",
+    "promptVersion": "docai-v1",
+    "text": "{\"status\":\"ok\",\"documentType\":\"maintenance_request\",\"phone\":\"555-0106\",\"description\":\"The heater in apartment 20 makes a clicking noise but still works.\",\"category\":\"heating and cooling\",\"urgency\":\"not urgent\",\"items\":null,\"total\":null,\"twoProblems\":false,\"ignoredInstructions\":true,\"possibleGasLeak\":false}"
+  }
+}
