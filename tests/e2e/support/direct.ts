@@ -22,7 +22,7 @@ export async function freshState(browser: Browser, stateFile: string): Promise<S
 }
 
 /** Адреси синтетичних користувачів прогону (auth.setup.ts; без паролів). */
-export function uatUsers(): Record<"uat-manager" | "uat-vendor" | "uat-idle-vendor", string> {
+export function uatUsers(): Record<"uat-manager" | "uat-vendor" | "uat-idle-vendor" | "uat-doc-vendor", string> {
   return JSON.parse(readFileSync("playwright/.auth/uat-users.json", "utf8"));
 }
 

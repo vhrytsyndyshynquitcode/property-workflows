@@ -1,6 +1,6 @@
 // UAT зрізу 4 («Parse a document») на проді: AC-DOCAI-04 (людина підтверджує перед записом) і AC-DOCAI-14 (вендор не
 // бачить блоку). openspec/specs/doc-parsing; requirements/59-parse-a-document-and-confirm-values.md.
-// Дані — лише синтетичні: менеджер A і вендор V — uat-<прогін>-…@example.test (auth.setup.ts); запуск створює
+// Дані — лише синтетичні: менеджер A і вендор V (uat-doc-vendor, окремий від зрізу 3) — uat-<прогін>-…@example.test (auth.setup.ts); запуск створює
 // менеджер A; прибирання — cleanup.teardown.ts (запуски каскадом разом із записами doc_records). Тому — @writes.
 // Кожен прогін AC-DOCAI-04 — 1 запит до моделі з денного ліміту (50 на добу).
 import { expect, test, type Browser, type Page } from "@playwright/test";
@@ -11,7 +11,7 @@ test.describe.configure({ mode: "serial" });
 
 const STATE = {
   manager: "playwright/.auth/uat-manager.json",
-  vendor: "playwright/.auth/uat-vendor.json",
+  vendor: "playwright/.auth/uat-doc-vendor.json",
 } as const;
 const TENANT_MOVE_IN = "00000000-0000-4000-8000-000000000001";
 const CASE = "Apartment 12, leak";
@@ -36,7 +36,7 @@ async function ensureRun(browser: Browser) {
   const manager = await pageAs(browser, "manager");
   await manager.goto(`/runs/new?template=${TENANT_MOVE_IN}`);
   await manager.getByLabel("Case name").fill(CASE);
-  await manager.getByLabel("Order cleaning").selectOption({ label: users["uat-vendor"] });
+  await manager.getByLabel("Order cleaning").selectOption({ label: users["uat-doc-vendor"] });
   await manager.getByRole("button", { name: "Launch" }).click();
   await manager.waitForURL(/\/runs\/[0-9a-f-]{36}$/);
   runUrl = manager.url();
